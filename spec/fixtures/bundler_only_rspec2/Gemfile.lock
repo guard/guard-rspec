@@ -17,4 +17,4 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  rspec (~> 2.0.0.beta.22)
+  rspec (~> 2.0.0.rc)
