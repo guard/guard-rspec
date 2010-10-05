@@ -1,4 +1,4 @@
-require 'rspec/core/formatters/base_formatter'
+require 'rspec/core/formatters/progress_formatter'
 require "#{File.dirname(__FILE__)}/../formatter"
 require "#{File.dirname(__FILE__)}/../../rspec"
 
