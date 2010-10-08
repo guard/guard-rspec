@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'rspec'
+require 'spec'
 
 Spec::Runner.configure do |config|
 end

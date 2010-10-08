@@ -1,13 +1,11 @@
-require 'rspec/core/formatters/progress_formatter'
+require 'spec/runner/formatter/base_formatter'
 require "#{File.dirname(__FILE__)}/../formatter"
 require "#{File.dirname(__FILE__)}/../../rspec"
 
-class RSpec2 < RSpec::Core::Formatters::ProgressFormatter
+class SpecNotify < Spec::Runner::Formatter::BaseFormatter
   include Formatter
   
   def dump_summary(duration, total, failures, pending)
-    super # needed to keep progress formatter
-    
     message = guard_message(total, failures, pending, duration)
     image   = guard_image(failures, pending)
     notify(message, image)

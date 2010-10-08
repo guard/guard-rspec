@@ -13,7 +13,7 @@ describe Guard::RSpec::Runner do
       
       it "should run with RSpec 2 and without bundler" do
         subject.should_receive(:system).with(
-          "rspec --require #{@lib_path.join('guard/rspec/formatter/rspec2.rb')} --format RSpec2 --color spec"
+          "rspec --require #{@lib_path.join('guard/rspec/formatters/rspec_notify.rb')} --format RSpecNotify --color spec"
         )
         subject.run(["spec"])
       end
@@ -27,7 +27,7 @@ describe Guard::RSpec::Runner do
       
       it "should run with RSpec 1 and with bundler" do
         subject.should_receive(:system).with(
-          "bundle exec spec -f progress --require #{@lib_path.join('guard/rspec/formatter/rspec1.rb')} --format RSpec1:STDOUT --color spec"
+          "bundle exec spec -f progress --require #{@lib_path.join('guard/rspec/formatters/spec_notify.rb')} --format SpecNotify:STDOUT --color spec"
         )
         subject.run(["spec"])
       end

@@ -22,10 +22,10 @@ module Guard
           case rspec_version
           when 1
             cmd_parts << "spec"
-            cmd_parts << "-f progress --require #{File.dirname(__FILE__)}/formatter/rspec1.rb --format RSpec1:STDOUT"
+            cmd_parts << "-f progress --require #{File.dirname(__FILE__)}/formatters/spec_notify.rb --format SpecNotify:STDOUT"
           when 2
             cmd_parts << "rspec"
-            cmd_parts << "--require #{File.dirname(__FILE__)}/formatter/rspec2.rb --format RSpec2"
+            cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/rspec_notify.rb --format RSpecNotify"
           end
           cmd_parts << "--color"
           cmd_parts << paths.join(' ')
