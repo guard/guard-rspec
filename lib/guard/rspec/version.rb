@@ -1,5 +1,5 @@
 module Guard
-  class RSpec
-    VERSION = "0.1.1"
+  module RSpecVersion
+    VERSION = "0.1.2"
   end
 end

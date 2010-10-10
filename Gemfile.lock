@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    guard-rspec (0.1.1)
+    guard-rspec (0.1.2)
       guard (~> 0.1.0)
 
 GEM
@@ -11,7 +11,7 @@ GEM
     ffi (0.6.3)
       rake (>= 0.8.7)
     growl (1.0.3)
-    guard (0.1.0)
+    guard (0.1.1)
       bundler (~> 1.0.2)
       growl (~> 1.0.3)
       libnotify (~> 0.1.3)

@@ -1,11 +1,10 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path('../lib', __FILE__)
-require 'guard/rspec'
 require 'guard/rspec/version'
 
 Gem::Specification.new do |s|
   s.name        = 'guard-rspec'
-  s.version     = Guard::RSpec::VERSION
+  s.version     = Guard::RSpecVersion::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Thibaud Guillaume-Gentil']
   s.email       = ['thibaud@thibaud.me']
