@@ -38,4 +38,4 @@ PLATFORMS
 DEPENDENCIES
   guard
   guard-rspec
-  rspec (~> 2.0.0.rc)
+  rspec (~> 2.0.0)
