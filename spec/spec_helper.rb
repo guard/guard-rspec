@@ -11,5 +11,9 @@ RSpec.configure do |config|
     @fixture_path = Pathname.new(File.expand_path('../fixtures/', __FILE__))
     @lib_path = Pathname.new(File.expand_path('../../lib/', __FILE__))
   end
+
+  config.after(:each) do
+    ENV["GUARD_ENV"] = nil
+  end
   
 end
