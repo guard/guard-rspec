@@ -2,7 +2,14 @@ require 'spec_helper'
 
 describe Guard::RSpec do
   subject { Guard::RSpec.new }
-  
+
+  describe '#initialize' do
+    it 'should pass options to the Runner.use_drb' do
+      Guard::RSpec::Runner.should_receive(:use_drb).with({:drb => true})
+      Guard::RSpec.new([], {:drb => true})
+    end
+  end
+
   describe "start" do
     it "should set rspec_version" do
       Guard::RSpec::Runner.should_receive(:set_rspec_version)

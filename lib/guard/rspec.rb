@@ -7,6 +7,11 @@ module Guard
     autoload :Runner, 'guard/rspec/runner'
     autoload :Inspector, 'guard/rspec/inspector'
     
+    def initialize(watchers = [], options = {})
+      super
+      Runner.use_drb(options)
+    end
+
     def start
       Runner.set_rspec_version(options)
     end

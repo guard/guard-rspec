@@ -1,8 +1,20 @@
 require 'spec_helper'
 
 describe Guard::RSpec::Runner do
-  subject { Guard::RSpec::Runner}
-  
+  subject { Guard::RSpec::Runner }
+
+  describe 'using_drb?' do
+    it 'is true when DRB options is true' do
+      subject.use_drb({:drb => true})
+      subject.should be_using_drb
+    end
+
+    it 'is false when the DRB option is anything but true' do
+      subject.use_drb({:drb => 'strawberry jam'})
+      subject.should_not be_using_drb
+    end
+  end
+
   describe "run" do
     
     context "in empty folder" do
