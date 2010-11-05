@@ -57,6 +57,10 @@ RSpec guard should automatically detect RSpec version (via spec_helper syntax or
     guard 'rspec', :version => 2 do
       ...
     end
+    
+Other available options:
+
+    :drb => true
 
 == Development
 
