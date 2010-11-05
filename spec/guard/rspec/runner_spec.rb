@@ -31,6 +31,13 @@ describe Guard::RSpec::Runner do
         )
         subject.run(["spec"], :rvm => ['1.8.7', '1.9.2'])
       end
+      
+      it "should run without color argument" do
+        subject.should_receive(:system).with(
+          "rspec --require #{@lib_path.join('guard/rspec/formatters/rspec_notify.rb')} --format RSpecNotify spec"
+        )
+        subject.run(["spec"], :color => false)
+      end
     end
     
     context "in RSpec 1 folder" do

@@ -31,7 +31,7 @@ module Guard
           end
 
           cmd_parts << "--drb" if options[:drb] == true
-          cmd_parts << "--color"
+          cmd_parts << "--color" if options[:color] != false
 
           cmd_parts << paths.join(' ')
           cmd_parts.join(" ")

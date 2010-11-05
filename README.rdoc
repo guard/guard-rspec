@@ -60,9 +60,10 @@ RSpec guard should automatically detect RSpec version (via spec_helper syntax or
     
 Other available options:
 
+    :color => false
     :drb => true
     :bundler => false # don't use "bundle exec"
-    :rvm => ['1.8.7', '1.9.2'] # directly test on multiple ruby
+    :rvm => ['1.8.7', '1.9.2'] # directly run your specs on multiple ruby
 
 == Development
 
