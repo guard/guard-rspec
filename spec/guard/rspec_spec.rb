@@ -4,16 +4,9 @@ describe Guard::RSpec do
   subject { Guard::RSpec.new }
 
   describe '#initialize' do
-    it 'should pass options to the Runner.use_drb' do
-      Guard::RSpec::Runner.should_receive(:use_drb).with({:drb => true})
-      Guard::RSpec.new([], {:drb => true})
-    end
-  end
-
-  describe "start" do
-    it "should set rspec_version" do
+    it 'should set rspec_version' do
       Guard::RSpec::Runner.should_receive(:set_rspec_version)
-      subject.start
+      Guard::RSpec.new
     end
   end
   
@@ -22,11 +15,23 @@ describe Guard::RSpec do
       Guard::RSpec::Runner.should_receive(:run).with(["spec"], :message => "Running all specs")
       subject.run_all
     end
+    
+    it "should pass options to runner" do
+      subject = Guard::RSpec.new([], { :drb => true })
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], :message => "Running all specs", :drb => true)
+      subject.run_all
+    end
   end
   
   describe "run_on_change" do
     it "should run rspec with paths" do
-      Guard::RSpec::Runner.should_receive(:run).with(["spec"])
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], {})
+      subject.run_on_change(["spec"])
+    end
+    
+    it "should pass options to runner" do
+      subject = Guard::RSpec.new([], { :drb => true })
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], :drb => true)
       subject.run_on_change(["spec"])
     end
   end

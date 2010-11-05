@@ -9,20 +9,16 @@ module Guard
     
     def initialize(watchers = [], options = {})
       super
-      Runner.use_drb(options)
-    end
-
-    def start
       Runner.set_rspec_version(options)
     end
     
     def run_all
-      Runner.run ["spec"], :message => "Running all specs"
+      Runner.run ["spec"], options.merge(:message => "Running all specs")
     end
     
     def run_on_change(paths)
       paths = Inspector.clean(paths)
-      Runner.run(paths) unless paths.empty?
+      Runner.run(paths, options) unless paths.empty?
     end
     
   end

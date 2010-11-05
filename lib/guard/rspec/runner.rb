@@ -7,24 +7,16 @@ module Guard
         def run(paths, options = {})
           message = options[:message] || "Running: #{paths.join(' ')}"
           UI.info message, :reset => true
-          system(rspec_command(paths))
+          system(rspec_command(paths, options))
         end
 
         def set_rspec_version(options = {})
           @rspec_version = options[:version] || determine_rspec_version
         end
 
-        def use_drb(options = {})
-          @use_drb = options[:drb] == true
-        end
-
-        def using_drb?
-          @use_drb
-        end
-
       private
 
-        def rspec_command(paths)
+        def rspec_command(paths, options = {})
           cmd_parts = []
           cmd_parts << "bundle exec" if bundler?
 
@@ -37,7 +29,7 @@ module Guard
             cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/rspec_notify.rb --format RSpecNotify"
           end
 
-          cmd_parts << "--drb" if using_drb?
+          cmd_parts << "--drb" if options[:drb] == true
           cmd_parts << "--color"
 
           cmd_parts << paths.join(' ')
