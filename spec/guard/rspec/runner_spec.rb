@@ -24,6 +24,13 @@ describe Guard::RSpec::Runner do
         )
         subject.run(["spec"], :drb => true)
       end
+      
+      it "should run with rvm exec" do
+        subject.should_receive(:system).with(
+          "rvm 1.8.7,1.9.2 exec rspec --require #{@lib_path.join('guard/rspec/formatters/rspec_notify.rb')} --format RSpecNotify --color spec"
+        )
+        subject.run(["spec"], :rvm => ['1.8.7', '1.9.2'])
+      end
     end
     
     context "in RSpec 1 folder" do
