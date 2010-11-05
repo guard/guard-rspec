@@ -38,6 +38,13 @@ describe Guard::RSpec::Runner do
         )
         subject.run(["spec"])
       end
+      
+      it "should run without bundler with bundler option to false" do
+        subject.should_receive(:system).with(
+          "spec -f progress --require #{@lib_path.join('guard/rspec/formatters/spec_notify.rb')} --format SpecNotify:STDOUT --color spec"
+        )
+        subject.run(["spec"], :bundler => false)
+      end
     end
     
   end

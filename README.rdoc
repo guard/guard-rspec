@@ -3,7 +3,7 @@
 RSpec guard allows to automatically & intelligently launch specs when files are modified.
 
 - Compatible with RSpec 1.3.x & RSpec 2.0.x
-- Tested on Ruby 1.8.7 & 1.9.2.
+- Tested on Ruby 1.8.6, 1.8.7 & 1.9.2.
 
 == Install
 
@@ -61,6 +61,7 @@ RSpec guard should automatically detect RSpec version (via spec_helper syntax or
 Other available options:
 
     :drb => true
+    :bundler => false # don't use "bundle exec"
 
 == Development
 

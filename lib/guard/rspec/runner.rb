@@ -18,7 +18,7 @@ module Guard
 
         def rspec_command(paths, options = {})
           cmd_parts = []
-          cmd_parts << "bundle exec" if bundler?
+          cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
 
           case rspec_version
           when 1
