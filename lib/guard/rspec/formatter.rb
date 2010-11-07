@@ -1,3 +1,5 @@
+require "#{File.dirname(__FILE__)}/../rspec"
+
 module Formatter
   
   def guard_message(example_count, failure_count, pending_count, duration)

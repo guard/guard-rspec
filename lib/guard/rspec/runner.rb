@@ -3,44 +3,45 @@ module Guard
     module Runner
       class << self
         attr_reader :rspec_version
-
+        
         def run(paths, options = {})
           message = options[:message] || "Running: #{paths.join(' ')}"
           UI.info message, :reset => true
           system(rspec_command(paths, options))
         end
-
+        
         def set_rspec_version(options = {})
           @rspec_version = options[:version] || determine_rspec_version
         end
-
+        
       private
-
+        
         def rspec_command(paths, options = {})
           cmd_parts = []
           cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
           cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
-
+          
           case rspec_version
           when 1
             cmd_parts << "spec"
-            cmd_parts << "-f progress --require #{File.dirname(__FILE__)}/formatters/spec_notify.rb --format SpecNotify:STDOUT"
           when 2
             cmd_parts << "rspec"
-            cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/rspec_notify.rb --format RSpecNotify"
           end
-
+          
+          formatter = options[:formatter] || "default"
+          cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}.rb --format #{formatter.capitalize}"
+          
           cmd_parts << "--drb" if options[:drb] == true
           cmd_parts << "--color" if options[:color] != false
-
+          
           cmd_parts << paths.join(' ')
           cmd_parts.join(" ")
         end
-
+        
         def bundler?
           @bundler ||= File.exist?("#{Dir.pwd}/Gemfile")
         end
-
+        
         def determine_rspec_version
           UI.info "Determine rspec_version... (can be forced with Guard::RSpec version option)"
           if File.exist?("#{Dir.pwd}/spec/spec_helper.rb")
@@ -53,7 +54,7 @@ module Guard
             2
           end
         end
-
+        
       end
     end
   end
