@@ -45,6 +45,13 @@ describe Guard::RSpec::Runner do
         )
         subject.run(["spec"], :formatter => "instafail")
       end
+      
+      it "should run with fail-fast argument" do
+        subject.should_receive(:system).with(
+          "rspec --require #{@lib_path.join('guard/rspec/formatters/default.rb')} --format Default --color --fail-fast spec"
+        )
+        subject.run(["spec"], :fail_fast => true)
+      end
     end
     
     context "in RSpec 1 folder" do
