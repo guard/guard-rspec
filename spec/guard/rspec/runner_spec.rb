@@ -13,42 +13,42 @@ describe Guard::RSpec::Runner do
       
       it "should run with RSpec 2 and without bundler" do
         subject.should_receive(:system).with(
-          "rspec --require #{@lib_path.join('guard/rspec/formatters/default.rb')} --format Default --color spec"
+          "rspec --require #{@lib_path.join('guard/rspec/formatters/default_rspec.rb')} --format DefaultRSpec --color spec"
         )
         subject.run(["spec"])
       end
       
       it "should run with drb argument" do
         subject.should_receive(:system).with(
-          "rspec --require #{@lib_path.join('guard/rspec/formatters/default.rb')} --format Default --drb --color spec"
+          "rspec --require #{@lib_path.join('guard/rspec/formatters/default_rspec.rb')} --format DefaultRSpec --drb --color spec"
         )
         subject.run(["spec"], :drb => true)
       end
       
       it "should run with rvm exec" do
         subject.should_receive(:system).with(
-          "rvm 1.8.7,1.9.2 exec rspec --require #{@lib_path.join('guard/rspec/formatters/default.rb')} --format Default --color spec"
+          "rvm 1.8.7,1.9.2 exec rspec --require #{@lib_path.join('guard/rspec/formatters/default_rspec.rb')} --format DefaultRSpec --color spec"
         )
         subject.run(["spec"], :rvm => ['1.8.7', '1.9.2'])
       end
       
       it "should run without color argument" do
         subject.should_receive(:system).with(
-          "rspec --require #{@lib_path.join('guard/rspec/formatters/default.rb')} --format Default spec"
+          "rspec --require #{@lib_path.join('guard/rspec/formatters/default_rspec.rb')} --format DefaultRSpec spec"
         )
         subject.run(["spec"], :color => false)
       end
       
       it "should run with instafail formatter" do
         subject.should_receive(:system).with(
-          "rspec --require #{@lib_path.join('guard/rspec/formatters/instafail.rb')} --format Instafail --color spec"
+          "rspec --require #{@lib_path.join('guard/rspec/formatters/instafail_rspec.rb')} --format InstafailRSpec --color spec"
         )
         subject.run(["spec"], :formatter => "instafail")
       end
       
       it "should run with fail-fast argument" do
         subject.should_receive(:system).with(
-          "rspec --require #{@lib_path.join('guard/rspec/formatters/default.rb')} --format Default --color --fail-fast spec"
+          "rspec --require #{@lib_path.join('guard/rspec/formatters/default_rspec.rb')} --format DefaultRSpec --color --fail-fast spec"
         )
         subject.run(["spec"], :fail_fast => true)
       end
@@ -62,14 +62,21 @@ describe Guard::RSpec::Runner do
       
       it "should run with RSpec 1 and with bundler" do
         subject.should_receive(:system).with(
-          "bundle exec spec --require #{@lib_path.join('guard/rspec/formatters/default.rb')} --format Default --color spec"
+          "bundle exec spec --require #{@lib_path.join('guard/rspec/formatters/default_spec.rb')} --format DefaultSpec --color spec"
         )
         subject.run(["spec"])
       end
       
+      it "should run with instafail formatter" do
+        subject.should_receive(:system).with(
+          "bundle exec spec --require #{@lib_path.join('guard/rspec/formatters/instafail_spec.rb')} --format InstafailSpec --color spec"
+        )
+        subject.run(["spec"], :formatter => "instafail")
+      end
+      
       it "should run without bundler with bundler option to false" do
         subject.should_receive(:system).with(
-          "spec --require #{@lib_path.join('guard/rspec/formatters/default.rb')} --format Default --color spec"
+          "spec --require #{@lib_path.join('guard/rspec/formatters/default_spec.rb')} --format DefaultSpec --color spec"
         )
         subject.run(["spec"], :bundler => false)
       end

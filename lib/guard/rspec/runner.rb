@@ -21,15 +21,15 @@ module Guard
           cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
           cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
           
+          formatter = options[:formatter] || "default"
           case rspec_version
           when 1
             cmd_parts << "spec"
+            cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}_spec.rb --format #{formatter.capitalize}Spec"
           when 2
             cmd_parts << "rspec"
+            cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}_rspec.rb --format #{formatter.capitalize}RSpec"
           end
-          
-          formatter = options[:formatter] || "default"
-          cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}.rb --format #{formatter.capitalize}"
           
           cmd_parts << "--drb" if options[:drb] == true
           cmd_parts << "--color" if options[:color] != false
