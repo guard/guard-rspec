@@ -16,7 +16,8 @@ class InstafailRSpec < RSpec::Core::Formatters::ProgressFormatter
   def example_failed(example)
     @counter ||= 0
     @counter += 1
-    exception = example.metadata[:execution_result][:exception_encountered]
+    result = example.metadata[:execution_result]
+    exception = result[:exception_encountered] || result[:exception] # rspec 2.0 || rspec 2.2
     short_padding = '  '
     padding = '     '
     output.puts
