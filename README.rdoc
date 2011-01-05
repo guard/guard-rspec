@@ -7,7 +7,7 @@ RSpec guard allows to automatically & intelligently launch specs when files are 
 
 == Install
 
-Please be sure to have {guard}[http://github.com/guard/guard] installed before continue.
+Please be sure to have {Guard}[https://github.com/guard/guard] installed before continue.
 
 Install the gem:
 
@@ -23,32 +23,33 @@ Add guard definition to your Guardfile by running this command:
 
 == Usage
 
-Please read {guard usage doc}[http://github.com/guard/guard#readme]
+Please read {Guard usage doc}[https://github.com/guard/guard#readme]
 
 == Guardfile
 
-RSpec guard can be really be adapated to all kind of projects.
-Please read {guard doc}[http://github.com/guard/guard#readme] for more info about Guardfile DSL.
+RSpec guard can be really adapted to all kind of projects.
 
 === Standard ruby gems
 
     guard 'rspec' do
-      watch('^spec/(.*)_spec.rb')
-      watch('^lib/(.*)\.rb')                              { |m| "spec/lib/#{m[1]}_spec.rb" }
-      watch('^spec/spec_helper.rb')                       { "spec" }
+      watch(%r{spec/(.*)_spec.rb})
+      watch(%r{lib/(.*)\.rb})      { |m| "spec/lib/#{m[1]}_spec.rb" }
+      watch('spec/spec_helper.rb') { "spec" }
     end
 
 === Rails app
 
     guard 'rspec' do
-      watch('^spec/(.*)_spec.rb')
-      watch('^app/(.*)\.rb')                              { |m| "spec/#{m[1]}_spec.rb" }
-      watch('^lib/(.*)\.rb')                              { |m| "spec/lib/#{m[1]}_spec.rb" }
-      watch('^spec/spec_helper.rb')                       { "spec" }
-      watch('^config/routes.rb')                          { "spec/routing" }
-      watch('^app/controllers/application_controller.rb') { "spec/controllers" }
-      watch('^spec/factories.rb')                         { "spec/models" }
+      watch(%r{spec/(.*)_spec.rb})
+      watch(%r{app/(.*)\.rb})                            { |m| "spec/#{m[1]}_spec.rb" }
+      watch(%r{lib/(.*)\.rb})                            { |m| "spec/lib/#{m[1]}_spec.rb" }
+      watch('spec/spec_helper.rb')                       { "spec" }
+      watch('config/routes.rb')                          { "spec/routing" }
+      watch('app/controllers/application_controller.rb') { "spec/controllers" }
+      watch('spec/factories.rb')                         { "spec/models" }
     end
+
+Please read {Guard doc}[https://github.com/guard/guard#readme] for more info about Guardfile DSL.
 
 == Options
 
@@ -69,8 +70,8 @@ Other available options:
 
 == Development
 
-- Source hosted at {GitHub}[http://github.com/guard/guard-rspec]
-- Report issues/Questions/Feature requests on {GitHub Issues}[http://github.com/guard/guard-rspec/issues]
+- Source hosted at {GitHub}[https://github.com/guard/guard-rspec]
+- Report issues/Questions/Feature requests on {GitHub Issues}[https://github.com/guard/guard-rspec/issues]
 
 Pull requests are very welcome! Make sure your patches are well tested. Please create a topic branch for every separate change
 you make.
@@ -81,4 +82,4 @@ Please run "rake spec:prepare_fixtures" once before launching specs.
 
 == Authors
 
-{Thibaud Guillaume-Gentil}[http://github.com/thibaudgg]
+{Thibaud Guillaume-Gentil}[https://github.com/thibaudgg]
