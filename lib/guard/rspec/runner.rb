@@ -50,7 +50,7 @@ module Guard
           elsif bundler?
             # Allow RSpactor to be tested with RSpactor (bundle show inside a bundle exec)
             ENV['BUNDLE_GEMFILE'] = "#{Dir.pwd}/Gemfile"
-            `bundle show rspec`.include?("/rspec-1.") ? 1 : 2
+            `bundle show rspec`.include?("rspec-1.") ? 1 : 2
           else
             2
           end

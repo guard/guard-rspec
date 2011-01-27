@@ -2,7 +2,7 @@ require "#{File.dirname(__FILE__)}/../formatter"
 require 'rspec/core/formatters/progress_formatter'
 
 class DefaultRSpec < RSpec::Core::Formatters::ProgressFormatter
-  include Formatter
+  include Guard::Rspec::Formatter
   
   def dump_summary(duration, total, failures, pending)
     super # needed to keep progress formatter
