@@ -31,9 +31,7 @@ module Guard
             cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}_rspec.rb --format #{formatter.capitalize}RSpec"
           end
           
-          cmd_parts << "--drb" if options[:drb] == true
-          cmd_parts << "--color" if options[:color] != false
-          cmd_parts << "--fail-fast" if options[:fail_fast] == true
+          cmd_parts << options[:rspec_options] if options[:rspec_options]
           
           cmd_parts << paths.join(' ')
           cmd_parts.join(" ")
