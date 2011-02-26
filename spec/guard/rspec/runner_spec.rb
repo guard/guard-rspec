@@ -38,6 +38,15 @@ describe Guard::RSpec::Runner do
         )
         subject.run(["spec"], :cli => "--color --drb --fail-fast")
       end
+
+      [:color, :drb, :fail_fast].each do |option|
+        it "should output deprecation warning for :#{option} option" do
+          Guard::UI.stub(:info)
+          Guard::UI.should_receive(:info).with(%{DEPRECATION WARNING: The :#{option} option is deprecated. Pass standard command line arguments to RSpec with the :cli option.})
+          subject.stub(:system)
+          subject.run(["spec"], option => false)
+        end
+      end
     end
     
     context "in RSpec 1 folder" do

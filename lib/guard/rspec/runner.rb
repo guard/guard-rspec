@@ -30,7 +30,11 @@ module Guard
             cmd_parts << "rspec"
             cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}_rspec.rb --format #{formatter.capitalize}RSpec"
           end
-          
+
+          [:color, :drb, :fail_fast].each do |option|
+            UI.info(%{DEPRECATION WARNING: The :#{option} option is deprecated. Pass standard command line arguments to RSpec with the :cli option.}) if options.key?(option)
+          end
+
           cmd_parts << options[:cli] if options[:cli]
           
           cmd_parts << paths.join(' ')
