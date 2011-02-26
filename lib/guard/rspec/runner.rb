@@ -20,8 +20,16 @@ module Guard
           cmd_parts = []
           cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
           cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
+
+          formatter = case
+          when options[:cli] && options[:cli].include?("--format")
+            "notification"
+          when options[:formatter]
+            options[:formatter]
+          else
+            "default"
+          end
           
-          formatter = options[:formatter] || "default"
           case rspec_version
           when 1
             cmd_parts << "spec"
