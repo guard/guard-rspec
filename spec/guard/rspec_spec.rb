@@ -17,8 +17,8 @@ describe Guard::RSpec do
     end
     
     it "should pass options to runner" do
-      subject = Guard::RSpec.new([], { :drb => true })
-      Guard::RSpec::Runner.should_receive(:run).with(["spec"], :message => "Running all specs", :drb => true)
+      subject = Guard::RSpec.new([], { :cli => "--color" })
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], :message => "Running all specs", :cli => "--color")
       subject.run_all
     end
   end
@@ -30,8 +30,8 @@ describe Guard::RSpec do
     end
     
     it "should pass options to runner" do
-      subject = Guard::RSpec.new([], { :drb => true })
-      Guard::RSpec::Runner.should_receive(:run).with(["spec"], :drb => true)
+      subject = Guard::RSpec.new([], { :cli => "--color" })
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], :cli => "--color")
       subject.run_on_change(["spec"])
     end
   end

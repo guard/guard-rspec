@@ -32,11 +32,11 @@ describe Guard::RSpec::Runner do
         subject.run(["spec"], :formatter => "instafail")
       end
 
-      it "should run with arbitrary arguments passed to RSpec" do
+      it "should run with CLI options passed to RSpec" do
         subject.should_receive(:system).with(
         "rspec --require #{@lib_path.join('guard/rspec/formatters/default_rspec.rb')} --format DefaultRSpec --color --drb --fail-fast spec"
         )
-        subject.run(["spec"], :rspec_options => "--color --drb --fail-fast")
+        subject.run(["spec"], :cli => "--color --drb --fail-fast")
       end
     end
     
@@ -67,11 +67,11 @@ describe Guard::RSpec::Runner do
         subject.run(["spec"], :bundler => false)
       end
 
-      it "should run with arbitrary arguments passed to RSpec" do
+      it "should run with CLI options passed to RSpec" do
         subject.should_receive(:system).with(
         "bundle exec spec --require #{@lib_path.join('guard/rspec/formatters/default_spec.rb')} --format DefaultSpec --color --drb --fail-fast spec"
         )
-        subject.run(["spec"], :rspec_options => "--color --drb --fail-fast")
+        subject.run(["spec"], :cli => "--color --drb --fail-fast")
       end
     end
     

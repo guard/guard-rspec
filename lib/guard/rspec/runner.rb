@@ -31,7 +31,7 @@ module Guard
             cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}_rspec.rb --format #{formatter.capitalize}RSpec"
           end
           
-          cmd_parts << options[:rspec_options] if options[:rspec_options]
+          cmd_parts << options[:cli] if options[:cli]
           
           cmd_parts << paths.join(' ')
           cmd_parts.join(" ")

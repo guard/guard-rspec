@@ -59,9 +59,9 @@ RSpec guard should automatically detect RSpec version (via spec_helper syntax or
       ...
     end
     
-You can invoke RSpec with any of its standard command line options using the "rspec_options" option:
+You can invoke RSpec with any of its standard command line options using the "cli" option:
 
-    guard 'rspec', :rspec_options => "--color --format nested --fail-fast --drb" do
+    guard 'rspec', :cli => "--color --format nested --fail-fast --drb" do
       ...
     end
 
