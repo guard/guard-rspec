@@ -20,8 +20,16 @@ module Guard
           cmd_parts = []
           cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
           cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
+
+          formatter = case
+          when options[:cli] && options[:cli].include?("--format")
+            "notification"
+          when options[:formatter]
+            options[:formatter]
+          else
+            "default"
+          end
           
-          formatter = options[:formatter] || "default"
           case rspec_version
           when 1
             cmd_parts << "spec"
@@ -30,10 +38,12 @@ module Guard
             cmd_parts << "rspec"
             cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}_rspec.rb --format #{formatter.capitalize}RSpec"
           end
-          
-          cmd_parts << "--drb" if options[:drb] == true
-          cmd_parts << "--color" if options[:color] != false
-          cmd_parts << "--fail-fast" if options[:fail_fast] == true
+
+          [:color, :drb, :fail_fast].each do |option|
+            UI.info(%{DEPRECATION WARNING: The :#{option} option is deprecated. Pass standard command line arguments to RSpec with the :cli option.}) if options.key?(option)
+          end
+
+          cmd_parts << options[:cli] if options[:cli]
           
           cmd_parts << paths.join(' ')
           cmd_parts.join(" ")

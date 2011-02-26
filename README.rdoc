@@ -59,14 +59,17 @@ RSpec guard should automatically detect RSpec version (via spec_helper syntax or
       ...
     end
     
+You can invoke RSpec with any of its standard command line options using the "cli" option:
+
+    guard 'rspec', :cli => "--color --format nested --fail-fast --drb" do
+      ...
+    end
+
 Other available options:
 
-    :color => false
-    :drb => true
     :bundler => false # don't use "bundle exec"
     :rvm => ['1.8.7', '1.9.2'] # directly run your specs on multiple ruby
     :formatter => "instafail" # show failing specs instantly
-    :fail_fast => true # RSpec 2.1+ only
 
 == Development
 
