@@ -3,6 +3,6 @@
 === Mar 1, 2011 by {Jimmy Cuadra}[https://github.com/jimmycuadra] and {Rémy Coutable}[https://github.com/rymai]
 
 New features:
-- New +:cli+ option for passing RSpec CLI option to the runner, thanks to {Jimmy Cuadra}[https://github.com/jimmycuadra].
-- Deprecation of +:color+, +:drb+, +:fail_fast+ and +:formatter+ options.
-- New +:notification+ option (to disable Growl/Libnotify notifications).
+- New <tt>:cli</tt> option for passing RSpec CLI option to the runner, thanks to {Jimmy Cuadra}[https://github.com/jimmycuadra].
+- Deprecation of <tt>:color</tt>, <tt>:drb</tt>, <tt>:fail_fast</tt> and <tt>:formatter</tt> options.
+- New <tt>:notification</tt> option (to disable Growl/Libnotify notifications).
