@@ -99,7 +99,7 @@ you make.
 
 === Testing
 
-Please run "rake spec:prepare_fixtures" once before launching specs.
+Please run +rake spec:prepare_fixtures+ once before launching specs.
 
 == Authors
 
