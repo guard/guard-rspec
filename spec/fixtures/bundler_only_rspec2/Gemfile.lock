@@ -2,19 +2,17 @@ GEM
   remote: http://rubygems.org/
   specs:
     diff-lcs (1.1.2)
-    rspec (2.0.0.beta.22)
-      rspec-core (= 2.0.0.beta.22)
-      rspec-expectations (= 2.0.0.beta.22)
-      rspec-mocks (= 2.0.0.beta.22)
-    rspec-core (2.0.0.beta.22)
-    rspec-expectations (2.0.0.beta.22)
-      diff-lcs (>= 1.1.2)
-    rspec-mocks (2.0.0.beta.22)
-      rspec-core (= 2.0.0.beta.22)
-      rspec-expectations (= 2.0.0.beta.22)
+    rspec (2.5.0)
+      rspec-core (~> 2.5.0)
+      rspec-expectations (~> 2.5.0)
+      rspec-mocks (~> 2.5.0)
+    rspec-core (2.5.1)
+    rspec-expectations (2.5.0)
+      diff-lcs (~> 1.1.2)
+    rspec-mocks (2.5.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  rspec (~> 2.0.0)
+  rspec (>= 2.4)

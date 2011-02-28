@@ -14,19 +14,19 @@ namespace(:spec) do
                  rvm #{version};
                  echo "--------- version #{version} ----------\n";
                  bundle install;
-                 rake spec:prepare_fixtures
-                 rake spec'
+                 rake spec:prepare_fixtures;
+                 rake spec;'
       BASH
     end
   end
-  
+
   desc "Run bundle install on each fixtures directories with Gemfile"
   task(:prepare_fixtures) do
     Dir.foreach("spec/fixtures") do |dir|
       if File.exists?("spec/fixtures/#{dir}/Gemfile")
         system <<-BASH
           cd spec/fixtures/#{dir};
-          bundle install
+          bundle install;
         BASH
       end
     end

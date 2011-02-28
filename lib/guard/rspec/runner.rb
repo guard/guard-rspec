@@ -3,56 +3,50 @@ module Guard
     module Runner
       class << self
         attr_reader :rspec_version
-        
-        def run(paths, options = {})
+
+        def run(paths, options={})
           message = options[:message] || "Running: #{paths.join(' ')}"
-          UI.info message, :reset => true
+          UI.info(message, :reset => true)
           system(rspec_command(paths, options))
         end
-        
-        def set_rspec_version(options = {})
+
+        def set_rspec_version(options={})
           @rspec_version = options[:version] || determine_rspec_version
         end
-        
+
       private
-        
-        def rspec_command(paths, options = {})
+
+        def rspec_command(paths, options={})
+          rspec_exec = case rspec_version
+          when 1
+            "Spec"
+          when 2
+            "RSpec"
+          end
+
+          [:color, :drb, :fail_fast, [:formatter, "format"]].each do |option|
+            key, value = option.is_a?(Array) ? option : [option, option.to_s.gsub('_', '-')]
+            if options.key?(key)
+              UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}
+            end
+          end
+
           cmd_parts = []
           cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
           cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
-
-          formatter = case
-          when options[:cli] && options[:cli].include?("--format")
-            "notification"
-          when options[:formatter]
-            options[:formatter]
-          else
-            "default"
-          end
-          
-          case rspec_version
-          when 1
-            cmd_parts << "spec"
-            cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}_spec.rb --format #{formatter.capitalize}Spec"
-          when 2
-            cmd_parts << "rspec"
-            cmd_parts << "--require #{File.dirname(__FILE__)}/formatters/#{formatter}_rspec.rb --format #{formatter.capitalize}RSpec"
-          end
-
-          [:color, :drb, :fail_fast].each do |option|
-            UI.info(%{DEPRECATION WARNING: The :#{option} option is deprecated. Pass standard command line arguments to RSpec with the :cli option.}) if options.key?(option)
-          end
-
+          cmd_parts << rspec_exec.downcase
           cmd_parts << options[:cli] if options[:cli]
-          
+          cmd_parts << "-f progress" unless options[:cli] && options[:cli].split(' ').any? { |w| %w[-f --format].include?(w) }
+          cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_exec.downcase}.rb -f Notification#{rspec_exec}#{rspec_version == 1 ? ":" : " --out "}/dev/null" if options[:notification] != false
           cmd_parts << paths.join(' ')
-          cmd_parts.join(" ")
+
+          cmd_parts.join(' ')
         end
-        
+
         def bundler?
           @bundler ||= File.exist?("#{Dir.pwd}/Gemfile")
         end
-        
+
         def determine_rspec_version
           UI.info "Determine rspec_version... (can be forced with Guard::RSpec version option)"
           if File.exist?("#{Dir.pwd}/spec/spec_helper.rb")
@@ -65,7 +59,7 @@ module Guard
             2
           end
         end
-        
+
       end
     end
   end

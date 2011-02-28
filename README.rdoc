@@ -11,7 +11,7 @@ Please be sure to have {Guard}[https://github.com/guard/guard] installed before 
 
 Install the gem:
 
-    gem install guard-rspec
+    $ gem install guard-rspec
 
 Add it to your Gemfile (inside test group):
 
@@ -19,7 +19,7 @@ Add it to your Gemfile (inside test group):
 
 Add guard definition to your Guardfile by running this command:
 
-    guard init rspec
+    $ guard init rspec
 
 == Usage
 
@@ -29,47 +29,65 @@ Please read {Guard usage doc}[https://github.com/guard/guard#readme]
 
 RSpec guard can be really adapted to all kind of projects.
 
-=== Standard ruby gems
+=== Standard RubyGem project
 
     guard 'rspec' do
-      watch(%r{spec/.+_spec\.rb})
-      watch(%r{lib/(.+)\.rb})      { |m| "spec/lib/#{m[1]}_spec.rb" }
+      watch(%r{^spec/.+_spec\.rb})
+      watch(%r{^lib/(.+)\.rb})     { |m| "spec/lib/#{m[1]}_spec.rb" }
       watch('spec/spec_helper.rb') { "spec" }
     end
 
-=== Rails app
+=== Typical Rails app
 
     guard 'rspec' do
-      watch(%r{spec/.+_spec\.rb})
-      watch(%r{app/(.+)\.rb})                            { |m| "spec/#{m[1]}_spec.rb" }
-      watch(%r{lib/(.+)\.rb})                            { |m| "spec/lib/#{m[1]}_spec.rb" }
       watch('spec/spec_helper.rb')                       { "spec" }
       watch('config/routes.rb')                          { "spec/routing" }
       watch('app/controllers/application_controller.rb') { "spec/controllers" }
-      watch('spec/factories.rb')                         { "spec/models" }
+      watch(%r{^spec/.+_spec\.rb})
+      watch(%r{^app/(.+)\.rb})                           { |m| "spec/#{m[1]}_spec.rb" }
+      watch(%r{^lib/(.+)\.rb})                           { |m| "spec/lib/#{m[1]}_spec.rb" }
+      watch(%r{^app/controllers/(.+)_(controller)\.rb})  { |m| ["spec/routing/#{m[1]}_routing_spec.rb", "spec/#{m[2]}s/#{m[1]}_#{m[2]}_spec.rb", "spec/acceptance/#{m[1]}_spec.rb"] }
     end
 
-Please read {Guard doc}[https://github.com/guard/guard#readme] for more info about Guardfile DSL.
+Please read {Guard doc}[https://github.com/guard/guard#readme] for more information about the Guardfile DSL.
 
 == Options
 
-RSpec guard should automatically detect RSpec version (via spec_helper syntax or Bundler) but you can force version with:
+By default, Guard::RSpec automatically detect your RSpec version (with the +spec_helper.rb+ syntax or with Bundler) but you can force the version with the +:version+ option:
 
     guard 'rspec', :version => 2 do
       ...
     end
-    
-You can invoke RSpec with any of its standard command line options using the "cli" option:
+
+You can pass any of the standard RSpec CLI options using the +:cli+ option:
 
     guard 'rspec', :cli => "--color --format nested --fail-fast --drb" do
       ...
     end
 
-Other available options:
+Former +:color+, +:drb+, +:fail_fast+ and +:formatter+ options are thus deprecated and have no effect anymore.
 
-    :bundler => false # don't use "bundle exec"
-    :rvm => ['1.8.7', '1.9.2'] # directly run your specs on multiple ruby
-    :formatter => "instafail" # show failing specs instantly
+=== List of available options:
+
+    :version => 1              # force use RSpec version 1, default: 2
+    :cli => "-c -f doc"        # pass arbitrary RSpec CLI arguments, default: "-f progress"
+    :bundler => false          # don't use "bundle exec" to run the RSpec command, default: true
+    :rvm => ['1.8.7', '1.9.2'] # directly run your specs on multiple Rubies, default: nil
+    :notification => false     # don't display Growl (or Libnotify) notification after the specs are done running, default: true
+
+== Formatters
+
+The +:formatter+ option has been removed since CLI arguments can be passed through the +:cli+ option. If you want to use the former Instafail formatter, you need to use +rspec-instafail+ gem instead:
+
+    # in your Gemfile
+    gem 'rspec-instafail'
+
+    # in your Guardfile
+    guard 'rspec, :cli => "-r rspec/instafail -f RSpec::Instafail" do
+      ...
+    end
+
+Default formatter is the +progress+ formatter (same as RSpec default).
 
 == Development
 

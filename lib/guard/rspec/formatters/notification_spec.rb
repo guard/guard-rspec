@@ -1,7 +1,7 @@
 require "#{File.dirname(__FILE__)}/../formatter"
-require 'spec/runner/formatter/base_formatter'
+require "spec/runner/formatter/base_formatter"
 
-class DefaultSpec < Spec::Runner::Formatter::BaseFormatter
+class NotificationSpec < Spec::Runner::Formatter::BaseFormatter
   include Formatter
 
   def dump_summary(duration, total, failures, pending)
@@ -9,4 +9,5 @@ class DefaultSpec < Spec::Runner::Formatter::BaseFormatter
     image   = guard_image(failures, pending)
     notify(message, image)
   end
+
 end
