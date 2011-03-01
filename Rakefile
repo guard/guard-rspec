@@ -8,12 +8,14 @@ task :default => :spec
 namespace(:spec) do
   desc "Run all specs on multiple ruby versions (requires rvm)"
   task(:portability) do
-    %w[1.8.6 1.8.7 1.9.2].each do |version|
+    %w[1.8.6 1.8.7 1.9.2 jruby rubinius].each do |version|
       system <<-BASH
         bash -c 'source ~/.rvm/scripts/rvm;
                  rvm #{version};
                  echo "--------- version #{version} ----------\n";
+                 gem install bundler
                  bundle install;
+                 gem install rspec --version=1.3.1
                  rake spec:prepare_fixtures;
                  rake spec;'
       BASH

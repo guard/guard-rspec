@@ -17,19 +17,7 @@ module Guard
       private
 
         def rspec_command(paths, options={})
-          rspec_exec = case rspec_version
-          when 1
-            "Spec"
-          when 2
-            "RSpec"
-          end
-
-          [:color, :drb, :fail_fast, [:formatter, "format"]].each do |option|
-            key, value = option.is_a?(Array) ? option : [option, option.to_s.gsub('_', '-')]
-            if options.key?(key)
-              UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}
-            end
-          end
+          warn_deprectation(options)
 
           cmd_parts = []
           cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
@@ -56,6 +44,24 @@ module Guard
             `bundle show rspec`.include?("/rspec-1.") ? 1 : 2
           else
             2
+          end
+        end
+
+        def rspec_exec
+          case rspec_version
+          when 1
+            "Spec"
+          when 2
+            "RSpec"
+          end
+        end
+
+        def warn_deprectation(options={})
+          [:color, :drb, :fail_fast, [:formatter, "format"]].each do |option|
+            key, value = option.is_a?(Array) ? option : [option, option.to_s.gsub('_', '-')]
+            if options.key?(key)
+              UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}
+            end
           end
         end
 
