@@ -2,8 +2,8 @@
 
 RSpec guard allows to automatically & intelligently launch specs when files are modified.
 
-- Compatible with RSpec 1.x & RSpec 2.x
-- Tested on Ruby 1.8.6, 1.8.7 & 1.9.2.
+- Compatible with RSpec 1.x & RSpec 2.x (>= 2.4 needed for notification formatter)
+- Tested on Ruby 1.8.6, 1.8.7, 1.9.2, JRuby & Rubinius.
 
 == Install
 
