@@ -48,7 +48,6 @@ module Guard
         end
 
         def determine_rspec_version
-          UI.info "Determine rspec_version... (can be forced with Guard::RSpec version option)"
           if File.exist?("#{Dir.pwd}/spec/spec_helper.rb")
             File.new("#{Dir.pwd}/spec/spec_helper.rb").read.include?("Spec::Runner") ? 1 : 2
           elsif bundler?
