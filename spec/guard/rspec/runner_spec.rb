@@ -4,6 +4,12 @@ describe Guard::RSpec::Runner do
 
   describe ".run" do
 
+    context "when passed an empty paths list" do
+      it "should return false" do
+        subject.run([]).should be_false
+      end
+    end
+
     context "in a folder without Bundler" do
       before(:each) do
         Dir.stub(:pwd).and_return(@fixture_path.join("empty"))

@@ -5,6 +5,7 @@ module Guard
         attr_reader :rspec_version
 
         def run(paths, options={})
+          return false if paths.empty?
           message = options[:message] || "Running: #{paths.join(' ')}"
           UI.info(message, :reset => true)
           system(rspec_command(paths, options))
