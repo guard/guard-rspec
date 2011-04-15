@@ -22,8 +22,17 @@ module Guard
     end
 
     def run_on_change(paths)
-      paths = Inspector.clean(paths)
-      Runner.run(paths, options) unless paths.empty?
+      paths  = Inspector.clean(paths)
+      passed = Runner.run(paths, options)
+
+      # run all the specs if the changed specs failed, like autotest
+      all_passed = run_all if passed && @last_failed
+
+      # track whether the changed specs failed for the next change
+      @last_failed = !passed
+
+      # return the overall spec passing status
+      passed || all_passed
     end
 
   end

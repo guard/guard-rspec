@@ -34,6 +34,19 @@ describe Guard::RSpec do
       Guard::RSpec::Runner.should_receive(:run).with(["spec"], :cli => "--color")
       subject.run_on_change(["spec"])
     end
+
+    it "should run_all if the changed specs pass after failing" do
+      Guard::RSpec::Runner.should_receive(:run).with(["spec/foo"], {}).and_return(false, true)
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], :message => "Running all specs")
+      subject.run_on_change(["spec/foo"])
+      subject.run_on_change(["spec/foo"])
+    end
+
+    it "should not run_all if the changed specs pass without failing" do
+      Guard::RSpec::Runner.should_receive(:run).with(["spec/foo"], {}).and_return(true)
+      Guard::RSpec::Runner.should_not_receive(:run).with(["spec"], :message => "Running all specs")
+      subject.run_on_change(["spec/foo"])
+    end
   end
   
 end
