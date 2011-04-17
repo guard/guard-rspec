@@ -9,7 +9,20 @@ describe Guard::RSpec do
       Guard::RSpec.new
     end
   end
-  
+
+  describe "start" do
+    it "should run_all" do
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], :message => "Running all specs")
+      subject.start
+    end
+
+    it "should not run_all if all_on_start is false" do
+      Guard::RSpec::Runner.should_not_receive(:run).with(["spec"], :message => "Running all specs")
+      subject = Guard::RSpec.new([], :all_on_start => false)
+      subject.start
+    end
+  end
+
   describe "run_all" do
     it "should run all spec" do
       Guard::RSpec::Runner.should_receive(:run).with(["spec"], :message => "Running all specs")
