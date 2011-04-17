@@ -93,7 +93,7 @@ describe Guard::RSpec::Runner do
             key, value = option.is_a?(Array) ? option : [option, option.to_s]
             it "should output deprecation warning for :#{key} option" do
               Guard::UI.should_receive(:info).with("Running: spec", { :reset => true }).ordered
-              Guard::UI.should_receive(:info).with(%{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument \"--#{value.gsub('_', '-')}\" to RSpec with the :cli option.}).ordered
+              Guard::UI.should_receive(:info).with(%{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value.gsub('_', '-')}" to RSpec with the :cli option.}).ordered
               subject.stub(:system)
               subject.run(["spec"], key => false)
             end

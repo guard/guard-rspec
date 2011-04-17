@@ -2,6 +2,6 @@
 
 New features:
 - New <tt>:cli</tt> option for passing RSpec CLI option to the runner, thanks to {Jimmy Cuadra}[https://github.com/jimmycuadra].
-- Deprecation of <tt>:color</tt>, <tt>:drb</tt>, <tt>:fail_fast</tt> and <tt>:formatter</tt> options.  {Rémy Coutable}[https://github.com/rymai]
+- Deprecation of <tt>:color</tt>, <tt>:drb</tt>, <tt>:fail_fast</tt> and <tt>:formatter</tt> options. {Rémy Coutable}[https://github.com/rymai]
 - New <tt>:notification</tt> option (to disable Growl/Libnotify notifications). {Rémy Coutable}[https://github.com/rymai]
 - Tested with JRuby and Rubinius. {Thibaud Guillaume-Gentil}[https://github.com/thibaudgg]

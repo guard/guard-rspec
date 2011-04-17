@@ -10,15 +10,15 @@ Gem::Specification.new do |s|
   s.email       = ['thibaud@thibaud.me']
   s.homepage    = 'http://rubygems.org/gems/guard-rspec'
   s.summary     = 'Guard gem for RSpec'
-  s.description = 'Guard::RSpec automatically run your specs (much like autotest)'
+  s.description = 'Guard::RSpec automatically run your specs (much like autotest).'
 
   s.required_rubygems_version = '>= 1.3.6'
   s.rubyforge_project         = 'guard-rspec'
 
   s.add_dependency 'guard', '>= 0.2.2'
 
-  s.add_development_dependency 'bundler', '~> 1.0.10'
-  s.add_development_dependency 'rspec',   '~> 2.4.0'
+  s.add_development_dependency 'bundler', '~> 1.0'
+  s.add_development_dependency 'rspec',   '~> 2.5'
   s.add_development_dependency 'rspec-instafail'
 
   s.files        = Dir.glob('{lib}/**/*') + %w[LICENSE README.rdoc]

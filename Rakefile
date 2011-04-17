@@ -10,18 +10,16 @@ task :custom_spec => "spec:prepare_fixtures" do
   `rake spec`
 end
 task :default => :custom_spec
-  
+
 namespace :spec do
-  desc "Run all specs on multiple ruby versions (requires rvm)"
+
+  desc "Run all specs on multiple ruby versions (requires rvm and bundler)"
   task :portability do
-    %w[1.8.6 1.8.7 1.9.2 jruby rubinius].each do |version|
+    %w[1.8.6 1.8.7 ree 1.9.2 jruby rubinius].each do |version|
       system <<-BASH
         bash -c 'source ~/.rvm/scripts/rvm;
                  rvm #{version};
                  echo "--------- version #{version} ----------\n";
-                 gem install bundler
-                 bundle install;
-                 gem install rspec --version=1.3.1
                  rake spec:prepare_fixtures;
                  rake spec;'
       BASH
@@ -34,9 +32,10 @@ namespace :spec do
       if File.exists?("spec/fixtures/#{dir}/Gemfile")
         system <<-BASH
           cd spec/fixtures/#{dir};
-          bundle install;
+          bundle install 1> /dev/null;
         BASH
       end
     end
   end
+
 end

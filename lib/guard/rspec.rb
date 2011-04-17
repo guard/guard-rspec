@@ -11,7 +11,7 @@ module Guard
       super
       Runner.set_rspec_version(options)
     end
-    
+
     # Call once when guard starts
     def start
       UI.info "Guard::RSpec is running, with RSpec #{Runner.rspec_version}!"
