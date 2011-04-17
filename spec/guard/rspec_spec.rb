@@ -42,6 +42,14 @@ describe Guard::RSpec do
       subject.run_on_change(["spec/foo"])
     end
 
+    it "should not run_all if if the changed specs pass after failing but all_after_pass is false" do
+      subject = Guard::RSpec.new([], :all_after_pass => false)
+      Guard::RSpec::Runner.should_receive(:run).with(["spec/foo"], {}).and_return(false, true)
+      Guard::RSpec::Runner.should_not_receive(:run).with(["spec"], :message => "Running all specs")
+      subject.run_on_change(["spec/foo"])
+      subject.run_on_change(["spec/foo"])
+    end
+
     it "should not run_all if the changed specs pass without failing" do
       Guard::RSpec::Runner.should_receive(:run).with(["spec/foo"], {}).and_return(true)
       Guard::RSpec::Runner.should_not_receive(:run).with(["spec"], :message => "Running all specs")
