@@ -114,7 +114,7 @@ The <tt>:formatter</tt> option has been removed since CLI arguments can be passe
 gem 'rspec-instafail'
 
 # in your Guardfile
-guard 'rspec, :cli => "-r rspec/instafail -f RSpec::Instafail" do
+guard 'rspec', :cli => '-r rspec/instafail -f RSpec::Instafail' do
   # ...
 end
 ```
