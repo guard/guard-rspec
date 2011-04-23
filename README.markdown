@@ -87,14 +87,14 @@ Former <tt>:color</tt>, <tt>:drb</tt>, <tt>:fail_fast</tt> and <tt>:formatter</t
 ### List of available options:
 
 ``` ruby
-:version => 1              # force use RSpec version 1, default: 2
-:cli => "-c -f doc"        # pass arbitrary RSpec CLI arguments, default: "-f progress"
-:bundler => false          # don't use "bundle exec" to run the RSpec command, default: true
-:rvm => ['1.8.7', '1.9.2'] # directly run your specs on multiple Rubies, default: nil
-:notification => false     # don't display Growl (or Libnotify) notification after the specs are done running, default: true
-:all_after_pass => false   # don't run all specs after changed specs pass, default: true
-:all_on_start => false     # don't run all the specs at startup, default: true
-:keep_failed => true       # keep failed specs until them pass, default: true
+:version => 1               # force use RSpec version 1, default: 2
+:cli => "-c -f doc"         # pass arbitrary RSpec CLI arguments, default: "-f progress"
+:bundler => false           # don't use "bundle exec" to run the RSpec command, default: true
+:rvm => ['1.8.7', '1.9.2']  # directly run your specs on multiple Rubies, default: nil
+:notification => false      # don't display Growl (or Libnotify) notification after the specs are done running, default: true
+:all_after_pass => false    # don't run all specs after changed specs pass, default: true
+:all_on_start => false      # don't run all the specs at startup, default: true
+:keep_failed => false       # keep failed specs until them pass, default: true
 ```
 
 Notification
