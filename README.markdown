@@ -94,7 +94,7 @@ Former <tt>:color</tt>, <tt>:drb</tt>, <tt>:fail_fast</tt> and <tt>:formatter</t
 :notification => false     # don't display Growl (or Libnotify) notification after the specs are done running, default: true
 :all_after_pass => false   # don't run all specs after changed specs pass, default: true
 :all_on_start => false     # don't run all the specs at startup, default: true
-:keep_failed => true       # keep failed specs untill them pass (useful with [:focus RSpec option](http://relishapp.com/rspec/rspec-core/v/2-6-rc/dir/filtering/inclusion-filters)), default: true
+:keep_failed => true       # keep failed specs until them pass, default: true
 ```
 
 Notification
