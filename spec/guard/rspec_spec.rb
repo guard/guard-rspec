@@ -46,6 +46,17 @@ describe Guard::RSpec do
     end
   end
 
+  describe "#reload" do
+    it "should clear failed_path" do
+      Guard::RSpec::Runner.should_receive(:run).with(["spec/foo"], default_options).and_return(false)
+      subject.run_on_change(["spec/foo"])
+      subject.reload
+      Guard::RSpec::Runner.should_receive(:run).with(["spec/bar"], default_options).and_return(true)
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], default_options.merge(:message => "Running all specs")).and_return(true)
+      subject.run_on_change(["spec/bar"])
+    end
+  end
+
   describe "#run_on_change" do
     it "runs rspec with paths" do
       Guard::RSpec::Runner.should_receive(:run).with(["spec"], default_options)

@@ -32,10 +32,14 @@ module Guard
       @last_failed  = !passed
     end
 
+    def reload
+      @failed_paths = []
+    end
+
     def run_on_change(paths)
-      paths  = Inspector.clean(paths)
       paths += @failed_paths if @options[:keep_failed]
-      passed = Runner.run(paths.uniq, options)
+      paths  = Inspector.clean(paths)
+      passed = Runner.run(paths, options)
 
       if passed
         # clean failed paths memory
