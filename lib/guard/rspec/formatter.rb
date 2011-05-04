@@ -13,7 +13,7 @@ module Formatter
 
   # failed | pending | success
   def guard_image(failure_count, pending_count)
-    icon = if failure_count > 0
+    if failure_count > 0
       :failed
     elsif pending_count > 0
       :pending
