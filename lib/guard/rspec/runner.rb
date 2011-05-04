@@ -12,7 +12,13 @@ module Guard
           success = system(rspec_command(paths, options))
 
           unless success
-            UI.error("Could not run specs", :reset => true)
+            message = "Could not run specs"
+
+            UI.error(message, :reset => true)
+
+            if options[:notification] != false
+              Notifier.notify(message, :title => "RSpec error", :image => :failed)
+            end
           end
         end
 
