@@ -8,7 +8,12 @@ module Guard
           return false if paths.empty?
           message = options[:message] || "Running: #{paths.join(' ')}"
           UI.info(message, :reset => true)
-          system(rspec_command(paths, options))
+
+          success = system(rspec_command(paths, options))
+
+          unless success
+            UI.error("Could not run specs", :reset => true)
+          end
         end
 
         def set_rspec_version(options={})
