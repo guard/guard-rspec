@@ -66,7 +66,7 @@ Please read [Guard doc](https://github.com/guard/guard#readme) for more informat
 Options
 -------
 
-By default, Guard::RSpec automatically detect your RSpec version (with the <tt>spec_helper.rb</tt> syntax or with Bundler) but you can force the version with the <tt>:version</tt> option:
+By default, Guard::RSpec automatically detect your RSpec version (with the `spec_helper.rb` syntax or with Bundler) but you can force the version with the `:version` option:
 
 ``` ruby
 guard 'rspec', :version => 2 do
@@ -74,7 +74,7 @@ guard 'rspec', :version => 2 do
 end
 ```
 
-You can pass any of the standard RSpec CLI options using the <tt>:cli</tt> option:
+You can pass any of the standard RSpec CLI options using the `:cli` option:
 
 ``` ruby
 guard 'rspec', :cli => "--color --format nested --fail-fast --drb" do
@@ -82,7 +82,7 @@ guard 'rspec', :cli => "--color --format nested --fail-fast --drb" do
 end
 ```
 
-Former <tt>:color</tt>, <tt>:drb</tt>, <tt>:fail_fast</tt> and <tt>:formatter</tt> options are thus deprecated and have no effect anymore.
+Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are thus deprecated and have no effect anymore.
 
 ### List of available options:
 
@@ -107,7 +107,7 @@ The best solution is still to update RSpec to the latest version!
 Formatters
 ----------
 
-The <tt>:formatter</tt> option has been removed since CLI arguments can be passed through the <tt>:cli</tt> option. If you want to use the former Instafail formatter, you need to use <tt>{rspec-instafail}[http://rubygems.org/gems/rspec-instafail]</tt> gem instead:
+The `:formatter` option has been removed since CLI arguments can be passed through the `:cli` option. If you want to use the former Instafail formatter, you need to use `[rspec-instafail](http://rubygems.org/gems/rspec-instafail)` gem instead:
 
 ``` ruby
 # in your Gemfile
@@ -119,7 +119,7 @@ guard 'rspec', :cli => '-r rspec/instafail -f RSpec::Instafail' do
 end
 ```
 
-Default formatter is the <tt>progress</tt> formatter (same as RSpec default).
+Default formatter is the `progress` formatter (same as RSpec default).
 
 Running a subset of all specs
 -----------
@@ -140,7 +140,7 @@ you make.
 Testing
 -------
 
-Please run <tt>rake spec:prepare_fixtures</tt> once before launching specs.
+Please run `rake spec:prepare_fixtures` once before launching specs.
 
 Author
 ------
