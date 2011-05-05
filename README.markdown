@@ -107,7 +107,7 @@ The best solution is still to update RSpec to the latest version!
 Formatters
 ----------
 
-The `:formatter` option has been removed since CLI arguments can be passed through the `:cli` option. If you want to use the former Instafail formatter, you need to use `[rspec-instafail](http://rubygems.org/gems/rspec-instafail)` gem instead:
+The `:formatter` option has been removed since CLI arguments can be passed through the `:cli` option. If you want to use the former Instafail formatter, you need to use [rspec-instafail](http://rubygems.org/gems/rspec-instafail) gem instead:
 
 ``` ruby
 # in your Gemfile
