@@ -1,8 +1,11 @@
 require 'spec_helper'
 
 describe Guard::RSpec::Inspector do
-
   describe ".clean" do
+    before do
+      subject.excluded = nil
+    end
+
     it "removes non-spec files" do
       subject.clean(["spec/guard/rspec_spec.rb", "bob.rb"]).should == ["spec/guard/rspec_spec.rb"]
     end
@@ -34,6 +37,21 @@ describe Guard::RSpec::Inspector do
     it "removes spec files included in spec folders (2)" do
       subject.clean(["spec/guard/rspec_spec.rb", "spec/guard/rspec/runner_spec.rb", "spec/guard/rspec"]).should == ["spec/guard/rspec_spec.rb", "spec/guard/rspec"]
     end
-  end
 
+    describe 'excluded files' do
+      context 'with a path to a single spec' do
+        it 'ignores the one spec' do
+          subject.excluded = 'spec/guard/rspec_spec.rb'
+          subject.clean(['spec/guard/rspec_spec.rb']).should == []
+        end
+      end
+
+      context 'with a glob' do
+        it 'ignores files recursively' do
+          subject.excluded = 'spec/guard/**/*'
+          subject.clean(['spec/guard/rspec_spec.rb', 'spec/guard/rspec/runner_spec.rb']).should == []
+        end
+      end
+    end
+  end
 end

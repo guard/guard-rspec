@@ -9,6 +9,11 @@ describe Guard::RSpec do
       Guard::RSpec::Runner.should_receive(:set_rspec_version)
       Guard::RSpec.new
     end
+
+    it 'passes an excluded spec glob to Inspector' do
+      Guard::RSpec::Inspector.should_receive(:excluded=).with('spec/slow/*')
+      Guard::RSpec.new([], :exclude => 'spec/slow/*')
+    end
   end
 
   describe "#start" do
