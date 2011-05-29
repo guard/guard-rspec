@@ -19,14 +19,10 @@ module Guard
           paths.reject { |p| included_in_other_path?(p, paths) }
         end
 
-        private
+      private
 
         def should_run_spec_file?(path)
-          (spec_file?(path) || spec_folder?(path)) && !excluded?(path)
-        end
-
-        def excluded?(path)
-          excluded.include?(path)
+          (spec_file?(path) || spec_folder?(path)) && !excluded.include?(path)
         end
 
         def spec_file?(path)
@@ -49,6 +45,7 @@ module Guard
         def included_in_other_path?(path, paths)
           (paths - [path]).any? { |p| path.include?(p) && path.sub(p, '').include?('/') }
         end
+
       end
     end
   end
