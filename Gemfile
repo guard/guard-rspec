@@ -3,6 +3,8 @@ source "http://rubygems.org"
 # Specify your gem's dependencies in guard-rspec.gemspec
 gemspec
 
+gem 'guard', :git => 'git://github.com/guard/guard.git'
+
 require 'rbconfig'
 
 platforms :ruby do
