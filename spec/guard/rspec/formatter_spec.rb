@@ -1,4 +1,4 @@
-describe Formatter, :focus => true do
+describe Formatter do
 
   subject { Class.new { include Formatter }.new }
 
