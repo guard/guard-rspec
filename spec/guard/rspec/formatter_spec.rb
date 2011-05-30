@@ -47,7 +47,7 @@ describe Formatter do
       subject.priority(:pending).should eql -1
     end
 
-    it "returns the failed priority" do
+    it "returns the success priority" do
       subject.priority(:success).should eql -2
     end
   end
