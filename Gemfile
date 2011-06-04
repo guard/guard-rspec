@@ -3,6 +3,8 @@ source "http://rubygems.org"
 # Specify your gem's dependencies in guard-rspec.gemspec
 gemspec
 
+gem 'rake'
+
 require 'rbconfig'
 
 platforms :ruby do
