@@ -1,7 +1,5 @@
-Guard::RSpec
+Guard::RSpec ![travis-ci](http://travis-ci.org/guard/guard-rspec.png)
 =============
-
-![travis-ci](http://travis-ci.org/guard/guard-rspec.png)
 
 RSpec guard allows to automatically & intelligently launch specs when files are modified.
 

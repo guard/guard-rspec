@@ -22,8 +22,16 @@ module Formatter
     end
   end
 
+  def priority(image)
+    { :failed => 2,
+      :pending => -1,
+      :success => -2
+    }[image]
+  end
+
   def notify(message, image)
-    Guard::Notifier.notify(message, :title => "RSpec results", :image => image)
+    Guard::Notifier.notify(message, :title => "RSpec results", :image => image,
+      :priority => priority(image))
   end
 
 private
