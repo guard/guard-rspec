@@ -1,3 +1,5 @@
+require "#{File.dirname(__FILE__)}/../../../lib/guard/rspec/formatter"
+
 describe Formatter do
 
   subject { Class.new { include Formatter }.new }

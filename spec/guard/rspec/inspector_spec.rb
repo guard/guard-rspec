@@ -15,7 +15,7 @@ describe Guard::RSpec::Inspector do
     end
 
     it "removes spec-looking but non-existing files (2)" do
-      subject.clean(["spec/guard/rspec/formatter_spec.rb"]).should == []
+      subject.clean(["spec/guard/rspec/version_spec.rb"]).should == []
     end
 
     it "keeps spec folder path" do
