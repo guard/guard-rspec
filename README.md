@@ -15,7 +15,7 @@ Install the gem:
 
     $ gem install guard-rspec
 
-Add it to your Gemfile (inside test group):
+Add it to your Gemfile (inside development group):
 
 ``` ruby
 gem 'guard-rspec'
