@@ -1,3 +1,5 @@
+Better readme!
+
 Guard::RSpec ![travis-ci](http://travis-ci.org/guard/guard-rspec.png)
 =============
 
