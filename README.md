@@ -122,7 +122,7 @@ Default formatter is the `progress` formatter (same as RSpec default).
 Running a subset of all specs
 -----------
 
-The `:all_on_start` and `:all_after_pass` options cause all specs to be run.  If there
+The `:all_on_start` and `:all_after_pass` options cause all specs located in the `spec` directory to be run.  If there
 are some specs you want to skip, you can tag them with RSpec metadata (such as `:slow => true`)
 and skip them with the cli `--tag` option (i.e. `--tag ~slow`).
 
@@ -144,3 +144,4 @@ Author
 ------
 
 [Thibaud Guillaume-Gentil](https://github.com/thibaudgg)
+
