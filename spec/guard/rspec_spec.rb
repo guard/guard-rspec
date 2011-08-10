@@ -64,6 +64,12 @@ describe Guard::RSpec do
       subject.run_all
     end
 
+    it "allows the :run_all options to override the default_options" do
+      subject = Guard::RSpec.new([], { :rvm => ['1.8.7', '1.9.2'], :cli => "--color", :run_all => { :cli => "--format progress" } })
+      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:cli => "--format progress", :rvm => ['1.8.7', '1.9.2']))
+      subject.run_all
+    end
+
     it_should_behave_like "clear failed paths"
 
   end
