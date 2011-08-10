@@ -8,7 +8,8 @@ module Guard
           return false if paths.empty?
           message = options[:message] || "Running: #{paths.join(' ')}"
           UI.info(message, :reset => true)
-          system(rspec_command(paths, options))
+          system(rspec_command(paths, options)) or
+            Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
         def set_rspec_version(options={})
