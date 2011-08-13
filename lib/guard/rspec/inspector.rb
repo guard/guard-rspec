@@ -9,6 +9,14 @@ module Guard
         def excluded=(glob)
           @excluded = Dir[glob.to_s]
         end
+        
+        def spec_paths
+          @spec_paths || []
+        end
+        
+        def spec_paths=(path_array)
+          @spec_paths = path_array
+        end
 
         def clean(paths)
           paths.uniq!
@@ -30,11 +38,12 @@ module Guard
         end
 
         def spec_folder?(path)
-          path.match(%r{^spec[^\.]*$})
+          path.match(%r{^(#{spec_paths.join("|")})[^\.]*$})
+          # path.match(%r{^spec[^\.]*$})
         end
 
         def spec_files
-          @spec_files ||= Dir["spec/**/*_spec.rb"]
+          @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**", "*_spec.rb")] }.flatten
         end
 
         def clear_spec_files_list_after

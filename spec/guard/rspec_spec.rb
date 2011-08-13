@@ -43,8 +43,14 @@ describe Guard::RSpec do
   end
 
   describe "#run_all" do
-    it "runs all specs in the 'spec/' directory" do
+    it "runs all specs specified by the default 'spec_paths' option" do
       Guard::RSpec::Runner.should_receive(:run).with(["spec/"], anything)
+      subject.run_all
+    end
+    
+    it "should run all specs specified by the 'spec_paths' option" do
+      subject = Guard::RSpec.new([], :spec_paths => ["spec", "spec/fixtures/other_spec_path"])
+      Guard::RSpec::Runner.should_receive(:run).with(["spec", "spec/fixtures/other_spec_path"], anything)
       subject.run_all
     end
 
