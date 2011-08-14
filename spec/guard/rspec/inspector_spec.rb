@@ -4,6 +4,7 @@ describe Guard::RSpec::Inspector do
   describe ".clean" do
     before do
       subject.excluded = nil
+      subject.spec_paths = ["spec/"]
     end
 
     it "removes non-spec files" do
@@ -50,6 +51,16 @@ describe Guard::RSpec::Inspector do
         it 'ignores files recursively' do
           subject.excluded = 'spec/guard/**/*'
           subject.clean(['spec/guard/rspec_spec.rb', 'spec/guard/rspec/runner_spec.rb']).should == []
+        end
+      end
+    end
+    
+    describe 'spec paths' do
+      context 'with an expanded spec path' do
+        before { subject.spec_paths = ["spec", "spec/fixtures/other_spec_path"] }
+                
+        it "should clean paths not specified" do
+          subject.clean(['clean_me/spec/cleaned_spec.rb', 'spec/guard/rspec/runner_spec.rb', 'spec/fixtures/other_spec_path/empty_spec.rb']).should == ['spec/guard/rspec/runner_spec.rb', 'spec/fixtures/other_spec_path/empty_spec.rb']
         end
       end
     end
