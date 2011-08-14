@@ -4,7 +4,7 @@ Guard::RSpec ![travis-ci](http://travis-ci.org/guard/guard-rspec.png)
 RSpec guard allows to automatically & intelligently launch specs when files are modified.
 
 * Compatible with RSpec 1.x & RSpec 2.x (>= 2.4 needed for the notification feature)
-* Tested on Ruby 1.8.7, 1.9.2, JRuby & Rubinius.
+* Tested against Ruby 1.8.7, 1.9.2, REE, JRuby & Rubinius.
 
 Install
 -------
@@ -39,9 +39,9 @@ RSpec guard can be really adapted to all kind of projects.
 
 ``` ruby
 guard 'rspec' do
-  watch(%r{^spec/.+_spec\.rb})
-  watch(%r{^lib/(.+)\.rb})     { |m| "spec/lib/#{m[1]}_spec.rb" }
-  watch('spec/spec_helper.rb') { "spec" }
+  watch(%r{^spec/.+_spec\.rb$})
+  watch(%r{^lib/(.+)\.rb$})     { |m| "spec/lib/#{m[1]}_spec.rb" }
+  watch('spec/spec_helper.rb')  { "spec" }
 end
 ```
 
@@ -49,13 +49,13 @@ end
 
 ``` ruby
 guard 'rspec' do
-  watch('spec/spec_helper.rb')                       { "spec" }
-  watch('config/routes.rb')                          { "spec/routing" }
-  watch('app/controllers/application_controller.rb') { "spec/controllers" }
-  watch(%r{^spec/.+_spec\.rb})
-  watch(%r{^app/(.+)\.rb})                           { |m| "spec/#{m[1]}_spec.rb" }
-  watch(%r{^lib/(.+)\.rb})                           { |m| "spec/lib/#{m[1]}_spec.rb" }
-  watch(%r{^app/controllers/(.+)_(controller)\.rb})  { |m| ["spec/routing/#{m[1]}_routing_spec.rb", "spec/#{m[2]}s/#{m[1]}_#{m[2]}_spec.rb", "spec/acceptance/#{m[1]}_spec.rb"] }
+  watch('spec/spec_helper.rb')                        { "spec" }
+  watch('config/routes.rb')                           { "spec/routing" }
+  watch('app/controllers/application_controller.rb')  { "spec/controllers" }
+  watch(%r{^spec/.+_spec\.rb$})
+  watch(%r{^app/(.+)\.rb$})                           { |m| "spec/#{m[1]}_spec.rb" }
+  watch(%r{^lib/(.+)\.rb$})                           { |m| "spec/lib/#{m[1]}_spec.rb" }
+  watch(%r{^app/controllers/(.+)_(controller)\.rb$})  { |m| ["spec/routing/#{m[1]}_routing_spec.rb", "spec/#{m[2]}s/#{m[1]}_#{m[2]}_spec.rb", "spec/acceptance/#{m[1]}_spec.rb"] }
 end
 ```
 
@@ -154,4 +154,3 @@ Author
 ------
 
 [Thibaud Guillaume-Gentil](https://github.com/thibaudgg)
-
