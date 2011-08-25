@@ -90,7 +90,7 @@ end
 If you have only one path to look, you can configure `:spec_paths` option with a string:
 
 ``` ruby
-guard 'rspec', :spec_paths => "spec" do
+guard 'rspec', :spec_paths => "test" do
   # ...
 end
 ```
