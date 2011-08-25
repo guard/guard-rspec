@@ -9,13 +9,13 @@ module Guard
         def excluded=(glob)
           @excluded = Dir[glob.to_s]
         end
-        
+
         def spec_paths
           @spec_paths || []
         end
-        
+
         def spec_paths=(path_array)
-          @spec_paths = path_array
+          @spec_paths = Array(path_array)
         end
 
         def clean(paths)
