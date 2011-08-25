@@ -87,6 +87,14 @@ guard 'rspec', :spec_paths => ["spec", "vendor/engines/reset/spec"] do
   # ...
 end
 ```
+If you have only one path to look, you can configure `:spec_paths` option with a string:
+
+``` ruby
+guard 'rspec', :spec_paths => "test" do
+  # ...
+end
+```
+
 
 Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are thus deprecated and have no effect anymore.
 

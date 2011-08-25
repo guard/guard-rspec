@@ -7,6 +7,16 @@ describe Guard::RSpec::Inspector do
       subject.spec_paths = ["spec/"]
     end
 
+    it "accept a string as spec_paths" do
+      subject.spec_paths ="test"
+      subject.spec_paths.should == ["test"]
+    end
+
+    it "accept an array as spec_paths" do
+      subject.spec_paths =["test"]
+      subject.spec_paths.should == ["test"]
+    end
+
     it "removes non-spec files" do
       subject.clean(["spec/guard/rspec_spec.rb", "bob.rb"]).should == ["spec/guard/rspec_spec.rb"]
     end
@@ -54,11 +64,11 @@ describe Guard::RSpec::Inspector do
         end
       end
     end
-    
+
     describe 'spec paths' do
       context 'with an expanded spec path' do
         before { subject.spec_paths = ["spec", "spec/fixtures/other_spec_path"] }
-                
+
         it "should clean paths not specified" do
           subject.clean(['clean_me/spec/cleaned_spec.rb', 'spec/guard/rspec/runner_spec.rb', 'spec/fixtures/other_spec_path/empty_spec.rb']).should == ['spec/guard/rspec/runner_spec.rb', 'spec/fixtures/other_spec_path/empty_spec.rb']
         end
