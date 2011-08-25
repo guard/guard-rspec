@@ -108,7 +108,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are thus deprecat
 :notification => false       # don't display Growl (or Libnotify) notification after the specs are done running, default: true
 :all_after_pass => false     # don't run all specs after changed specs pass, default: true
 :all_on_start => false       # don't run all the specs at startup, default: true
-:keep_failed => false        # keep failed specs until them pass, default: true
+:keep_failed => false        # don't keep failed specs until they pass, default: true
 :run_all => { :cli => "-p" } # override any option when running all specs
 :spec_paths => ["spec/"]     # specify an array of paths that contain spec files
 ```
