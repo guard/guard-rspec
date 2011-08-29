@@ -144,6 +144,25 @@ The `:all_on_start` and `:all_after_pass` options cause all specs located in the
 are some specs you want to skip, you can tag them with RSpec metadata (such as `:slow => true`)
 and skip them with the cli `--tag` option (i.e. `--tag ~slow`).
 
+You can also use option :spec_paths to override paths used when running all specs.
+You can use this feature to create multiple groups of guarded specs with distinct paths, and execute each in own process:
+
+``` ruby
+# in your Guardfile
+group 'acceptance-tests' do
+  guard 'rspec', :spec_paths => ['spec/acceptance'] do
+    # ...
+  end
+end
+
+group 'unit-tests' do
+  guard 'rspec', :spec_paths => ['spec/models', 'spec/controllers', 'spec/routing'] do
+    # ...
+  end
+end
+```
+
+
 Development
 -----------
 
