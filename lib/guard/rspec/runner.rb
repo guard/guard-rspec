@@ -27,7 +27,7 @@ module Guard
           cmd_parts << rspec_exec.downcase
           cmd_parts << options[:cli] if options[:cli]
           cmd_parts << "-f progress" if options[:cli].nil? || !options[:cli].split(' ').any? { |w| %w[-f --format].include?(w) }
-          cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_exec.downcase}.rb -f Notification#{rspec_exec}#{rspec_version == 1 ? ":" : " --out "}/dev/null" if options[:notification] != false
+          cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_exec.downcase}.rb -f Guard::RSpec::Formatter::Notification#{rspec_exec}#{rspec_version == 1 ? ":" : " --out "}/dev/null" if options[:notification] != false
           cmd_parts << paths.join(' ')
 
           cmd_parts.join(' ')

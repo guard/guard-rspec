@@ -1,8 +1,8 @@
 require "#{File.dirname(__FILE__)}/../../../lib/guard/rspec/formatter"
 
-describe Formatter do
+describe Guard::RSpec::Formatter do
 
-  subject { Class.new { include Formatter }.new }
+  subject { Class.new { include Guard::RSpec::Formatter }.new }
 
   describe "#guard_message" do
     context 'with a pending example' do
