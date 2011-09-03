@@ -1,6 +1,6 @@
 require "#{File.dirname(__FILE__)}/../rspec"
 
-module Formatter
+module Guard::RSpec::Formatter
 
   def guard_message(example_count, failure_count, pending_count, duration)
     message = "#{example_count} examples, #{failure_count} failures"

@@ -17,7 +17,7 @@ describe Guard::RSpec::Runner do
 
       it "runs with RSpec 2 and without bundler" do
         subject.should_receive(:system).with(
-          "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f NotificationRSpec --out /dev/null spec"
+          "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null spec"
         ).and_return(true)
         subject.run(["spec"])
       end
@@ -37,7 +37,7 @@ describe Guard::RSpec::Runner do
 
       it "runs with RSpec 2 and with Bundler" do
         subject.should_receive(:system).with(
-          "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f NotificationRSpec --out /dev/null spec"
+          "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null spec"
         ).and_return(true)
         subject.run(["spec"])
       end
@@ -46,7 +46,7 @@ describe Guard::RSpec::Runner do
         describe ":rvm" do
           it "runs with rvm exec" do
             subject.should_receive(:system).with(
-              "rvm 1.8.7,1.9.2 exec bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f NotificationRSpec --out /dev/null spec"
+              "rvm 1.8.7,1.9.2 exec bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null spec"
             ).and_return(true)
             subject.run(["spec"], :rvm => ['1.8.7', '1.9.2'])
           end
@@ -55,21 +55,21 @@ describe Guard::RSpec::Runner do
         describe ":cli" do
           it "runs with CLI options passed to RSpec" do
             subject.should_receive(:system).with(
-            "bundle exec rspec --color --drb --fail-fast -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f NotificationRSpec --out /dev/null spec"
+            "bundle exec rspec --color --drb --fail-fast -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null spec"
             ).and_return(true)
             subject.run(["spec"], :cli => "--color --drb --fail-fast")
           end
 
           it "sets progress formatter by default if no formatter is passed in CLI options to RSpec" do
             subject.should_receive(:system).with(
-            "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f NotificationRSpec --out /dev/null spec"
+            "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null spec"
             ).and_return(true)
             subject.run(["spec"])
           end
 
           it "respects formatter passed in CLI options to RSpec" do
             subject.should_receive(:system).with(
-            "bundle exec rspec -f doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f NotificationRSpec --out /dev/null spec"
+            "bundle exec rspec -f doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null spec"
             ).and_return(true)
             subject.run(["spec"], :cli => "-f doc")
           end
@@ -78,7 +78,7 @@ describe Guard::RSpec::Runner do
         describe ":bundler" do
           it "runs without Bundler with bundler option to false" do
             subject.should_receive(:system).with(
-              "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f NotificationRSpec --out /dev/null spec"
+              "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null spec"
             ).and_return(true)
             subject.run(["spec"], :bundler => false)
           end
@@ -115,7 +115,7 @@ describe Guard::RSpec::Runner do
 
       it "runs with RSpec 1 and with bundler" do
         subject.should_receive(:system).with(
-          "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} -f NotificationSpec:/dev/null spec"
+          "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} -f Guard::RSpec::Formatter::NotificationSpec:/dev/null spec"
         ).and_return(true)
         subject.run(["spec"])
       end
