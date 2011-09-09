@@ -4,7 +4,7 @@ describe Guard::RSpec::Inspector do
   describe ".clean" do
     before do
       subject.excluded = nil
-      subject.spec_paths = ["spec/"]
+      subject.spec_paths = ["spec"]
     end
 
     it "accept a string as spec_paths" do
