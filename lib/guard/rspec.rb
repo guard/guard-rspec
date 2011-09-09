@@ -12,7 +12,7 @@ module Guard
         :all_after_pass => true,
         :all_on_start   => true,
         :keep_failed    => true,
-        :spec_paths     => ["spec/"]
+        :spec_paths     => ["spec"]
       }.update(options)
       @last_failed  = false
       @failed_paths = []
