@@ -22,9 +22,9 @@ describe Guard::RSpec::Runner do
         subject.run(["spec"])
       end
 
-      it "notifies when RSpec fails to execute" do
+      it "not notifies when RSpec fails to execute" do
         subject.should_receive(:system).and_return(nil)
-        Guard::Notifier.should_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+        Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         subject.run(["spec"])
       end
     end
