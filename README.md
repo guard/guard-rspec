@@ -80,7 +80,7 @@ guard 'rspec', :cli => "--color --format nested --fail-fast --drb" do
 end
 ```
 
-By default, Guard::RSpec will only look for spec files within `spec/` in your project root. You can configure Guard::RSpec to look in additional paths by using the `:spec_paths` option:
+By default, Guard::RSpec will only look for spec files within `spec` in your project root. You can configure Guard::RSpec to look in additional paths by using the `:spec_paths` option:
 
 ``` ruby
 guard 'rspec', :spec_paths => ["spec", "vendor/engines/reset/spec"] do
@@ -110,7 +110,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are thus deprecat
 :all_on_start => false       # don't run all the specs at startup, default: true
 :keep_failed => false        # don't keep failed specs until they pass, default: true
 :run_all => { :cli => "-p" } # override any option when running all specs
-:spec_paths => ["spec/"]     # specify an array of paths that contain spec files
+:spec_paths => ["spec"]      # specify an array of paths that contain spec files
 ```
 
 Notification
