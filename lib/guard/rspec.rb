@@ -31,6 +31,8 @@ module Guard
     def run_all
       passed = Runner.run(options[:spec_paths], options.merge(options[:run_all] || {}).merge(:message => "Running all specs"))
 
+      hook :passed if passed
+
       @failed_paths = [] if passed
       @last_failed  = !passed
     end
