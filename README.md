@@ -105,10 +105,10 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are thus deprecat
 :cli => "-c -f doc"          # pass arbitrary RSpec CLI arguments, default: "-f progress"
 :bundler => false            # don't use "bundle exec" to run the RSpec command, default: true
 :rvm => ['1.8.7', '1.9.2']   # directly run your specs on multiple Rubies, default: nil
-:notification => false       # don't display Growl (or Libnotify) notification after the specs are done running, default: true
-:all_after_pass => false     # don't run all specs after changed specs pass, default: true
-:all_on_start => false       # don't run all the specs at startup, default: true
-:keep_failed => false        # don't keep failed specs until they pass, default: true
+:notification => false       # display Growl (or Libnotify) notification after the specs are done running, default: true
+:all_after_pass => false     # run all specs after changed specs pass, default: true
+:all_on_start => false       # run all the specs at startup, default: true
+:keep_failed => false        # keep failed specs until they pass, default: true
 :run_all => { :cli => "-p" } # override any option when running all specs
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
 ```
