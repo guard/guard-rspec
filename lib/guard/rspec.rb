@@ -31,8 +31,12 @@ module Guard
     def run_all
       passed = Runner.run(options[:spec_paths], options.merge(options[:run_all] || {}).merge(:message => "Running all specs"))
 
-      @failed_paths = [] if passed
-      @last_failed  = !passed
+      @last_failed = !passed
+      if passed
+        @failed_paths = []
+      else
+        throw :task_has_failed
+      end
     end
 
     def reload
@@ -54,6 +58,7 @@ module Guard
         @failed_paths += paths if @options[:keep_failed]
         # track whether the changed specs failed for the next change
         @last_failed = true
+        throw :task_has_failed
       end
     end
 

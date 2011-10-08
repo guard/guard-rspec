@@ -7,10 +7,10 @@ describe Guard::RSpec do
   shared_examples_for "clear failed paths" do
     it "should clear the previously failed paths" do
       Guard::RSpec::Runner.stub(:run).and_return(false, true)
-      subject.run_on_change(["spec/foo"])
+      expect { subject.run_on_change(["spec/foo"]) }.to throw_symbol :task_has_failed
       subject.run_all
       Guard::RSpec::Runner.should_receive(:run).with(["spec/bar"], anything)
-      subject.run_on_change(["spec/bar"])
+      expect { subject.run_on_change(["spec/bar"]) }.to throw_symbol :task_has_failed
     end
   end
 
@@ -44,40 +44,44 @@ describe Guard::RSpec do
 
   describe "#run_all" do
     it "runs all specs specified by the default 'spec_paths' option" do
-      Guard::RSpec::Runner.should_receive(:run).with(["spec"], anything)
+      Guard::RSpec::Runner.should_receive(:run).with(["spec"], anything).and_return(true)
       subject.run_all
     end
 
     it "should run all specs specified by the 'spec_paths' option" do
       subject = Guard::RSpec.new([], :spec_paths => ["spec", "spec/fixtures/other_spec_path"])
-      Guard::RSpec::Runner.should_receive(:run).with(["spec", "spec/fixtures/other_spec_path"], anything)
+      Guard::RSpec::Runner.should_receive(:run).with(["spec", "spec/fixtures/other_spec_path"], anything).and_return(true)
       subject.run_all
     end
 
     it "passes the default options to the runner" do
-      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(default_options))
+      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(default_options)).and_return(true)
       subject.run_all
     end
 
     it "passes the message to the runner" do
-      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:message => "Running all specs"))
+      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:message => "Running all specs")).and_return(true)
       subject.run_all
     end
 
     it "directly passes :cli option to runner" do
       subject = Guard::RSpec.new([], { :cli => "--color" })
-      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:cli => "--color"))
+      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:cli => "--color")).and_return(true)
       subject.run_all
     end
 
     it "allows the :run_all options to override the default_options" do
       subject = Guard::RSpec.new([], { :rvm => ['1.8.7', '1.9.2'], :cli => "--color", :run_all => { :cli => "--format progress" } })
-      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:cli => "--format progress", :rvm => ['1.8.7', '1.9.2']))
+      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:cli => "--format progress", :rvm => ['1.8.7', '1.9.2'])).and_return(true)
       subject.run_all
     end
 
-    it_should_behave_like "clear failed paths"
+    it "throws task_has_failed if specs aren't passed" do
+      Guard::RSpec::Runner.should_receive(:run).and_return(false)
+      expect { subject.run_all }.to throw_symbol :task_has_failed
+    end
 
+    it_should_behave_like "clear failed paths"
   end
 
   describe "#reload" do
@@ -86,13 +90,13 @@ describe Guard::RSpec do
 
   describe "#run_on_change" do
     it "runs rspec with paths" do
-      Guard::RSpec::Runner.should_receive(:run).with(["spec/foo"], anything)
+      Guard::RSpec::Runner.should_receive(:run).with(["spec/foo"], anything).and_return(true)
       subject.run_on_change(["spec/foo"])
     end
 
     it "directly passes :cli option to runner" do
       subject = Guard::RSpec.new([], { :cli => "--color" })
-      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:cli => "--color"))
+      Guard::RSpec::Runner.should_receive(:run).with(anything, hash_including(:cli => "--color")).and_return(true)
       subject.run_on_change(["spec/foo"])
     end
 
@@ -101,7 +105,8 @@ describe Guard::RSpec do
 
       it "calls #run_all" do
         subject.should_receive(:run_all)
-        2.times { subject.run_on_change(["spec/foo"]) }
+        expect { subject.run_on_change(["spec/foo"]) }.to throw_symbol :task_has_failed
+        subject.run_on_change(["spec/foo"])
       end
 
       context "but the :all_after_pass option is false" do
@@ -109,7 +114,8 @@ describe Guard::RSpec do
 
         it "doesn't call #run_all" do
           subject.should_not_receive(:run_all)
-          2.times { subject.run_on_change(["spec/foo"]) }
+          expect { subject.run_on_change(["spec/foo"]) }.to throw_symbol :task_has_failed
+          subject.run_on_change(["spec/foo"])
         end
       end
     end
@@ -125,11 +131,16 @@ describe Guard::RSpec do
 
     it "should keep failed spec and rerun later" do
       Guard::RSpec::Runner.stub(:run).and_return(false)
-      subject.run_on_change(["spec/foo"])
+      expect { subject.run_on_change(["spec/foo"]) }.to throw_symbol :task_has_failed
       Guard::RSpec::Runner.stub(:run).and_return(true)
       subject.run_on_change(["spec/bar"])
       Guard::RSpec::Runner.should_receive(:run).with(["spec/bar"], anything)
       subject.run_on_change(["spec/bar"])
+    end
+
+    it "throws task_has_failed if specs aren't passed" do
+      Guard::RSpec::Runner.should_receive(:run).and_return(false)
+      expect { subject.run_on_change(["spec/bar"]) }.to throw_symbol :task_has_failed
     end
   end
 
