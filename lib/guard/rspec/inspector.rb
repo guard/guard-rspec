@@ -30,11 +30,15 @@ module Guard
       private
 
         def should_run_spec_file?(path)
-          (spec_file?(path) || spec_folder?(path)) && !excluded.include?(path)
+          (spec_file?(path) || feature_file?(path) || spec_folder?(path)) && !excluded.include?(path)
         end
 
         def spec_file?(path)
           spec_files.include?(path)
+        end
+
+        def feature_file?(path)
+          feature_files.include?(path)
         end
 
         def spec_folder?(path)
@@ -44,6 +48,10 @@ module Guard
 
         def spec_files
           @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**", "*_spec.rb")] }.flatten
+        end
+
+        def feature_files
+          @feature_files ||= spec_paths.collect { |path| Dir[File.join(path, "**", "*.feature")] }.flatten
         end
 
         def clear_spec_files_list_after
