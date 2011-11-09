@@ -38,14 +38,21 @@ describe Guard::RSpec::Runner do
 
       it "notifies when RSpec fails to execute" do
         subject.should_receive(:system).and_return(nil)
-        system("`exit 2`") # prime the $? variable
+        system("`exit 1`") # prime the $? variable
         Guard::Notifier.should_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         subject.run(["spec"])
       end
 
       it "does not notify that RSpec failed when the specs failed" do
         subject.should_receive(:system).and_return(nil)
-        system("`exit -1`") # prime the $? variable
+        system("`exit 2`") # prime the $? variable
+        Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+        subject.run(["spec"])
+      end
+
+      it "does not notify that RSpec failed when the specs pass" do
+        subject.should_receive(:system)
+        system("`exit 0`") # prime the $? variable
         Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         subject.run(["spec"])
       end
