@@ -9,6 +9,10 @@ module Guard
           message = options[:message] || "Running: #{paths.join(' ')}"
           UI.info(message, :reset => true)
           system(rspec_command(paths, options))
+
+          if options[:notification] != false && failure_exit_code_supported? && $? && $?.exitstatus != failure_exit_code
+            Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+          end
         end
 
         def set_rspec_version(options={})
@@ -27,6 +31,7 @@ module Guard
           cmd_parts << options[:cli] if options[:cli]
           cmd_parts << "-f progress" if options[:cli].nil? || !options[:cli].split(' ').any? { |w| %w[-f --format].include?(w) }
           cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_exec.downcase}.rb -f Guard::RSpec::Formatter::Notification#{rspec_exec}#{rspec_version == 1 ? ":" : " --out "}/dev/null" if options[:notification] != false
+          cmd_parts << "--failure-exit-code #{failure_exit_code}" if failure_exit_code_supported?
           cmd_parts << paths.join(' ')
 
           cmd_parts.join(' ')
@@ -34,6 +39,21 @@ module Guard
 
         def bundler?
           @bundler ||= File.exist?("#{Dir.pwd}/Gemfile")
+        end
+
+        def failure_exit_code_supported?
+          return @failure_exit_code_supported if defined?(@failure_exit_code_supported)
+          @failure_exit_code_supported ||= begin
+            cmd_parts = []
+            cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
+            cmd_parts << rspec_exec.downcase
+            cmd_parts << "--help"
+            `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
+          end
+        end
+
+        def failure_exit_code
+          2
         end
 
         def determine_rspec_version
