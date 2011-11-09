@@ -10,7 +10,7 @@ module Guard
           UI.info(message, :reset => true)
           system(rspec_command(paths, options))
 
-          if options[:notification] != false && failure_exit_code_supported?(options) && $? && $?.exitstatus == failure_exit_code
+          if options[:notification] != false && failure_exit_code_supported?(options) && $? && !$?.success? && $?.exitstatus != failure_exit_code
             Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
           end
         end
