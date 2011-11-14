@@ -10,7 +10,7 @@ module Guard
           UI.info(message, :reset => true)
           system(rspec_command(paths, options))
 
-          if options[:notification] != false && failure_exit_code_supported?(options) && $? && !$?.success? && $?.exitstatus != failure_exit_code
+          if options[:notification] != false && !drb?(options) && failure_exit_code_supported?(options) && $? && !$?.success? && $?.exitstatus != failure_exit_code
             Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
           end
         end
@@ -35,6 +35,10 @@ module Guard
           cmd_parts << paths.join(' ')
 
           cmd_parts.join(' ')
+        end
+
+        def drb?(options)
+          !options[:cli].nil? && options[:cli].include?('--drb')
         end
 
         def bundler?

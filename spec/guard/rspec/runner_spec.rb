@@ -43,6 +43,13 @@ describe Guard::RSpec::Runner do
         subject.run(["spec"])
       end
 
+      it "does not notify notifies when RSpec fails to execute and using drb" do
+        subject.should_receive(:system).and_return(nil)
+        system("`exit 1`") # prime the $? variable
+        Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+        subject.run(["spec"], :cli => "--drb")
+      end
+
       it "does not notify that RSpec failed when the specs failed" do
         subject.should_receive(:system).and_return(nil)
         system("`exit 2`") # prime the $? variable
