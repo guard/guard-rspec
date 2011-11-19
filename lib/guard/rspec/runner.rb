@@ -13,6 +13,8 @@ module Guard
           if options[:notification] != false && !drb?(options) && failure_exit_code_supported?(options) && $? && !$?.success? && $?.exitstatus != failure_exit_code
             Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
           end
+
+          $?.success?
         end
 
         def set_rspec_version(options={})
