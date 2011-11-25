@@ -28,11 +28,11 @@ module Guard
 
           cmd_parts = []
           cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
-          cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
-          cmd_parts << rspec_exec.downcase
+          cmd_parts << "bundle exec" if (bundler? && options[:binstubs] == true && options[:bundler] != false) || (bundler? && options[:bundler] != false)
+          cmd_parts << rspec_exec(options)
           cmd_parts << options[:cli] if options[:cli]
           cmd_parts << "-f progress" if options[:cli].nil? || !options[:cli].split(' ').any? { |w| %w[-f --format].include?(w) }
-          cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_exec.downcase}.rb -f Guard::RSpec::Formatter::Notification#{rspec_exec}#{rspec_version == 1 ? ":" : " --out "}/dev/null" if options[:notification] != false
+          cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb -f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null" if options[:notification] != false
           cmd_parts << "--failure-exit-code #{failure_exit_code}" if failure_exit_code_supported?(options)
           cmd_parts << paths.join(' ')
 
@@ -51,9 +51,11 @@ module Guard
           return @failure_exit_code_supported if defined?(@failure_exit_code_supported)
           @failure_exit_code_supported ||= begin
             cmd_parts = []
-            cmd_parts << "bundle exec" if bundler? && options[:bundler] != false
-            cmd_parts << rspec_exec.downcase
+            cmd_parts << "bundle exec" if (bundler? && options[:bundler] != false) || (bundler? && options[:binstubs] == true)
+            options[:binstubs] = false if options[:binstubs] # failure exit code support is independent of rspec location
+            cmd_parts << rspec_exec(options)
             cmd_parts << "--help"
+            $stdout.puts "#{cmd_parts.join(' ')}"
             `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
           end
         end
@@ -74,12 +76,21 @@ module Guard
           end
         end
 
-        def rspec_exec
+        def rspec_class
           case rspec_version
           when 1
             "Spec"
           when 2
             "RSpec"
+          end
+        end
+
+        def rspec_exec(options = {})
+          case rspec_version
+          when 1
+            options[:binstubs] == true && options[:bundler] != false ? "bin/spec" : "spec"
+          when 2
+            options[:binstubs] == true && options[:bundler] != false ? "bin/rspec" : "rspec"
           end
         end
 
