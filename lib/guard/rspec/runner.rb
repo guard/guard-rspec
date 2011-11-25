@@ -55,7 +55,6 @@ module Guard
             options[:binstubs] = false if options[:binstubs] # failure exit code support is independent of rspec location
             cmd_parts << rspec_exec(options)
             cmd_parts << "--help"
-            $stdout.puts "#{cmd_parts.join(' ')}"
             `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
           end
         end
