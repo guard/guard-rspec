@@ -1,12 +1,6 @@
 require 'spec_helper'
 
 describe Guard::RSpec::Runner do
-  describe ".new" do
-    it "returns the singleton (refactoring step)" do
-      Guard::RSpec::Runner.new.should be == Guard::RSpec::Runner
-    end
-  end
-
   describe ".run" do
     context "when passed an empty paths list" do
       it "returns false" do
@@ -41,32 +35,39 @@ describe Guard::RSpec::Runner do
         subject.run(["spec"])
       end
 
-      it "notifies when RSpec fails to execute" do
-        subject.should_receive(:system).and_return(nil)
-        system("`exit 1`") # prime the $? variable
-        Guard::Notifier.should_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
-        subject.run(["spec"])
-      end
+      describe "notification" do
+        before(:each) do
+          # This was introduced in RSpec 2.7, we assume it here for the purpose of these examples
+          subject.stub(:failure_exit_code_supported? => true)
+        end
 
-      it "does not notify notifies when RSpec fails to execute and using drb" do
-        subject.should_receive(:system).and_return(nil)
-        system("`exit 1`") # prime the $? variable
-        Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
-        subject.run(["spec"], :cli => "--drb")
-      end
+        it "notifies when RSpec fails to execute" do
+          subject.should_receive(:rspec_command) { |paths, options| "`exit 1`" }
 
-      it "does not notify that RSpec failed when the specs failed" do
-        subject.should_receive(:system).and_return(nil)
-        system("`exit 2`") # prime the $? variable
-        Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
-        subject.run(["spec"])
-      end
+          Guard::Notifier.should_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+          subject.run(["spec"])
+        end
 
-      it "does not notify that RSpec failed when the specs pass" do
-        subject.should_receive(:system)
-        system("`exit 0`") # prime the $? variable
-        Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
-        subject.run(["spec"])
+        it "does not notify notifies when RSpec fails to execute and using drb" do
+          subject.should_receive(:rspec_command) { |paths, options| "`exit 1`" }
+
+          Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+          subject.run(["spec"], :cli => "--drb")
+        end
+
+        it "does not notify that RSpec failed when the specs failed" do        
+          subject.should_receive(:rspec_command) { |paths, options| "`exit 2`" }
+
+          Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+          subject.run(["spec"])
+        end
+
+        it "does not notify that RSpec failed when the specs pass" do
+          subject.should_receive(:rspec_command) { |paths, options| "`exit 0`" }
+
+          Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+          subject.run(["spec"])
+        end
       end
 
       describe "options" do
@@ -168,7 +169,7 @@ describe Guard::RSpec::Runner do
         subject.set_rspec_version
       end
 
-      it "runs with RSpec 1 and with bundler" do
+      it "runs with RSpec 1 and with bundler", :pending => true do
         subject.should_receive(:system).with(
           "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} -f Guard::RSpec::Formatter::NotificationSpec:/dev/null --failure-exit-code 2 spec"
         ).and_return(true)
