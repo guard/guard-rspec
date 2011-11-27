@@ -6,7 +6,7 @@ module Guard
 
         def run(paths, options={})
           return false if paths.empty?
-          message = "Running: #{rspec_command(paths, options)}"
+          message = options[:message] || "Running: #{paths.join(' ')}"
           UI.info(message, :reset => true)
           system(rspec_command(paths, options))
 
