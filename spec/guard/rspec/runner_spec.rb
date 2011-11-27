@@ -169,9 +169,9 @@ describe Guard::RSpec::Runner do
         subject.set_rspec_version
       end
 
-      it "runs with RSpec 1 and with bundler", :pending => true do
+      it "runs with RSpec 1 and with bundler" do
         subject.should_receive(:system).with(
-          "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} -f Guard::RSpec::Formatter::NotificationSpec:/dev/null --failure-exit-code 2 spec"
+          "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} -f Guard::RSpec::Formatter::NotificationSpec:/dev/null spec"
         ).and_return(true)
         subject.run(["spec"])
       end
