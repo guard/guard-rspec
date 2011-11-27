@@ -6,7 +6,7 @@ module Guard
 
         def run(paths, options={})
           return false if paths.empty?
-          message = options[:message] || "Running: #{paths.join(' ')}"
+          message = "Running: #{rspec_command(paths, options)}"
           UI.info(message, :reset => true)
           system(rspec_command(paths, options))
 
@@ -51,9 +51,10 @@ module Guard
           return @failure_exit_code_supported if defined?(@failure_exit_code_supported)
           @failure_exit_code_supported ||= begin
             cmd_parts = []
-            cmd_parts << "bundle exec" if (bundler? && options[:bundler] != false) || (bundler? && options[:binstubs] == true)
-            options[:binstubs] = false if options[:binstubs] # failure exit code support is independent of rspec location
+            cmd_parts << "bundle exec" if (bundler? && options[:bundler].is_a?(TrueClass)) || (bundler? && options[:binstubs].is_a?(TrueClass))
+            ( saved = true; options[:binstubs] = false ) if options[:binstubs].is_a?(TrueClass) # failure exit code support is independent of rspec location
             cmd_parts << rspec_exec(options)
+            options[:binstubs] = true if saved
             cmd_parts << "--help"
             `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
           end
