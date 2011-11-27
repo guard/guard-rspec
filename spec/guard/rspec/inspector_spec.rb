@@ -1,6 +1,12 @@
 require 'spec_helper'
 
 describe Guard::RSpec::Inspector do
+  describe ".new" do
+    it "returns the singleton (refactoring step)" do
+      Guard::RSpec::Inspector.new.should be == Guard::RSpec::Inspector
+    end
+  end
+
   describe ".clean" do
     before do
       subject.excluded = nil

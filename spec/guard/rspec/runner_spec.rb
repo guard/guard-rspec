@@ -1,6 +1,11 @@
 require 'spec_helper'
 
 describe Guard::RSpec::Runner do
+  describe ".new" do
+    it "returns the singleton (refactoring step)" do
+      Guard::RSpec::Runner.new.should be == Guard::RSpec::Runner
+    end
+  end
 
   describe ".run" do
     context "when passed an empty paths list" do

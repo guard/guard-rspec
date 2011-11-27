@@ -4,6 +4,10 @@ module Guard
       class << self
         attr_reader :rspec_version
 
+        def new
+          self
+        end
+
         def run(paths, options={})
           return false if paths.empty?
           message = options[:message] || "Running: #{paths.join(' ')}"

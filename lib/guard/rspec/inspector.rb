@@ -2,6 +2,10 @@ module Guard
   class RSpec
     module Inspector
       class << self
+        def new
+          self
+        end
+
         def excluded
           @excluded || []
         end
