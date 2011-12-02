@@ -1,4 +1,5 @@
 require "#{File.dirname(__FILE__)}/../rspec"
+require 'guard/notifier'
 
 module Guard::RSpec::Formatter
 
