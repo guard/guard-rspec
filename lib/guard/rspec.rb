@@ -17,19 +17,22 @@ module Guard
       @last_failed  = false
       @failed_paths = []
 
-      Runner.set_rspec_version(options)
-      Inspector.excluded = @options[:exclude]
-      Inspector.spec_paths = @options[:spec_paths]
+      @runner = Runner.new
+      @inspector = Inspector.new
+
+      @runner.set_rspec_version(options)
+      @inspector.excluded = @options[:exclude]
+      @inspector.spec_paths = @options[:spec_paths]
     end
 
     # Call once when guard starts
     def start
-      UI.info "Guard::RSpec is running, with RSpec #{Runner.rspec_version}!"
+      UI.info "Guard::RSpec is running, with RSpec #{@runner.rspec_version}!"
       run_all if @options[:all_on_start]
     end
 
     def run_all
-      passed = Runner.run(options[:spec_paths], options.merge(options[:run_all] || {}).merge(:message => "Running all specs"))
+      passed = @runner.run(options[:spec_paths], options.merge(options[:run_all] || {}).merge(:message => "Running all specs"))
 
       @last_failed = !passed
       if passed
@@ -45,8 +48,8 @@ module Guard
 
     def run_on_change(paths)
       paths += @failed_paths if @options[:keep_failed]
-      paths  = Inspector.clean(paths)
-      passed = Runner.run(paths, options)
+      paths  = @inspector.clean(paths)
+      passed = @runner.run(paths, options)
 
       if passed
         # clean failed paths memory
