@@ -111,7 +111,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are thus deprecat
 :all_after_pass => false     # run all specs after changed specs pass, default: true
 :all_on_start => false       # run all the specs at startup, default: true
 :keep_failed => false        # keep failed specs until they pass, default: true
-:run_all => { :cli => "-p" } # override any option when running all specs
+:run_all => { :cli => "-p" } # cli arguments to use when running all specs, default: same as :cli
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
 ```
 
