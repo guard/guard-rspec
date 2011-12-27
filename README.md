@@ -19,7 +19,7 @@ Add it to your Gemfile (inside development group):
 
 ``` ruby
 group :development do
-  gem 'guard-rsepc'
+  gem 'guard-rspec'
 end
 ```
 
