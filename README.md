@@ -18,7 +18,9 @@ Install the gem:
 Add it to your Gemfile (inside development group):
 
 ``` ruby
-gem 'guard-rspec'
+group :development do
+  gem 'guard-rsepc'
+end
 ```
 
 Add guard definition to your Guardfile by running this command:
