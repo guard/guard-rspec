@@ -101,6 +101,13 @@ describe Guard::RSpec::Runner do
             ).and_return(true)
             subject.run(["spec"], :cli => "-f doc")
           end
+
+          it "respects formatter passed in CLI options to RSpec, using the '=' syntax" do
+            subject.should_receive(:system).with(
+            "bundle exec rspec --format=doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+            ).and_return(true)
+            subject.run(["spec"], :cli => "--format=doc")
+          end
         end
 
         describe ":bundler" do
