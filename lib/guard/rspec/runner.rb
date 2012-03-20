@@ -3,8 +3,8 @@ module Guard
     class Runner
       attr_reader :rspec_version
 
-      def initialize(opts={})
-        @debug = opts[:debug]
+      def initialize(options={})
+        @debug = options[:debug]
         UI.info("Debug is on.") if debug?
       end
 
