@@ -49,6 +49,10 @@ describe Guard::RSpec::Inspector do
       subject.clean(["spec/guard/rspec_spec.rb", "spec/guard/rspec/runner_spec.rb", "spec/guard/rspec"]).should == ["spec/guard/rspec_spec.rb", "spec/guard/rspec"]
     end
 
+    it "keeps spec files in symlink target" do
+      subject.clean(["spec/fixtures/symlink_to_spec/rspec_spec.rb"]).should == ["spec/fixtures/symlink_to_spec/rspec_spec.rb"]
+    end
+
     describe 'excluded files' do
       context 'with a path to a single spec' do
         it 'ignores the one spec' do
