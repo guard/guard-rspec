@@ -17,7 +17,7 @@ module Guard
       @last_failed  = false
       @failed_paths = []
 
-      @runner = Runner.new
+      @runner = Runner.new(options)
       @inspector = Inspector.new
 
       @runner.set_rspec_version(options)

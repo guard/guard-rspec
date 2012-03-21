@@ -3,11 +3,16 @@ module Guard
     class Runner
       attr_reader :rspec_version
 
+      def initialize(options={})
+        @debug = options[:debug]
+        UI.info("Debug is on.") if debug?
+      end
+
       def run(paths, options={})
         return false if paths.empty?
         message = options[:message] || "Running: #{paths.join(' ')}"
         UI.info(message, :reset => true)
-        system(rspec_command(paths, options))
+        run_command(rspec_command(paths, options))
 
         if options[:notification] != false && !drb?(options) && failure_exit_code_supported?(options) && $? && !$?.success? && $?.exitstatus != failure_exit_code
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
@@ -21,6 +26,15 @@ module Guard
       end
 
     private
+
+      def debug?
+        @debug
+      end
+
+      def run_command(command)
+        UI.info("Running: " + command) if debug?
+        system(command)
+      end
 
       def rspec_command(paths, options={})
         warn_deprectation(options)
