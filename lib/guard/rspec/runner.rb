@@ -7,13 +7,37 @@ module Guard
         return false if paths.empty?
         message = options[:message] || "Running: #{paths.join(' ')}"
         UI.info(message, :reset => true)
-        system(rspec_command(paths, options))
+
+        if options[:drb]
+          result = run_drb_rspec(paths, options)
+        else
+          result = exec_rspec(paths, options)
+        end
 
         if options[:notification] != false && !drb?(options) && failure_exit_code_supported?(options) && $? && !$?.success? && $?.exitstatus != failure_exit_code
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
+        result
+      end
+
+      def exec_rspec(paths, options={})
+        system(rspec_command(paths, options))
+
         $?.success?
+      end
+
+      def run_drb_rspec(paths, options={})
+        require "rspec/core"
+
+        args = rspec_arguments(paths, options)
+        args << "--drb" unless args.include? "--drb"
+        args.map! { |a| a.to_s }
+
+        exit_code = ::RSpec::Core::Runner.run(args)
+
+        # TODO: What does it return if not?
+        exit_code == failure_exit_code
       end
 
       def set_rspec_version(options={})
@@ -21,6 +45,26 @@ module Guard
       end
 
     private
+
+      def rspec_arguments(paths, options={})
+        args = []
+        args += options[:args] if options[:args]
+        args += ["-f", "progress"] if options[:cli].nil? || !options[:cli].split(/[\s=]/).any? { |w| %w[-f --format].include?(w) } || args.include?('-f') || args.include?('--format')
+
+        if options[:notification] != false
+          args += ["-r", "#{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"]
+          if rspec_version == 1
+            args += ["-f", "Guard::RSpec::Formatter::Notification#{rspec_class}:/dev/null"]
+          else
+            args += ["-f", "Guard::RSpec::Formatter::Notification#{rspec_class}", "--out", "/dev/null"]
+          end
+        end
+
+        args += ["--failure-exit-code", failure_exit_code] if failure_exit_code_supported?(options)
+        args += paths
+
+        args
+      end
 
       def rspec_command(paths, options={})
         warn_deprectation(options)
@@ -30,10 +74,7 @@ module Guard
         cmd_parts << "bundle exec" if (bundler? && options[:binstubs] == true && options[:bundler] != false) || (bundler? && options[:bundler] != false)
         cmd_parts << rspec_exec(options)
         cmd_parts << options[:cli] if options[:cli]
-        cmd_parts << "-f progress" if options[:cli].nil? || !options[:cli].split(/[\s=]/).any? { |w| %w[-f --format].include?(w) }
-        cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb -f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null" if options[:notification] != false
-        cmd_parts << "--failure-exit-code #{failure_exit_code}" if failure_exit_code_supported?(options)
-        cmd_parts << paths.join(' ')
+        cmd_parts += rspec_arguments(paths, options)
 
         cmd_parts.join(' ')
       end
@@ -94,10 +135,12 @@ module Guard
       end
 
       def warn_deprectation(options={})
+        UI.info %{DEPRECATION WARNING: The :cli option is deprecated.  Please use an array via :args => ["-f", "nested", "--color", ...]} if options[:cli]
+
         [:color, :drb, :fail_fast, [:formatter, "format"]].each do |option|
           key, value = option.is_a?(Array) ? option : [option, option.to_s.gsub('_', '-')]
           if options.key?(key)
-            UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}
+            UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :args option.}
           end
         end
       end
