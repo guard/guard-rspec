@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe Guard::RSpec do
-  let(:default_options) { { :all_after_pass => true, :all_on_start => true, :keep_failed => true } }
-  subject { Guard::RSpec.new }
+  let(:default_options) { { :all_after_pass => true, :all_on_start => true, :keep_failed => true, :spec_paths => ["spec"], :run_all => {} } }
+  subject { described_class.new }
 
   let(:inspector) { mock(described_class::Inspector, :excluded= => nil, :spec_paths= => nil, :clean => []) }
   let(:runner)    { mock(described_class::Runner, :set_rspec_version => nil, :rspec_version => nil) }
@@ -45,7 +45,7 @@ describe Guard::RSpec do
     end
 
     context ":all_on_start option is false" do
-      let(:subject) { subject = Guard::RSpec.new([], :all_on_start => false) }
+      let(:subject) { subject = described_class.new([], :all_on_start => false) }
 
       it "doesn't call #run_all" do
         subject.should_not_receive(:run_all)
@@ -61,7 +61,7 @@ describe Guard::RSpec do
     end
 
     it "should run all specs specified by the 'spec_paths' option" do
-      subject = Guard::RSpec.new([], :spec_paths => ["spec", "spec/fixtures/other_spec_path"])
+      subject = described_class.new([], :spec_paths => ["spec", "spec/fixtures/other_spec_path"])
       runner.should_receive(:run).with(["spec", "spec/fixtures/other_spec_path"], anything).and_return(true)
       subject.run_all
     end
@@ -77,13 +77,13 @@ describe Guard::RSpec do
     end
 
     it "directly passes :cli option to runner" do
-      subject = Guard::RSpec.new([], { :cli => "--color" })
+      subject = described_class.new([], { :cli => "--color" })
       runner.should_receive(:run).with(anything, hash_including(:cli => "--color")).and_return(true)
       subject.run_all
     end
 
     it "allows the :run_all options to override the default_options" do
-      subject = Guard::RSpec.new([], { :rvm => ['1.8.7', '1.9.2'], :cli => "--color", :run_all => { :cli => "--format progress" } })
+      subject = described_class.new([], { :rvm => ['1.8.7', '1.9.2'], :cli => "--color", :run_all => { :cli => "--format progress" } })
       runner.should_receive(:run).with(anything, hash_including(:cli => "--format progress", :rvm => ['1.8.7', '1.9.2'])).and_return(true)
       subject.run_all
     end
@@ -108,7 +108,7 @@ describe Guard::RSpec do
     end
 
     it "directly passes :cli option to runner" do
-      subject = Guard::RSpec.new([], { :cli => "--color" })
+      subject = described_class.new([], { :cli => "--color" })
       runner.should_receive(:run).with(anything, hash_including(:cli => "--color")).and_return(true)
       subject.run_on_change(["spec/foo"])
     end
@@ -123,7 +123,7 @@ describe Guard::RSpec do
       end
 
       context "but the :all_after_pass option is false" do
-        let(:subject) { Guard::RSpec.new([], :all_after_pass => false) }
+        let(:subject) { described_class.new([], :all_after_pass => false) }
 
         it "doesn't call #run_all" do
           subject.should_not_receive(:run_all)

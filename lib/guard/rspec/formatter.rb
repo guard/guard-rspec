@@ -37,7 +37,7 @@ module Guard::RSpec::Formatter
 
 private
 
-  def round_float(float, decimals=4)
+  def round_float(float, decimals = 4)
     if Float.instance_method(:round).arity == 0 # Ruby 1.8
       factor = 10**decimals
       (float*factor).round / factor.to_f
