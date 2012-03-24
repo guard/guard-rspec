@@ -2,6 +2,14 @@ require 'spec_helper'
 
 describe Guard::RSpec::Runner do
   subject { described_class.new }
+  let(:mock_success_res)   { mock('res', :success? => true, :exitstatus => 0) }
+  let(:mock_failed_res)    { mock('res', :success? => false, :exitstatus => 2) }
+  let(:mock_exception_res) { mock('res', :success? => false, :exitstatus => 1) }
+
+  before do
+    described_class.any_instance.stub(:failure_exit_code_supported? => true)
+  end
+
   describe ".initialize" do
     it "sets rspec_version" do
       described_class.new.rspec_version.should_not be_nil
@@ -28,13 +36,14 @@ describe Guard::RSpec::Runner do
     context "in a folder without Bundler" do
       before do
         Dir.stub(:pwd).and_return(@fixture_path.join("empty"))
-        subject.set_rspec_version
       end
 
       it "runs with RSpec 2 and without bundler" do
         subject.should_receive(:system).with(
-          "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-        ).and_return(true)
+          "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+          "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+        ).and_return(mock_success_res)
+
         subject.run(["spec"])
       end
     end
@@ -42,163 +51,176 @@ describe Guard::RSpec::Runner do
     context "in RSpec 2 folder with Bundler" do
       before do
         Dir.stub(:pwd).and_return(@fixture_path.join("rspec2"))
-        subject.set_rspec_version
       end
 
       it "runs with RSpec 2 and with Bundler" do
         subject.should_receive(:system).with(
-          "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-        ).and_return(true)
+          "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+          "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+        ).and_return(mock_success_res)
+
         subject.run(["spec"])
       end
 
       describe "notification" do
-        before(:each) do
-          # This was introduced in RSpec 2.7, we assume it here for the purpose of these examples
-          subject.stub(:failure_exit_code_supported? => true)
-        end
-
         it "notifies when RSpec fails to execute" do
-          subject.should_receive(:rspec_command) { |paths, options| "`exit 1`" }
-
+          subject.should_receive(:system) { mock_exception_res }
           Guard::Notifier.should_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+
           subject.run(["spec"])
         end
 
-        it "does not notify notifies when RSpec fails to execute and using drb" do
-          subject.should_receive(:rspec_command) { |paths, options| "`exit 1`" }
+        context "using DRB" do
+          subject { described_class.new(:cli => "--drb") }
 
-          Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
-          subject.run(["spec"], :cli => "--drb")
+          it "does not notify notifies when RSpec fails to execute and using drb" do
+            subject.should_receive(:system) { mock_exception_res }
+            Guard::Notifier.should_not_receive(:notify)
+            subject.run(["spec"])
+          end
         end
 
-        it "does not notify that RSpec failed when the specs failed" do        
-          subject.should_receive(:rspec_command) { |paths, options| "`exit 2`" }
+        it "does not notify that RSpec failed when the specs failed" do
+          subject.should_receive(:system) { mock_failed_res }
+          Guard::Notifier.should_not_receive(:notify)
 
-          Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
           subject.run(["spec"])
         end
 
         it "does not notify that RSpec failed when the specs pass" do
-          subject.should_receive(:rspec_command) { |paths, options| "`exit 0`" }
+          subject.should_receive(:system) { mock_success_res }
+          Guard::Notifier.should_not_receive(:notify)
 
-          Guard::Notifier.should_not_receive(:notify).with("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
           subject.run(["spec"])
         end
       end
 
       describe "options" do
         describe ":rvm" do
-          it "runs with rvm exec" do
-            subject.should_receive(:system).with(
-              "rvm 1.8.7,1.9.2 exec bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :rvm => ['1.8.7', '1.9.2'])
+          context ":rvm => ['1.8.7', '1.9.2']" do
+            subject { described_class.new(:rvm => ['1.8.7', '1.9.2']) }
+
+            it "runs with rvm exec" do
+              subject.should_receive(:system).with(
+                "rvm 1.8.7,1.9.2 exec bundle exec rspec -f progress " +
+                "-r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+                "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+              ).and_return(mock_success_res)
+              subject.run(["spec"])
+            end
           end
         end
 
         describe ":cli" do
-          it "runs with CLI options passed to RSpec" do
-            subject.should_receive(:system).with(
-            "bundle exec rspec --color --drb --fail-fast -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :cli => "--color --drb --fail-fast")
+          context ":cli => '--color --drb --fail-fast'" do
+            subject { described_class.new(:cli => '--color --drb --fail-fast') }
+
+            it "runs with CLI options passed to RSpec" do
+              subject.should_receive(:system).with(
+                "bundle exec rspec --color --drb --fail-fast -f progress " +
+                "-r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+                "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+              ).and_return(mock_success_res)
+
+              subject.run(["spec"])
+            end
           end
 
-          it "sets progress formatter by default if no formatter is passed in CLI options to RSpec" do
+          it "use progress formatter by default" do
             subject.should_receive(:system).with(
-            "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
+              "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+              "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+            ).and_return(mock_success_res)
+
             subject.run(["spec"])
           end
 
-          it "respects formatter passed in CLI options to RSpec" do
-            subject.should_receive(:system).with(
-            "bundle exec rspec -f doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :cli => "-f doc")
+          context ":cli => '-f doc'" do
+            subject { described_class.new(:cli => '-f doc') }
+
+            it "respects formatter passed in CLI options to RSpec" do
+              subject.should_receive(:system).with(
+                "bundle exec rspec -f doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+                "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+              ).and_return(mock_success_res)
+
+              subject.run(["spec"])
+            end
           end
 
-          it "respects formatter passed in CLI options to RSpec, using the '=' syntax" do
-            subject.should_receive(:system).with(
-            "bundle exec rspec --format=doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :cli => "--format=doc")
+          context ":cli => '-f doc'" do
+            subject { described_class.new(:cli => '--format=doc') }
+
+            it "respects formatter passed in CLI options to RSpec" do
+              subject.should_receive(:system).with(
+                "bundle exec rspec --format=doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+                "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+              ).and_return(mock_success_res)
+
+              subject.run(["spec"])
+            end
           end
         end
 
         describe ":bundler" do
-          it "runs without Bundler with bundler option to false" do
-            subject.should_receive(:system).with(
-              "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :bundler => false)
+          context ":bundler => false" do
+            subject { described_class.new(:bundler => false) }
+
+            it "runs without Bundler" do
+              subject.should_receive(:system).with(
+                "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+                "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+              ).and_return(mock_success_res)
+              subject.run(["spec"])
+            end
           end
         end
 
         describe ":binstubs" do
-          it "runs without Bundler with binstubs option to true and bundler option to false" do
-            subject.should_receive(:system).with(
-              "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :bundler => false, :binstubs => true)
+          context ":bundler => false, :binstubs => true" do
+            subject { described_class.new(:bundler => false, :binstubs => true) }
+
+            it "runs without Bundler and binstubs" do
+              subject.should_receive(:system).with(
+                "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+                "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+              ).and_return(mock_success_res)
+
+              subject.run(["spec"])
+            end
           end
-          it "runs with Bundler and binstubs with bundler option to true and binstubs option to true" do
-            subject.should_receive(:system).with(
-              "bundle exec bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :bundler => true, :binstubs => true)
-          end
-          it "runs with Bundler and binstubs with bundler option unset and binstubs option to true" do
-            subject.should_receive(:system).with(
-              "bundle exec bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :binstubs => true)
-          end
-          it "runs with Bundler and binstubs with bundler option unset, binstubs option to true and all_after_pass option to true" do
-            subject.should_receive(:system).with(
-              "bundle exec bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :binstubs => true, :all_after_pass => true)
-          end
-          it "runs with Bundler and binstubs with bundler option unset, binstubs option to true and all_on_start option to true" do
-            subject.should_receive(:system).with(
-              "bundle exec bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :binstubs => true, :all_on_start => true)
-          end
-          it "runs with Bundler and binstubs with bundler option unset, binstubs option to true, all_on_start option to true and all_after_pass option to true" do
-            subject.should_receive(:system).with(
-              "bundle exec bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} -f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :binstubs => true, :all_after_pass => true, :all_on_start => true)
+
+          context ":bundler => true, :binstubs => true" do
+            subject { described_class.new(:bundler => true, :binstubs => true) }
+
+            it "runs with Bundler and binstubs" do
+              subject.should_receive(:system).with(
+                "bundle exec bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " +
+                "-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec"
+              ).and_return(mock_success_res)
+
+              subject.run(["spec"])
+            end
           end
         end
 
         describe ":notification" do
-          it "runs without notification formatter with notification option to false" do
-            subject.should_receive(:system).with(
-              "bundle exec rspec -f progress --failure-exit-code 2 spec"
-            ).and_return(true)
-            subject.run(["spec"], :notification => false)
-          end
+          context ":notification => false" do
+            subject { described_class.new(:notification => false) }
 
-          it "does not notify when RSpec fails to execute" do
-            subject.should_receive(:system).and_return(nil)
-            system("`exit 2`") # prime the $? variable
-            Guard::Notifier.should_not_receive(:notify)
-            subject.run(["spec"], :notification => false)
-          end
-        end
+            it "runs without notification formatter" do
+              subject.should_receive(:system).with(
+                "bundle exec rspec -f progress --failure-exit-code 2 spec"
+              ).and_return(mock_success_res)
 
-        describe "deprecated options" do
-          [:color, :drb, :fail_fast, [:formatter, "format"]].each do |option|
-            key, value = option.is_a?(Array) ? option : [option, option.to_s]
-            it "outputs deprecation warning for :#{key} option" do
-              Guard::UI.should_receive(:info).with("Running: spec", { :reset => true }).ordered
-              Guard::UI.should_receive(:info).with(%{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value.gsub('_', '-')}" to RSpec with the :cli option.}).ordered
-              subject.stub(:system).and_return(true)
-              subject.run(["spec"], key => false)
+              subject.run(["spec"])
+            end
+
+            it "doesn't notify when specs fails" do
+              subject.should_receive(:system) { mock('res', :success? => false, :exitstatus => 2) }
+              Guard::Notifier.should_not_receive(:notify)
+
+              subject.run(["spec"])
             end
           end
         end
@@ -208,66 +230,62 @@ describe Guard::RSpec::Runner do
     context "in RSpec 1 folder with Bundler" do
       before do
         Dir.stub(:pwd).and_return(@fixture_path.join("rspec1"))
-        subject.set_rspec_version
+        described_class.any_instance.stub(:failure_exit_code_supported? => false)
       end
 
       it "runs with RSpec 1 and with bundler" do
         subject.should_receive(:system).with(
-          "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} -f Guard::RSpec::Formatter::NotificationSpec:/dev/null spec"
-        ).and_return(true)
+          "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} " +
+          "-f Guard::RSpec::Formatter::NotificationSpec:/dev/null spec"
+        ).and_return(mock_success_res)
+
         subject.run(["spec"])
       end
     end
   end
 
-  describe ".set_rspec_version" do
-    it "uses version option first" do
-      subject.set_rspec_version(:version => 1)
-      subject.rspec_version.should == 1
+  describe ".rspec_version" do
+    it ":version option sets the @rspec_version" do
+      described_class.new(:version => 1).rspec_version.should be 1
     end
 
     context "in empty folder" do
-      before(:each) { Dir.stub(:pwd).and_return(@fixture_path.join("empty")) }
+      before { Dir.stub(:pwd).and_return(@fixture_path.join("empty")) }
 
       it "sets RSpec 2 because cannot determine version" do
-        subject.set_rspec_version
-        subject.rspec_version.should == 2
+        subject.rspec_version.should be 2
       end
     end
 
     context "in RSpec 1 folder with Bundler" do
-      before(:each) { Dir.stub(:pwd).and_return(@fixture_path.join("bundler_only_rspec1")) }
+      before { Dir.stub(:pwd).and_return(@fixture_path.join("bundler_only_rspec1")) }
 
       it "sets RSpec 1 from Bundler" do
-        subject.set_rspec_version
-        subject.rspec_version.should == 1
+        subject.rspec_version.should be 1
       end
     end
 
     context "in RSpec 2 folder with Bundler" do
-      before(:each) { Dir.stub(:pwd).and_return(@fixture_path.join("bundler_only_rspec2")) }
+      before { Dir.stub(:pwd).and_return(@fixture_path.join("bundler_only_rspec2")) }
 
       it "sets RSpec 2 from Bundler" do
-        subject.set_rspec_version
-        subject.rspec_version.should == 2
+        subject.rspec_version.should be 2
       end
     end
 
     context "in RSpec 1 folder without Bundler" do
-      before(:each) { Dir.stub(:pwd).and_return(@fixture_path.join("rspec1")) }
+      before { Dir.stub(:pwd).and_return(@fixture_path.join("rspec1")) }
 
       it "sets RSpec 1 from spec_helper.rb" do
-        subject.set_rspec_version
-        subject.rspec_version.should == 1
+        subject.rspec_version.should be 1
       end
     end
 
     context "in RSpec 2 folder without Bundler" do
-      before(:each) { Dir.stub(:pwd).and_return(@fixture_path.join("rspec2")) }
+      before { Dir.stub(:pwd).and_return(@fixture_path.join("rspec2")) }
 
       it "sets RSpec 2 from spec_helper.rb" do
-        subject.set_rspec_version
-        subject.rspec_version.should == 2
+        subject.rspec_version.should be 2
       end
     end
   end

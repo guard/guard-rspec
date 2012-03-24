@@ -1,19 +1,19 @@
-Guard::RSpec ![travis-ci](http://travis-ci.org/guard/guard-rspec.png)
-=============
+# Guard::RSpec [![Build Status](https://secure.travis-ci.org/guard/guard-rspec.png?branch=master)](http://travis-ci.org/guard/guard-rspec)
 
 RSpec guard allows to automatically & intelligently launch specs when files are modified.
 
-* Compatible with RSpec 1.x & RSpec 2.x (>= 2.4 needed for the notification feature)
-* Tested against Ruby 1.8.7, 1.9.2, REE, JRuby & Rubinius.
+* Compatible with RSpec 1.x & RSpec 2.x (>= 2.4 needed for the notification feature).
+* Tested against Ruby 1.8.7, 1.9.2, 1.9.3, REE and the latest versions of JRuby & Rubinius.
 
-Install
--------
+## Install
 
 Please be sure to have [Guard](https://github.com/guard/guard) installed before continue.
 
 Install the gem:
 
-    $ gem install guard-rspec
+```
+$ gem install guard-rspec
+```
 
 Add it to your Gemfile (inside development group):
 
@@ -25,15 +25,15 @@ end
 
 Add guard definition to your Guardfile by running this command:
 
-    $ guard init rspec
+```
+$ guard init rspec
+```
 
-Usage
------
+## Usage
 
 Please read [Guard usage doc](https://github.com/guard/guard#readme)
 
-Guardfile
----------
+## Guardfile
 
 RSpec guard can be really adapted to all kind of projects.
 
@@ -64,8 +64,7 @@ end
 
 Please read [Guard doc](https://github.com/guard/guard#readme) for more information about the Guardfile DSL.
 
-Options
--------
+## Options
 
 By default, Guard::RSpec automatically detect your RSpec version (with the `spec_helper.rb` syntax or with Bundler) but you can force the version with the `:version` option:
 

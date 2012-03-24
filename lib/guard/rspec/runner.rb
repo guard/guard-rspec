@@ -3,6 +3,8 @@ module Guard
     class Runner
       attr_reader :rspec_version
 
+      FAILURE_EXIT_CODE = 2
+
       def initialize(opts = {})
         @options = {
           :bundler      => true,
@@ -20,66 +22,93 @@ module Guard
 
         message = opts[:message] || "Running: #{paths.join(' ')}"
         UI.info(message, :reset => true)
-        system(rspec_command(paths, options))
 
-        if options[:notification] != false && !drb?(options) && failure_exit_code_supported?(options) && $? && !$?.success? && $?.exitstatus != failure_exit_code
+        ret = system(rspec_command(paths))
+
+        if @options[:notification] && !drb_used? && rspec_command_exited_with_an_exception?(ret)
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
-        $?.success?
+        ret.success?
       end
 
-      def set_rspec_version(options={})
-        @rspec_version = options[:version] || determine_rspec_version
+      def rspec_version
+        @rspec_version ||= @options[:version] || determine_rspec_version
       end
 
-    private
-
-      def rspec_command(paths, options={})
-
-        cmd_parts = []
-        cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
-        cmd_parts << "bundle exec" if (bundler? && options[:binstubs] == true && options[:bundler] != false) || (bundler? && options[:bundler] != false)
-        cmd_parts << rspec_exec(options)
-        cmd_parts << options[:cli] if options[:cli]
-        cmd_parts << "-f progress" if options[:cli].nil? || !options[:cli].split(/[\s=]/).any? { |w| %w[-f --format].include?(w) }
-        cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb -f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null" if options[:notification] != false
-        cmd_parts << "--failure-exit-code #{failure_exit_code}" if failure_exit_code_supported?(options)
-        cmd_parts << paths.join(' ')
-
-        cmd_parts.join(' ')
+      def rspec_exec
+        @rspec_exec ||= begin
+          exec = rspec_class.downcase
+          binstubs? ? "bin/#{exec}" : exec
+        end
       end
 
-      def drb?(options)
-        !options[:cli].nil? && options[:cli].include?('--drb')
-      end
-
-      def bundler?
-        @bundler ||= File.exist?("#{Dir.pwd}/Gemfile")
-      end
-
-      def failure_exit_code_supported?(options={})
-        return @failure_exit_code_supported if defined?(@failure_exit_code_supported)
+      def failure_exit_code_supported?
         @failure_exit_code_supported ||= begin
+          options = @options.dup
+
           cmd_parts = []
-          cmd_parts << "bundle exec" if (bundler? && options[:bundler].is_a?(TrueClass)) || (bundler? && options[:binstubs].is_a?(TrueClass))
-          ( saved = true; options[:binstubs] = false ) if options[:binstubs].is_a?(TrueClass) # failure exit code support is independent of rspec location
-          cmd_parts << rspec_exec(options)
-          options[:binstubs] = true if saved
+          cmd_parts << "bundle exec" if bundler?
+          # options[:binstubs] = !binstubs? # failure exit code support is independent of rspec location
+          cmd_parts << rspec_exec
           cmd_parts << "--help"
           `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
         end
       end
 
-      def failure_exit_code
-        2
+      def rspec_class
+        @rspec_class ||= case rspec_version
+                         when 1
+                           "Spec"
+                         when 2
+                           "RSpec"
+                         end
+      end
+
+    private
+
+      def rspec_command(paths, opts = {})
+        options = @options.dup.merge(opts)
+
+        cmd_parts = []
+        cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].respond_to?(:join)
+        cmd_parts << "bundle exec" if bundler?
+        cmd_parts << rspec_exec << options[:cli]
+        cmd_parts << "-f progress" if !options[:cli] || options[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
+        if options[:notification]
+          cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
+          cmd_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
+        end
+        cmd_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
+        cmd_parts << paths.join(' ')
+
+        cmd_parts.compact.join(' ')
+      end
+
+      def drb_used?
+        @options[:cli] && @options[:cli].include?("--drb")
+      end
+
+      def bundler_allowed?
+        File.exist?("#{Dir.pwd}/Gemfile")
+      end
+
+      def bundler?
+        @bundler ||= bundler_allowed? && @options[:bundler]
+      end
+
+      def binstubs?
+        @binstubs ||= bundler? && @options[:binstubs]
+      end
+
+      def rspec_command_exited_with_an_exception?(ret)
+        failure_exit_code_supported? && !ret.success? && ret.exitstatus != FAILURE_EXIT_CODE
       end
 
       def determine_rspec_version
         if File.exist?("#{Dir.pwd}/spec/spec_helper.rb")
           File.new("#{Dir.pwd}/spec/spec_helper.rb").read.include?("Spec::Runner") ? 1 : 2
-        elsif bundler?
-          # Allow RSpactor to be tested with RSpactor (bundle show inside a bundle exec)
+        elsif bundler_allowed?
           ENV['BUNDLE_GEMFILE'] = "#{Dir.pwd}/Gemfile"
           `bundle show rspec`.include?("/rspec-1.") ? 1 : 2
         else
@@ -87,28 +116,6 @@ module Guard
         end
       end
 
-      def rspec_class
-        case rspec_version
-        when 1
-          "Spec"
-        when 2
-          "RSpec"
-        end
-      end
-
-      def rspec_exec(options = {})
-        case rspec_version
-        when 1
-          options[:binstubs] == true && options[:bundler] != false ? "bin/spec" : "spec"
-        when 2
-          options[:binstubs] == true && options[:bundler] != false ? "bin/rspec" : "rspec"
-        end
-      end
-
-      def warn_deprectation(options={})
-        [:color, :drb, :fail_fast, [:formatter, "format"]].each do |option|
-          key, value = option.is_a?(Array) ? option : [option, option.to_s.gsub('_', '-')]
-          if options.key?(key)
       def deprecations_warnings
         [:color, :drb, [:fail_fast, "fail-fast"], [:formatter, "format"]].each do |option|
           key, value = option.is_a?(Array) ? option : [option, option.to_s]

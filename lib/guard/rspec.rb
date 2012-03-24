@@ -67,6 +67,7 @@ module Guard
     def remove_failed(paths)
       @failed_paths -= paths if @options[:keep_failed]
     end
+
     def add_failed(paths)
       @failed_paths += paths if @options[:keep_failed]
     end
