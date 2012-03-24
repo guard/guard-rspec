@@ -36,8 +36,8 @@ module Guard
 
         exit_code = ::RSpec::Core::Runner.run(args)
 
-        # TODO: What does it return if not?
-        exit_code == failure_exit_code
+        # Successful?
+        exit_code != failure_exit_code
       end
 
       def set_rspec_version(options={})
