@@ -42,15 +42,14 @@ module Guard
 
       def spec_folder?(path)
         path.match(%r{^(#{spec_paths.join("|")})[^\.]*$})
-        # path.match(%r{^spec[^\.]*$})
       end
 
       def spec_files
-        @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**/*/**", "*_spec.rb")] }.flatten
+        @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**", "*_spec.rb")] }.flatten
       end
 
       def feature_files
-        @feature_files ||= spec_paths.collect { |path| Dir[File.join(path, "**/*/**", "*.feature")] }.flatten
+        @feature_files ||= spec_paths.collect { |path| Dir[File.join(path, "**", "*.feature")] }.flatten
       end
 
       def clear_spec_files_list_after
