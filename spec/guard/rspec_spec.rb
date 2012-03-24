@@ -5,11 +5,11 @@ describe Guard::RSpec do
   subject { Guard::RSpec.new }
 
   let(:runner) { mock(Guard::RSpec::Runner, :set_rspec_version => nil, :rspec_version => nil) }
-  let(:inspector) { mock(Guard::RSpec::Inspector, :excluded= => nil, :spec_paths= => nil, :clean => [ ]) }
+  let(:inspector) { mock(described_class::Inspector, :excluded= => nil, :spec_paths= => nil, :clean => []) }
 
-  before(:each) do
-    Guard::RSpec::Runner.stub(:new => runner)
-    Guard::RSpec::Inspector.stub(:new => inspector)
+  before do
+    described_class::Runner.stub(:new => runner)
+    described_class::Inspector.stub(:new => inspector)
   end
 
   shared_examples_for "clear failed paths" do
@@ -24,25 +24,20 @@ describe Guard::RSpec do
     end
   end
 
-  describe '#initialize' do
     it "creates a runner" do
       Guard::RSpec::Runner.should_receive(:new)
       Guard::RSpec.new
     end
 
+  describe '.initialize' do
     it "creates an inspector" do
-      Guard::RSpec::Inspector.should_receive(:new)
-      Guard::RSpec.new
-    end
+      described_class::Inspector.should_receive(:new).with(default_options.merge(:foo => :bar))
 
     it 'sets rspec_version' do
       runner.should_receive(:set_rspec_version)
       Guard::RSpec.new
     end
 
-    it 'passes an excluded spec glob to Inspector' do
-      inspector.should_receive(:excluded=).with('spec/slow/*')
-      Guard::RSpec.new([], :exclude => 'spec/slow/*')
     end
   end
 
