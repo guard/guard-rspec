@@ -29,7 +29,7 @@ module Guard
     end
 
     def run_all
-      passed = @runner.run(@options[:spec_paths], @options.merge(@options[:run_all]).merge(:message => "Running all specs"))
+      passed = @runner.run(@options[:spec_paths], @options[:run_all].merge(:message => 'Running all specs'))
 
       unless @last_failed = !passed
         @failed_paths = []
@@ -46,7 +46,7 @@ module Guard
       paths += @failed_paths if @options[:keep_failed]
       paths  = @inspector.clean(paths)
 
-      if passed = @runner.run(paths, options)
+      if passed = @runner.run(paths)
         remove_failed(paths)
 
         # run all the specs if the run before this one failed

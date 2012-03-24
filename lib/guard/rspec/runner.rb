@@ -23,7 +23,7 @@ module Guard
         message = opts[:message] || "Running: #{paths.join(' ')}"
         UI.info(message, :reset => true)
 
-        ret = system(rspec_command(paths))
+        ret = system(rspec_command(paths, @options.merge(opts)))
 
         if @options[:notification] && !drb_used? && rspec_command_exited_with_an_exception?(ret)
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
@@ -45,11 +45,8 @@ module Guard
 
       def failure_exit_code_supported?
         @failure_exit_code_supported ||= begin
-          options = @options.dup
-
           cmd_parts = []
           cmd_parts << "bundle exec" if bundler?
-          # options[:binstubs] = !binstubs? # failure exit code support is independent of rspec location
           cmd_parts << rspec_exec
           cmd_parts << "--help"
           `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
@@ -67,15 +64,13 @@ module Guard
 
     private
 
-      def rspec_command(paths, opts = {})
-        options = @options.dup.merge(opts)
-
+      def rspec_command(paths, opts)
         cmd_parts = []
-        cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].respond_to?(:join)
+        cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundler?
-        cmd_parts << rspec_exec << options[:cli]
-        cmd_parts << "-f progress" if !options[:cli] || options[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
-        if options[:notification]
+        cmd_parts << rspec_exec << opts[:cli]
+        cmd_parts << "-f progress" if !opts[:cli] || opts[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
+        if @options[:notification]
           cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
           cmd_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
         end
@@ -85,24 +80,40 @@ module Guard
         cmd_parts.compact.join(' ')
       end
 
+      def rspec_command_exited_with_an_exception?(ret)
+        failure_exit_code_supported? && !ret.success? && ret.exitstatus != FAILURE_EXIT_CODE
+      end
+
       def drb_used?
-        @options[:cli] && @options[:cli].include?("--drb")
+        if @drb_used.nil?
+          @drb_used = @options[:cli] && @options[:cli].include?('--drb')
+        else
+          @drb_used
+        end
       end
 
       def bundler_allowed?
-        File.exist?("#{Dir.pwd}/Gemfile")
+        if @bundler_allowed.nil?
+          @bundler_allowed = File.exist?("#{Dir.pwd}/Gemfile")
+        else
+          @bundler_allowed
+        end
       end
 
       def bundler?
-        @bundler ||= bundler_allowed? && @options[:bundler]
+        if @bundler.nil?
+          @bundler = bundler_allowed? && @options[:bundler]
+        else
+          @bundler
+        end
       end
 
       def binstubs?
-        @binstubs ||= bundler? && @options[:binstubs]
-      end
-
-      def rspec_command_exited_with_an_exception?(ret)
-        failure_exit_code_supported? && !ret.success? && ret.exitstatus != FAILURE_EXIT_CODE
+        if @binstubs.nil?
+          @binstubs = bundler? && @options[:binstubs]
+        else
+          @binstubs
+        end
       end
 
       def determine_rspec_version

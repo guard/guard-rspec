@@ -1,7 +1,12 @@
 require 'spec_helper'
 
 describe Guard::RSpec do
-  let(:default_options) { { :all_after_pass => true, :all_on_start => true, :keep_failed => true, :spec_paths => ["spec"], :run_all => {} } }
+  let(:default_options) do
+    {
+      :all_after_pass => true, :all_on_start => true, :keep_failed => true,
+      :spec_paths => ['spec'], :run_all => {}
+    }
+  end
   subject { described_class.new }
 
   let(:inspector) { mock(described_class::Inspector, :excluded= => nil, :spec_paths= => nil, :clean => []) }
@@ -12,39 +17,42 @@ describe Guard::RSpec do
     described_class::Inspector.stub(:new => inspector)
   end
 
-  shared_examples_for "clear failed paths" do
-    it "should clear the previously failed paths" do
-      inspector.stub(:clean).and_return(["spec/foo"], ["spec/bar"])
-      runner.stub(:run).and_return(false, true)
+  shared_examples_for 'clear failed paths' do
+    it 'should clear the previously failed paths' do
+      inspector.stub(:clean).and_return(['spec/foo'], ['spec/bar'])
 
-      expect { subject.run_on_change(["spec/foo"]) }.to throw_symbol :task_has_failed
-      subject.run_all
-      runner.should_receive(:run).with(["spec/bar"], anything)
-      expect { subject.run_on_change(["spec/bar"]) }.to throw_symbol :task_has_failed
+      runner.should_receive(:run).with(['spec/foo']) { false }
+      expect { subject.run_on_change(['spec/foo']) }.to throw_symbol :task_has_failed
+
+      runner.should_receive(:run) { true }
+      expect { subject.run_all }.to_not throw_symbol # this actually clears the failed paths
+
+      runner.should_receive(:run).with(['spec/bar']) { true }
+      subject.run_on_change(['spec/bar'])
     end
   end
 
   describe '.initialize' do
-    it "creates an inspector" do
+    it 'creates an inspector' do
       described_class::Inspector.should_receive(:new).with(default_options.merge(:foo => :bar))
 
       described_class.new([], :foo => :bar)
     end
 
-    it "creates a runner" do
+    it 'creates a runner' do
       described_class::Runner.should_receive(:new).with(default_options.merge(:foo => :bar))
 
       described_class.new([], :foo => :bar)
     end
   end
 
-  describe "#start" do
-    it "calls #run_all" do
+  describe '#start' do
+    it 'calls #run_all' do
       subject.should_receive(:run_all)
       subject.start
     end
 
-    context ":all_on_start option is false" do
+    context ':all_on_start option is false' do
       let(:subject) { subject = described_class.new([], :all_on_start => false) }
 
       it "doesn't call #run_all" do
@@ -54,108 +62,118 @@ describe Guard::RSpec do
     end
   end
 
-  describe "#run_all" do
+  describe '#run_all' do
     it "runs all specs specified by the default 'spec_paths' option" do
-      runner.should_receive(:run).with(["spec"], anything).and_return(true)
+      runner.should_receive(:run).with(['spec'], anything) { true }
+
       subject.run_all
     end
 
     it "should run all specs specified by the 'spec_paths' option" do
-      subject = described_class.new([], :spec_paths => ["spec", "spec/fixtures/other_spec_path"])
-      runner.should_receive(:run).with(["spec", "spec/fixtures/other_spec_path"], anything).and_return(true)
+      subject = described_class.new([], :spec_paths => ['spec', 'spec/fixtures/other_spec_path'])
+      runner.should_receive(:run).with(['spec', 'spec/fixtures/other_spec_path'], anything) { true }
+
       subject.run_all
     end
 
-    it "passes the default options to the runner" do
-      runner.should_receive(:run).with(anything, hash_including(default_options)).and_return(true)
+    it 'passes the :run_all options' do
+      subject = described_class.new([], {
+        :rvm => ['1.8.7', '1.9.2'], :cli => '--color', :run_all => { :cli => '--format progress' }
+      })
+      runner.should_receive(:run).with(['spec'], hash_including(:cli => '--format progress')) { true }
+
       subject.run_all
     end
 
-    it "passes the message to the runner" do
-      runner.should_receive(:run).with(anything, hash_including(:message => "Running all specs")).and_return(true)
+    it 'passes the message to the runner' do
+      runner.should_receive(:run).with(['spec'], hash_including(:message => 'Running all specs')) { true }
+
       subject.run_all
     end
 
-    it "directly passes :cli option to runner" do
-      subject = described_class.new([], { :cli => "--color" })
-      runner.should_receive(:run).with(anything, hash_including(:cli => "--color")).and_return(true)
-      subject.run_all
-    end
+    it "throws task_has_failed if specs don't passed" do
+      runner.should_receive(:run) { false }
 
-    it "allows the :run_all options to override the default_options" do
-      subject = described_class.new([], { :rvm => ['1.8.7', '1.9.2'], :cli => "--color", :run_all => { :cli => "--format progress" } })
-      runner.should_receive(:run).with(anything, hash_including(:cli => "--format progress", :rvm => ['1.8.7', '1.9.2'])).and_return(true)
-      subject.run_all
-    end
-
-    it "throws task_has_failed if specs aren't passed" do
-      runner.should_receive(:run).and_return(false)
       expect { subject.run_all }.to throw_symbol :task_has_failed
     end
 
-    it_should_behave_like "clear failed paths"
+    it_should_behave_like 'clear failed paths'
   end
 
-  describe "#reload" do
-    it_should_behave_like "clear failed paths"
+  describe '#reload' do
+    it_should_behave_like 'clear failed paths'
   end
 
-  describe "#run_on_change" do
-    it "runs rspec with paths" do
-      inspector.stub(:clean => ["spec/foo"])
-      runner.should_receive(:run).with(["spec/foo"], anything).and_return(true)
-      subject.run_on_change(["spec/foo"])
+  describe '#run_on_change' do
+    before { inspector.stub(:clean => ['spec/foo']) }
+
+    it 'runs rspec with paths' do
+      runner.should_receive(:run).with(['spec/foo']) { true }
+
+      subject.run_on_change(['spec/foo'])
     end
 
-    it "directly passes :cli option to runner" do
-      subject = described_class.new([], { :cli => "--color" })
-      runner.should_receive(:run).with(anything, hash_including(:cli => "--color")).and_return(true)
-      subject.run_on_change(["spec/foo"])
-    end
+    context 'the changed specs pass after failing' do
+      it 'calls #run_all' do
+        runner.should_receive(:run).with(['spec/foo']) { false }
 
-    context "the changed specs pass after failing" do
-      before { runner.stub(:run).and_return(false, true) }
+        expect { subject.run_on_change(['spec/foo']) }.to throw_symbol :task_has_failed
 
-      it "calls #run_all" do
+        runner.should_receive(:run).with(['spec/foo']) { true }
         subject.should_receive(:run_all)
-        expect { subject.run_on_change(["spec/foo"]) }.to throw_symbol :task_has_failed
-        subject.run_on_change(["spec/foo"])
+
+        expect { subject.run_on_change(['spec/foo']) }.to_not throw_symbol
       end
 
-      context "but the :all_after_pass option is false" do
-        let(:subject) { described_class.new([], :all_after_pass => false) }
+      context ':all_after_pass option is false' do
+        subject { described_class.new([], :all_after_pass => false) }
 
         it "doesn't call #run_all" do
+          runner.should_receive(:run).with(['spec/foo']) { false }
+
+          expect { subject.run_on_change(['spec/foo']) }.to throw_symbol :task_has_failed
+
+          runner.should_receive(:run).with(['spec/foo']) { true }
           subject.should_not_receive(:run_all)
-          expect { subject.run_on_change(["spec/foo"]) }.to throw_symbol :task_has_failed
-          subject.run_on_change(["spec/foo"])
+
+          expect { subject.run_on_change(['spec/foo']) }.to_not throw_symbol
         end
       end
     end
 
-    context "the changed specs pass without failing" do
-      before { runner.stub(:run).and_return(true) }
+    context 'the changed specs pass without failing' do
+      it "doesn't call #run_all" do
+        runner.should_receive(:run).with(['spec/foo']) { true }
 
-      it "doesn't call #run_all " do
         subject.should_not_receive(:run_all)
-        subject.run_on_change(["spec/foo"])
+
+        subject.run_on_change(['spec/foo'])
       end
     end
 
-    it "should keep failed spec and rerun later" do
-      inspector.stub(:clean => ["spec/bar"])
+    it 'keeps failed spec and rerun them later' do
+      subject = described_class.new([], :all_after_pass => false)
 
-      runner.stub(:run).and_return(false)
-      expect { subject.run_on_change(["spec/foo"]) }.to throw_symbol :task_has_failed
-      runner.stub(:run).and_return(true)
-      subject.run_on_change(["spec/bar"])
-      runner.should_receive(:run).with(["spec/bar"], anything)
-      subject.run_on_change(["spec/bar"])
+      inspector.should_receive(:clean).with(['spec/bar']).and_return(['spec/bar'])
+      runner.should_receive(:run).with(['spec/bar']) { false }
+
+      expect { subject.run_on_change(['spec/bar']) }.to throw_symbol :task_has_failed
+
+      inspector.should_receive(:clean).with(['spec/foo', 'spec/bar']).and_return(['spec/foo', 'spec/bar'])
+      runner.should_receive(:run).with(['spec/foo', 'spec/bar']) { true }
+
+      subject.run_on_change(['spec/foo'])
+
+      inspector.should_receive(:clean).with(['spec/foo']).and_return(['spec/foo'])
+      runner.should_receive(:run).with(['spec/foo']) { true }
+
+      subject.run_on_change(['spec/foo'])
     end
 
-    it "throws task_has_failed if specs aren't passed" do
-      runner.should_receive(:run).and_return(false)
-      expect { subject.run_on_change(["spec/bar"]) }.to throw_symbol :task_has_failed
+    it "throws task_has_failed if specs doesn't pass" do
+      runner.should_receive(:run).with(['spec/foo']) { false }
+
+      expect { subject.run_on_change(['spec/foo']) }.to throw_symbol :task_has_failed
     end
   end
 

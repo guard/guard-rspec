@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Guard::RSpec::Inspector do
 
-  describe ".initialize" do
+  describe '.initialize' do
     it 'accepts an :exclude option that sets @excluded' do
       inspector1 = described_class.new(:exclude => 'spec/slow/*')
 
@@ -22,74 +22,78 @@ describe Guard::RSpec::Inspector do
     end
   end
 
-  describe "#excluded=" do
-    it "runs a glob on the given pattern" do
+  describe '#excluded=' do
+    it 'runs a glob on the given pattern' do
       subject.excluded = 'spec/slow/*'
       subject.excluded.should eq Dir['spec/slow/*']
     end
   end
 
-  describe "#spec_paths=" do
-    context "given a string" do
-      before { subject.spec_paths = "test" }
+  describe '#spec_paths=' do
+    context 'given a string' do
+      before { subject.spec_paths = 'test' }
 
-      it "returns an array" do
-        subject.spec_paths.should eq ["test"]
+      it 'returns an array' do
+        subject.spec_paths.should eq ['test']
       end
     end
 
-    context "given an array" do
-      before { subject.spec_paths = ["test"] }
+    context 'given an array' do
+      before { subject.spec_paths = ['test'] }
 
-      it "returns an array" do
-        subject.spec_paths.should eq ["test"]
+      it 'returns an array' do
+        subject.spec_paths.should eq ['test']
       end
     end
   end
 
-  describe ".clean" do
+  describe '#clean' do
     before do
       subject.excluded = nil
-      subject.spec_paths = ["spec"]
+      subject.spec_paths = ['spec']
     end
 
-    it "removes non-spec files" do
-      subject.clean(["spec/guard/rspec_spec.rb", "bob.rb"]).should eq ["spec/guard/rspec_spec.rb"]
+    it 'removes non-spec files' do
+      subject.clean(['spec/guard/rspec_spec.rb', 'bob.rb']).
+      should eq ['spec/guard/rspec_spec.rb']
     end
 
-    it "removes spec-looking but non-existing files" do
-      subject.clean(["spec/guard/rspec_spec.rb", "bob_spec.rb"]).should eq ["spec/guard/rspec_spec.rb"]
+    it 'removes spec-looking but non-existing files' do
+      subject.clean(['spec/guard/rspec_spec.rb', 'bob_spec.rb']).
+      should eq ['spec/guard/rspec_spec.rb']
     end
 
-    it "removes spec-looking but non-existing files (2)" do
-      subject.clean(["spec/guard/rspec/version_spec.rb"]).should be_empty
+    it 'removes spec-looking but non-existing files (2)' do
+      subject.clean(['spec/guard/rspec/version_spec.rb']).should be_empty
     end
 
-    it "keeps spec folder path" do
-      subject.clean(["spec/guard/rspec_spec.rb", "spec/models"]).should eq ["spec/guard/rspec_spec.rb", "spec/models"]
+    it 'keeps spec folder path' do
+      subject.clean(['spec/guard/rspec_spec.rb', 'spec/models']).
+      should eq ['spec/guard/rspec_spec.rb', 'spec/models']
     end
 
-    it "removes duplication" do
-      subject.clean(["spec", "spec"]).should eq ["spec"]
+    it 'removes duplication' do
+      subject.clean(['spec', 'spec']).should eq ['spec']
     end
 
-    it "removes spec folders included in other spec folders" do
-      subject.clean(["spec/models", "spec"]).should eq ["spec"]
+    it 'removes spec folders included in other spec folders' do
+      subject.clean(['spec/models', 'spec']).should eq ['spec']
     end
 
-    it "removes spec files included in spec folders" do
-      subject.clean(["spec/guard/rspec_spec.rb", "spec"]).should eq ["spec"]
+    it 'removes spec files included in spec folders' do
+      subject.clean(['spec/guard/rspec_spec.rb', 'spec']).should eq ['spec']
     end
 
-    it "removes spec files included in spec folders (2)" do
+    it 'removes spec files included in spec folders (2)' do
       subject.clean([
         'spec/guard/rspec_spec.rb', 'spec/guard/rspec/runner_spec.rb',
         'spec/guard/rspec'
-      ]).should eq ["spec/guard/rspec_spec.rb", "spec/guard/rspec"]
+      ]).should eq ['spec/guard/rspec_spec.rb', 'spec/guard/rspec']
     end
 
-    it "keeps spec files in symlink target" do
-      subject.clean(["spec/fixtures/symlink_to_spec/rspec_spec.rb"]).should eq ["spec/fixtures/symlink_to_spec/rspec_spec.rb"]
+    it 'keeps spec files in symlink target' do
+      subject.clean(['spec/fixtures/symlink_to_spec/rspec_spec.rb']).
+      should eq ['spec/fixtures/symlink_to_spec/rspec_spec.rb']
     end
 
     describe 'excluded files' do
@@ -110,9 +114,9 @@ describe Guard::RSpec::Inspector do
 
     describe 'spec paths' do
       context 'with an expanded spec path' do
-        before { subject.spec_paths = ["spec", "spec/fixtures/other_spec_path"] }
+        before { subject.spec_paths = ['spec', 'spec/fixtures/other_spec_path'] }
 
-        it "should clean paths not specified" do
+        it 'should clean paths not specified' do
           subject.clean([
             'clean_me/spec/cleaned_spec.rb', 'spec/guard/rspec/runner_spec.rb',
             'spec/fixtures/other_spec_path/empty_spec.rb'
@@ -121,4 +125,5 @@ describe Guard::RSpec::Inspector do
       end
     end
   end
+
 end
