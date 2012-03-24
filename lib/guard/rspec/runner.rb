@@ -3,9 +3,22 @@ module Guard
     class Runner
       attr_reader :rspec_version
 
-      def run(paths, options={})
+      def initialize(opts = {})
+        @options = {
+          :bundler      => true,
+          :binstubs     => false,
+          :rvm          => nil,
+          :cli          => nil,
+          :notification => true
+        }.merge(opts)
+
+        deprecations_warnings
+      end
+
+      def run(paths, opts = {})
         return false if paths.empty?
-        message = options[:message] || "Running: #{paths.join(' ')}"
+
+        message = opts[:message] || "Running: #{paths.join(' ')}"
         UI.info(message, :reset => true)
         system(rspec_command(paths, options))
 
@@ -23,7 +36,6 @@ module Guard
     private
 
       def rspec_command(paths, options={})
-        warn_deprectation(options)
 
         cmd_parts = []
         cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].is_a?(Array)
@@ -97,10 +109,16 @@ module Guard
         [:color, :drb, :fail_fast, [:formatter, "format"]].each do |option|
           key, value = option.is_a?(Array) ? option : [option, option.to_s.gsub('_', '-')]
           if options.key?(key)
+      def deprecations_warnings
+        [:color, :drb, [:fail_fast, "fail-fast"], [:formatter, "format"]].each do |option|
+          key, value = option.is_a?(Array) ? option : [option, option.to_s]
+          if @options.key?(key)
+            @options.delete(key)
             UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}
           end
         end
       end
+
     end
   end
 end

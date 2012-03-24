@@ -1,6 +1,23 @@
 require 'spec_helper'
 
 describe Guard::RSpec::Runner do
+  subject { described_class.new }
+  describe ".initialize" do
+    it "sets rspec_version" do
+      described_class.new.rspec_version.should_not be_nil
+    end
+
+    describe "shows warnings for deprecated options" do
+      [:color, :drb, [:fail_fast, 'fail-fast'], [:formatter, 'format']].each do |option|
+        key, value = option.is_a?(Array) ? option : [option, option.to_s]
+        it "outputs deprecation warning for :#{key} option" do
+          Guard::UI.should_receive(:info).with(%{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}).ordered
+          described_class.new(key => 'foo')
+        end
+      end
+    end
+  end
+
   describe ".run" do
     context "when passed an empty paths list" do
       it "returns false" do
@@ -9,7 +26,7 @@ describe Guard::RSpec::Runner do
     end
 
     context "in a folder without Bundler" do
-      before(:each) do
+      before do
         Dir.stub(:pwd).and_return(@fixture_path.join("empty"))
         subject.set_rspec_version
       end
@@ -23,7 +40,7 @@ describe Guard::RSpec::Runner do
     end
 
     context "in RSpec 2 folder with Bundler" do
-      before(:each) do
+      before do
         Dir.stub(:pwd).and_return(@fixture_path.join("rspec2"))
         subject.set_rspec_version
       end
@@ -189,7 +206,7 @@ describe Guard::RSpec::Runner do
     end
 
     context "in RSpec 1 folder with Bundler" do
-      before(:each) do
+      before do
         Dir.stub(:pwd).and_return(@fixture_path.join("rspec1"))
         subject.set_rspec_version
       end

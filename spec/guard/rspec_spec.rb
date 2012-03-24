@@ -4,8 +4,8 @@ describe Guard::RSpec do
   let(:default_options) { { :all_after_pass => true, :all_on_start => true, :keep_failed => true } }
   subject { Guard::RSpec.new }
 
-  let(:runner) { mock(Guard::RSpec::Runner, :set_rspec_version => nil, :rspec_version => nil) }
   let(:inspector) { mock(described_class::Inspector, :excluded= => nil, :spec_paths= => nil, :clean => []) }
+  let(:runner)    { mock(described_class::Runner, :set_rspec_version => nil, :rspec_version => nil) }
 
   before do
     described_class::Runner.stub(:new => runner)
@@ -24,20 +24,17 @@ describe Guard::RSpec do
     end
   end
 
-    it "creates a runner" do
-      Guard::RSpec::Runner.should_receive(:new)
-      Guard::RSpec.new
-    end
-
   describe '.initialize' do
     it "creates an inspector" do
       described_class::Inspector.should_receive(:new).with(default_options.merge(:foo => :bar))
 
-    it 'sets rspec_version' do
-      runner.should_receive(:set_rspec_version)
-      Guard::RSpec.new
+      described_class.new([], :foo => :bar)
     end
 
+    it "creates a runner" do
+      described_class::Runner.should_receive(:new).with(default_options.merge(:foo => :bar))
+
+      described_class.new([], :foo => :bar)
     end
   end
 

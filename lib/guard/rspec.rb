@@ -17,10 +17,8 @@ module Guard
       @last_failed  = false
       @failed_paths = []
 
-      @runner = Runner.new
-
-      @runner.set_rspec_version(options)
       @inspector = Inspector.new(@options)
+      @runner    = Runner.new(@options)
     end
 
     # Call once when guard starts
