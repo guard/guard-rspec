@@ -78,25 +78,16 @@ module Guard
       # of the user's shell, bundler and ruby environment.
       def run_via_drb(paths, opts)
         require "shellwords"
-        require "drb/drb"
-
         argv = rspec_arguments(paths, opts).shellsplit
 
-        # RSpec 1 & 2 use the same DRB call signature.  We don't want to call their runners directly
-        # because they fall back to spinning up a local drb service, which is unsafe within the
-        # guard process.
-        #
-        # For reference:
-        #
-        # * RSpec 1: https://github.com/myronmarston/rspec-1/blob/master/lib/spec/runner/drb_command_line.rb
-        #
-        # * RSpec 2: https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/drb_command_line.rb
-        #
-        # TODO: Parse --drb-port
-        drb_port    = ENV['RSPEC_DRB'] || 8989
-        spec_server = DRbObject.new_with_uri("druby://127.0.0.1:#{drb_port}")
+        # The user can specify --drb-port for rspec, we need to honor it.
+        if idx = argv.index("--drb-port")
+          port = argv[idx + 1].to_i
+        end
+        port = ENV["RSPEC_DRB"] || 8989 unless port && port > 0
 
-        spec_server.run(argv, $stderr, $stdout)
+        ret = drb_service(port).run(argv, $stderr, $stdout)
+        ret == 0
       rescue DRb::DRbConnError
         # Fall back to the shell runner; we don't want to mangle the environment!
         run_via_shell(paths, opts)
@@ -138,8 +129,29 @@ module Guard
         end
       end
 
-      def drb_running?
-        true
+      # RSpec 1 & 2 use the same DRb call signature, and we can avoid loading a large chunk of rspec
+      # just to let DRb know what to do.
+      #
+      # For reference:
+      #
+      # * RSpec 1: https://github.com/myronmarston/rspec-1/blob/master/lib/spec/runner/drb_command_line.rb
+      # * RSpec 2: https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/drb_command_line.rb
+      def drb_service(port)
+        require "drb/drb"
+
+        # Make sure we have a listener running
+        unless @drb_listener_running
+          begin
+            DRb.start_service("druby://localhost:0")
+          rescue SocketError, Errno::EADDRNOTAVAIL
+            DRb.start_service("druby://:0")
+          end
+
+          @drb_listener_running = true
+        end
+
+        @drb_services ||= {}
+        @drb_services[port.to_i] ||= DRbObject.new_with_uri("druby://127.0.0.1:#{port}")
       end
 
       def bundler_allowed?
