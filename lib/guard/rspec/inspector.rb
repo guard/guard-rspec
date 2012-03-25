@@ -51,11 +51,11 @@ module Guard
       end
 
       def spec_files
-        @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**/*/**", "*_spec.rb")] }.flatten
+        @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*_spec.rb")] }.flatten
       end
 
       def feature_files
-        @feature_files ||= spec_paths.collect { |path| Dir[File.join(path, "**/*/**", "*.feature")] }.flatten
+        @feature_files ||= spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*.feature")] }.flatten
       end
 
       def clear_spec_files_list_after
