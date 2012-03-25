@@ -5,31 +5,31 @@ module Guard
 
       FAILURE_EXIT_CODE = 2
 
-      def initialize(opts = {})
+      def initialize(options = {})
         @options = {
           :bundler      => true,
           :binstubs     => false,
           :rvm          => nil,
           :cli          => nil,
           :notification => true
-        }.merge(opts)
+        }.merge(options)
 
         deprecations_warnings
       end
 
-      def run(paths, opts = {})
+      def run(paths, options = {})
         return false if paths.empty?
 
-        message = opts[:message] || "Running: #{paths.join(' ')}"
+        message = options[:message] || "Running: #{paths.join(' ')}"
         UI.info(message, :reset => true)
 
-        ret = system(rspec_command(paths, @options.merge(opts)))
+        success = system(rspec_command(paths, @options.merge(options)))
 
-        if @options[:notification] && !drb_used? && rspec_command_exited_with_an_exception?(ret)
+        if @options[:notification] && !drb_used? && !success && rspec_command_exited_with_an_exception?
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
-        ret.success?
+        success
       end
 
       def rspec_version
@@ -64,12 +64,12 @@ module Guard
 
     private
 
-      def rspec_command(paths, opts)
+      def rspec_command(paths, options)
         cmd_parts = []
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundler?
-        cmd_parts << rspec_exec << opts[:cli]
-        cmd_parts << "-f progress" if !opts[:cli] || opts[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
+        cmd_parts << rspec_exec << options[:cli]
+        cmd_parts << "-f progress" if !options[:cli] || options[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
         if @options[:notification]
           cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
           cmd_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
@@ -80,8 +80,8 @@ module Guard
         cmd_parts.compact.join(' ')
       end
 
-      def rspec_command_exited_with_an_exception?(ret)
-        failure_exit_code_supported? && !ret.success? && ret.exitstatus != FAILURE_EXIT_CODE
+      def rspec_command_exited_with_an_exception?
+        failure_exit_code_supported? && $?.exitstatus != FAILURE_EXIT_CODE
       end
 
       def drb_used?

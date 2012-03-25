@@ -6,7 +6,7 @@ module Guard
     autoload :Runner,    'guard/rspec/runner'
     autoload :Inspector, 'guard/rspec/inspector'
 
-    def initialize(watchers = [], opts = {})
+    def initialize(watchers = [], options = {})
       super
       @options = {
         :all_after_pass => true,
@@ -14,7 +14,7 @@ module Guard
         :keep_failed    => true,
         :spec_paths     => ["spec"],
         :run_all        => {}
-      }.merge(opts)
+      }.merge(options)
       @last_failed  = false
       @failed_paths = []
 

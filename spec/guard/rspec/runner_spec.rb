@@ -2,9 +2,6 @@ require 'spec_helper'
 
 describe Guard::RSpec::Runner do
   subject { described_class.new }
-  let(:mock_success_res)   { mock('res', :success? => true, :exitstatus => 0) }
-  let(:mock_failed_res)    { mock('res', :success? => false, :exitstatus => 2) }
-  let(:mock_exception_res) { mock('res', :success? => false, :exitstatus => 1) }
 
   before do
     described_class.any_instance.stub(:failure_exit_code_supported? => true)
@@ -45,7 +42,7 @@ describe Guard::RSpec::Runner do
         subject.should_receive(:system).with(
           "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
           '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-        ).and_return(mock_success_res)
+        ).and_return(true)
 
         subject.run(['spec'])
       end
@@ -60,14 +57,14 @@ describe Guard::RSpec::Runner do
         subject.should_receive(:system).with(
           "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
           '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-        ).and_return(mock_success_res)
+        ).and_return(true)
 
         subject.run(['spec'])
       end
 
       describe 'notification' do
         it 'notifies when RSpec fails to execute' do
-          subject.should_receive(:system) { mock_exception_res }
+          subject.should_receive(:rspec_command) { "`exit 1`" }
           Guard::Notifier.should_receive(:notify).with(
             'Failed', :title => 'RSpec results', :image => :failed, :priority => 2
           )
@@ -79,7 +76,7 @@ describe Guard::RSpec::Runner do
           subject { described_class.new(:cli => '--drb') }
 
           it 'does not notify notifies when RSpec fails to execute and using drb' do
-            subject.should_receive(:system) { mock_exception_res }
+            subject.should_receive(:rspec_command) { "`exit 1`" }
             Guard::Notifier.should_not_receive(:notify)
 
             subject.run(['spec'])
@@ -87,14 +84,14 @@ describe Guard::RSpec::Runner do
         end
 
         it 'does not notify that RSpec failed when the specs failed' do
-          subject.should_receive(:system) { mock_failed_res }
+          subject.should_receive(:rspec_command) { "`exit 2`" }
           Guard::Notifier.should_not_receive(:notify)
 
           subject.run(['spec'])
         end
 
         it 'does not notify that RSpec failed when the specs pass' do
-          subject.should_receive(:system) { mock_success_res }
+          subject.should_receive(:rspec_command) { "`exit 0`" }
           Guard::Notifier.should_not_receive(:notify)
 
           subject.run(['spec'])
@@ -110,7 +107,7 @@ describe Guard::RSpec::Runner do
               'bundle exec rspec --format doc ' <<
               "-r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
               '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-            ).and_return(mock_success_res)
+            ).and_return(true)
 
             subject.run(['spec'], :cli => '--format doc')
           end
@@ -121,7 +118,7 @@ describe Guard::RSpec::Runner do
 
           it 'runs with rvm exec' do
             ::Guard::UI.should_receive(:info).with('Foo Bar', :reset => true)
-            subject.should_receive(:system).and_return(mock_success_res)
+            subject.should_receive(:system).and_return(true)
 
             subject.run(['spec'], :message => 'Foo Bar')
           end
@@ -136,7 +133,7 @@ describe Guard::RSpec::Runner do
                 'rvm 1.8.7,1.9.2 exec bundle exec rspec -f progress ' <<
                 "-r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-              ).and_return(mock_success_res)
+              ).and_return(true)
 
               subject.run(['spec'])
             end
@@ -152,7 +149,7 @@ describe Guard::RSpec::Runner do
                 'bundle exec rspec --color --drb --fail-fast -f progress ' <<
                 "-r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-              ).and_return(mock_success_res)
+              ).and_return(true)
 
               subject.run(['spec'])
             end
@@ -162,7 +159,7 @@ describe Guard::RSpec::Runner do
             subject.should_receive(:system).with(
               "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
               '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-            ).and_return(mock_success_res)
+            ).and_return(true)
 
             subject.run(['spec'])
           end
@@ -174,7 +171,7 @@ describe Guard::RSpec::Runner do
               subject.should_receive(:system).with(
                 "bundle exec rspec -f doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-              ).and_return(mock_success_res)
+              ).and_return(true)
 
               subject.run(['spec'])
             end
@@ -187,7 +184,7 @@ describe Guard::RSpec::Runner do
               subject.should_receive(:system).with(
                 "bundle exec rspec --format=doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-              ).and_return(mock_success_res)
+              ).and_return(true)
 
               subject.run(['spec'])
             end
@@ -202,7 +199,7 @@ describe Guard::RSpec::Runner do
               subject.should_receive(:system).with(
                 "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-              ).and_return(mock_success_res)
+              ).and_return(true)
 
               subject.run(['spec'])
             end
@@ -217,7 +214,7 @@ describe Guard::RSpec::Runner do
               subject.should_receive(:system).with(
                 "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-              ).and_return(mock_success_res)
+              ).and_return(true)
 
               subject.run(['spec'])
             end
@@ -230,7 +227,7 @@ describe Guard::RSpec::Runner do
               subject.should_receive(:system).with(
                 "bundle exec bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
-              ).and_return(mock_success_res)
+              ).and_return(true)
 
               subject.run(['spec'])
             end
@@ -244,7 +241,7 @@ describe Guard::RSpec::Runner do
             it 'runs without notification formatter' do
               subject.should_receive(:system).with(
                 'bundle exec rspec -f progress --failure-exit-code 2 spec'
-              ).and_return(mock_success_res)
+              ).and_return(true)
 
               subject.run(['spec'])
             end
@@ -270,7 +267,7 @@ describe Guard::RSpec::Runner do
         subject.should_receive(:system).with(
           "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} " <<
           '-f Guard::RSpec::Formatter::NotificationSpec:/dev/null spec'
-        ).and_return(mock_success_res)
+        ).and_return(true)
 
         subject.run(['spec'])
       end
