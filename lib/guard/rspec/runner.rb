@@ -64,35 +64,6 @@ module Guard
 
     private
 
-      def run_via_shell(paths, opts)
-        success = system(rspec_command(paths, opts))
-
-        if @options[:notification] && !success && rspec_command_exited_with_an_exception?
-          Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
-        end
-
-        success
-      end
-
-      # We can optimize this path by hitting up the drb server directly, circumventing the overhead
-      # of the user's shell, bundler and ruby environment.
-      def run_via_drb(paths, opts)
-        require "shellwords"
-        argv = rspec_arguments(paths, opts).shellsplit
-
-        # The user can specify --drb-port for rspec, we need to honor it.
-        if idx = argv.index("--drb-port")
-          port = argv[idx + 1].to_i
-        end
-        port = ENV["RSPEC_DRB"] || 8989 unless port && port > 0
-
-        ret = drb_service(port).run(argv, $stderr, $stdout)
-        ret == 0
-      rescue DRb::DRbConnError
-        # Fall back to the shell runner; we don't want to mangle the environment!
-        run_via_shell(paths, opts)
-      end
-
       def rspec_arguments(paths, opts)
         arg_parts = []
         arg_parts << opts[:cli]
@@ -117,8 +88,37 @@ module Guard
         cmd_parts.compact.join(' ')
       end
 
+      def run_via_shell(paths, opts)
+        success = system(rspec_command(paths, opts))
+
+        if @options[:notification] && !success && rspec_command_exited_with_an_exception?
+          Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+        end
+
+        success
+      end
+
       def rspec_command_exited_with_an_exception?
         failure_exit_code_supported? && $?.exitstatus != FAILURE_EXIT_CODE
+      end
+
+      # We can optimize this path by hitting up the drb server directly, circumventing the overhead
+      # of the user's shell, bundler and ruby environment.
+      def run_via_drb(paths, opts)
+        require "shellwords"
+        argv = rspec_arguments(paths, opts).shellsplit
+
+        # The user can specify --drb-port for rspec, we need to honor it.
+        if idx = argv.index("--drb-port")
+          port = argv[idx + 1].to_i
+        end
+        port = ENV["RSPEC_DRB"] || 8989 unless port && port > 0
+
+        ret = drb_service(port).run(argv, $stderr, $stdout)
+        ret == 0
+      rescue DRb::DRbConnError
+        # Fall back to the shell runner; we don't want to mangle the environment!
+        run_via_shell(paths, opts)
       end
 
       def drb_used?
