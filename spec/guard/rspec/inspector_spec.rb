@@ -91,6 +91,12 @@ describe Guard::RSpec::Inspector do
       ]).should eq ['spec/guard/rspec_spec.rb', 'spec/guard/rspec']
     end
 
+    it 'keeps top-level specs' do
+      subject.spec_paths = ['spec/fixtures/other_spec_path']
+      subject.clean(['spec/fixtures/other_spec_path/empty_spec.rb']).
+      should eq ['spec/fixtures/other_spec_path/empty_spec.rb']
+    end
+
     it 'keeps spec files in symlink target' do
       subject.clean(['spec/fixtures/symlink_to_spec/rspec_spec.rb']).
       should eq ['spec/fixtures/symlink_to_spec/rspec_spec.rb']
