@@ -64,10 +64,10 @@ module Guard
 
     private
 
-      def rspec_arguments(paths, opts)
+      def rspec_arguments(paths, options)
         arg_parts = []
-        arg_parts << opts[:cli]
-        arg_parts << "-f progress" if !opts[:cli] || opts[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
+        arg_parts << options[:cli]
+        arg_parts << "-f progress" if !options[:cli] || options[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
         if @options[:notification]
           arg_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
           arg_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
@@ -78,18 +78,18 @@ module Guard
         arg_parts.compact.join(' ')
       end
 
-      def rspec_command(paths, opts)
+      def rspec_command(paths, options)
         cmd_parts = []
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundler?
         cmd_parts << rspec_executable
-        cmd_parts << rspec_arguments(paths, opts)
+        cmd_parts << rspec_arguments(paths, options)
 
         cmd_parts.compact.join(' ')
       end
 
-      def run_via_shell(paths, opts)
-        success = system(rspec_command(paths, opts))
+      def run_via_shell(paths, options)
+        success = system(rspec_command(paths, options))
 
         if @options[:notification] && !drb_used? && !success && rspec_command_exited_with_an_exception?
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
@@ -104,9 +104,9 @@ module Guard
 
       # We can optimize this path by hitting up the drb server directly, circumventing the overhead
       # of the user's shell, bundler and ruby environment.
-      def run_via_drb(paths, opts)
+      def run_via_drb(paths, options)
         require "shellwords"
-        argv = rspec_arguments(paths, opts).shellsplit
+        argv = rspec_arguments(paths, options).shellsplit
 
         # The user can specify --drb-port for rspec, we need to honor it.
         if idx = argv.index("--drb-port")
@@ -118,7 +118,7 @@ module Guard
         ret == 0
       rescue DRb::DRbConnError
         # Fall back to the shell runner; we don't want to mangle the environment!
-        run_via_shell(paths, opts)
+        run_via_shell(paths, options)
       end
 
       def drb_used?
