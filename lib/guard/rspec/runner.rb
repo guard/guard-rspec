@@ -23,12 +23,12 @@ module Guard
         message = options[:message] || "Running: #{paths.join(' ')}"
         UI.info(message, :reset => true)
 
-        opts = @options.merge(opts)
+        options = @options.merge(options)
 
         if drb_used?
-          run_via_drb(paths, opts)
+          run_via_drb(paths, options)
         else
-          run_via_shell(paths, opts)
+          run_via_shell(paths, options)
         end
       end
 
