@@ -23,21 +23,21 @@ module Guard
         message = options[:message] || "Running: #{paths.join(' ')}"
         UI.info(message, :reset => true)
 
-        success = system(rspec_command(paths, @options.merge(options)))
+        options = @options.merge(options)
 
-        if @options[:notification] && !drb_used? && !success && rspec_command_exited_with_an_exception?
-          Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+        if drb_used?
+          run_via_drb(paths, options)
+        else
+          run_via_shell(paths, options)
         end
-
-        success
       end
 
       def rspec_version
         @rspec_version ||= @options[:version] || determine_rspec_version
       end
 
-      def rspec_exec
-        @rspec_exec ||= begin
+      def rspec_executable
+        @rspec_executable ||= begin
           exec = rspec_class.downcase
           binstubs? ? "bin/#{exec}" : exec
         end
@@ -47,7 +47,7 @@ module Guard
         @failure_exit_code_supported ||= begin
           cmd_parts = []
           cmd_parts << "bundle exec" if bundler?
-          cmd_parts << rspec_exec
+          cmd_parts << rspec_executable
           cmd_parts << "--help"
           `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
         end
@@ -64,24 +64,61 @@ module Guard
 
     private
 
+      def rspec_arguments(paths, options)
+        arg_parts = []
+        arg_parts << options[:cli]
+        arg_parts << "-f progress" if !options[:cli] || options[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
+        if @options[:notification]
+          arg_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
+          arg_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
+        end
+        arg_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
+        arg_parts << paths.join(' ')
+
+        arg_parts.compact.join(' ')
+      end
+
       def rspec_command(paths, options)
         cmd_parts = []
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundler?
-        cmd_parts << rspec_exec << options[:cli]
-        cmd_parts << "-f progress" if !options[:cli] || options[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
-        if @options[:notification]
-          cmd_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
-          cmd_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
-        end
-        cmd_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
-        cmd_parts << paths.join(' ')
+        cmd_parts << rspec_executable
+        cmd_parts << rspec_arguments(paths, options)
 
         cmd_parts.compact.join(' ')
       end
 
+      def run_via_shell(paths, options)
+        success = system(rspec_command(paths, options))
+
+        if @options[:notification] && !drb_used? && !success && rspec_command_exited_with_an_exception?
+          Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
+        end
+
+        success
+      end
+
       def rspec_command_exited_with_an_exception?
         failure_exit_code_supported? && $?.exitstatus != FAILURE_EXIT_CODE
+      end
+
+      # We can optimize this path by hitting up the drb server directly, circumventing the overhead
+      # of the user's shell, bundler and ruby environment.
+      def run_via_drb(paths, options)
+        require "shellwords"
+        argv = rspec_arguments(paths, options).shellsplit
+
+        # The user can specify --drb-port for rspec, we need to honor it.
+        if idx = argv.index("--drb-port")
+          port = argv[idx + 1].to_i
+        end
+        port = ENV["RSPEC_DRB"] || 8989 unless port && port > 0
+
+        ret = drb_service(port.to_i).run(argv, $stderr, $stdout)
+        ret == 0
+      rescue DRb::DRbConnError
+        # Fall back to the shell runner; we don't want to mangle the environment!
+        run_via_shell(paths, options)
       end
 
       def drb_used?
@@ -90,6 +127,31 @@ module Guard
         else
           @drb_used
         end
+      end
+
+      # RSpec 1 & 2 use the same DRb call signature, and we can avoid loading a large chunk of rspec
+      # just to let DRb know what to do.
+      #
+      # For reference:
+      #
+      # * RSpec 1: https://github.com/myronmarston/rspec-1/blob/master/lib/spec/runner/drb_command_line.rb
+      # * RSpec 2: https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/drb_command_line.rb
+      def drb_service(port)
+        require "drb/drb"
+
+        # Make sure we have a listener running
+        unless @drb_listener_running
+          begin
+            DRb.start_service("druby://localhost:0")
+          rescue SocketError, Errno::EADDRNOTAVAIL
+            DRb.start_service("druby://:0")
+          end
+
+          @drb_listener_running = true
+        end
+
+        @drb_services ||= {}
+        @drb_services[port.to_i] ||= DRbObject.new_with_uri("druby://127.0.0.1:#{port}")
       end
 
       def bundler_allowed?
