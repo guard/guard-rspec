@@ -98,7 +98,7 @@ end
 ```
 
 
-Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are thus deprecated and have no effect anymore.
+Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and have no effect anymore.
 
 ### List of available options:
 
@@ -115,6 +115,14 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are thus deprecat
 :run_all => { :cli => "-p" } # cli arguments to use when running all specs, default: same as :cli
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
 ```
+
+### DRb mode
+
+When you specify `--drb` within `:cli`, guard-rspec will circumvent the `rspec` command line tool by
+directly communicating with the RSpec DRb server.  This avoids the extra overhead incurred by your
+shell, bundler and loading RSpec's environment just to send a DRb message.  It shaves off a
+second or two before the specs start to run; they should run almost immediately.
+
 
 Notification
 ------------

@@ -75,11 +75,47 @@ describe Guard::RSpec::Runner do
         context 'using DRb' do
           subject { described_class.new(:cli => '--drb') }
 
+          let(:service) {
+            service_double = double
+            subject.should_receive(:drb_service) { |port|
+              service_double.stub(:port) { port }
+              service_double
+            }
+
+            service_double
+          }
+
           it 'does not notify notifies when RSpec fails to execute and using drb' do
-            subject.should_receive(:rspec_command) { "`exit 1`" }
+            service.should_receive(:run) { 1 }
             Guard::Notifier.should_not_receive(:notify)
 
             subject.run(['spec'])
+          end
+
+          it 'should fall back to the command runner with an inactive server' do
+            service.should_receive(:run).and_raise(DRb::DRbConnError)
+            subject.should_receive(:run_via_shell)
+
+            subject.run(['spec'])
+          end
+
+          it 'should default to DRb port 8989' do
+            service.should_receive(:run) { 0 }
+            subject.run(['spec'])
+            service.port.should == 8989
+          end
+
+          it 'should honor RSPEC_DRB' do
+            ENV['RSPEC_DRB'] = '12345'
+            service.should_receive(:run) { 0 }
+            subject.run(['spec'])
+            service.port.should == 12345
+          end
+
+          it 'should honor --drb-port' do
+            service.should_receive(:run) { 0 }
+            subject.run(['spec'], cli: '--drb --drb-port 2222')
+            service.port.should == 2222
           end
         end
 
