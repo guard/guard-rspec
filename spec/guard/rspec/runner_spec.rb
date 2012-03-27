@@ -385,12 +385,12 @@ describe Guard::RSpec::Runner do
   describe '#default_formatter' do
     before { Dir.stub(:pwd).and_return(@fixture_path) }
     it 'returns formatter from .rspec file' do
-      subject.default_formatter.should == '-f documentation'
+      subject.default_formatter.should eq '-f documentation'
     end
     context 'if .rspec file no exists' do
       before { File.stub(:exist?).and_return(false) }
       it 'returns progress formatter' do
-        subject.default_formatter == '-f progress'
+        subject.default_formatter.should eq '-f progress'
       end
     end
   end
