@@ -302,7 +302,7 @@ describe Guard::RSpec::Runner do
 
             it 'runs without notification formatter' do
               subject.should_receive(:system).with(
-                'bundle exec rspec -f progress --failure-exit-code 2 spec'
+                'bundle exec rspec --failure-exit-code 2 spec'
               ).and_return(true)
 
               subject.run(['spec'])
