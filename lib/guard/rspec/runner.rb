@@ -62,13 +62,23 @@ module Guard
                          end
       end
 
+      def default_formatter
+        @default_formatter ||= unless @options[:cli] =~ formatter_regex
+          file_name = "#{Dir.pwd}/.rspec"
+          if File.exist?(file_name)
+            s = File.read(file_name)
+            s.scan(formatter_regex).flatten.map{|i| "-f #{i}"}.join(' ')
+          end
+        end || '-f progress'
+      end
+
     private
 
       def rspec_arguments(paths, options)
         arg_parts = []
         arg_parts << options[:cli]
-        arg_parts << "-f progress" if !options[:cli] || options[:cli].split(/[\s=]/).none? { |w| %w[-f --format].include?(w) }
         if @options[:notification]
+          arg_parts << default_formatter unless options[:cli] =~ formatter_regex
           arg_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
           arg_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
         end
@@ -84,7 +94,6 @@ module Guard
         cmd_parts << "bundle exec" if bundler?
         cmd_parts << rspec_executable
         cmd_parts << rspec_arguments(paths, options)
-
         cmd_parts.compact.join(' ')
       end
 
@@ -197,6 +206,10 @@ module Guard
             UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}
           end
         end
+      end
+
+      def formatter_regex
+        @formatter_regex ||= /(?:^|\s)(?:-f\s*|--format(?:=|\s+))(\w+)/
       end
 
     end

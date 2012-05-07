@@ -213,7 +213,33 @@ describe Guard::RSpec::Runner do
             end
           end
 
-          context ":cli => '-f doc'" do
+          context ":cli => '-fdoc'" do
+            subject { described_class.new(:cli => '-fdoc') }
+
+            it 'respects formatter passed in CLI options to RSpec' do
+              subject.should_receive(:system).with(
+                "bundle exec rspec -fdoc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+                '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
+              ).and_return(true)
+
+              subject.run(['spec'])
+            end
+          end
+
+          context ":cli => '--format doc'" do
+            subject { described_class.new(:cli => '--format doc') }
+
+            it 'respects formatter passed in CLI options to RSpec' do
+              subject.should_receive(:system).with(
+                "bundle exec rspec --format doc -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+                '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
+              ).and_return(true)
+
+              subject.run(['spec'])
+            end
+          end
+
+          context ":cli => '--format=doc'" do
             subject { described_class.new(:cli => '--format=doc') }
 
             it 'respects formatter passed in CLI options to RSpec' do
@@ -276,7 +302,7 @@ describe Guard::RSpec::Runner do
 
             it 'runs without notification formatter' do
               subject.should_receive(:system).with(
-                'bundle exec rspec -f progress --failure-exit-code 2 spec'
+                'bundle exec rspec --failure-exit-code 2 spec'
               ).and_return(true)
 
               subject.run(['spec'])
@@ -356,4 +382,16 @@ describe Guard::RSpec::Runner do
     end
   end
 
+  describe '#default_formatter' do
+    before { Dir.stub(:pwd).and_return(@fixture_path) }
+    it 'returns formatter from .rspec file' do
+      subject.default_formatter.should eq '-f documentation'
+    end
+    context 'if .rspec file no exists' do
+      before { File.stub(:exist?).and_return(false) }
+      it 'returns progress formatter' do
+        subject.default_formatter.should eq '-f progress'
+      end
+    end
+  end
 end
