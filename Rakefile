@@ -32,7 +32,7 @@ namespace :spec do
       if File.exists?("spec/fixtures/#{dir}/Gemfile")
         system <<-BASH
           cd spec/fixtures/#{dir};
-          bundle install 1> /dev/null;
+          bundle install;
         BASH
       end
     end
