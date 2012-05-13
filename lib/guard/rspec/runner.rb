@@ -62,14 +62,16 @@ module Guard
                          end
       end
 
-      def default_formatter
-        @default_formatter ||= unless @options[:cli] =~ formatter_regex
+      def parsed_or_default_formatter
+        @parsed_or_default_formatter ||= begin
           file_name = "#{Dir.pwd}/.rspec"
-          if File.exist?(file_name)
-            s = File.read(file_name)
-            s.scan(formatter_regex).flatten.map{|i| "-f #{i}"}.join(' ')
+          parsed_formatter = if File.exist?(file_name)
+            formatters = File.read(file_name).scan(formatter_regex).flatten
+            formatters.map { |formatter| "-f #{formatter}" }.join(' ')
           end
-        end || '-f progress'
+
+          parsed_formatter.nil? || parsed_formatter.empty? ? '-f progress' : parsed_formatter
+        end
       end
 
     private
@@ -77,8 +79,8 @@ module Guard
       def rspec_arguments(paths, options)
         arg_parts = []
         arg_parts << options[:cli]
+        arg_parts << parsed_or_default_formatter unless options[:cli] =~ formatter_regex
         if @options[:notification]
-          arg_parts << default_formatter unless options[:cli] =~ formatter_regex
           arg_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
           arg_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
         end

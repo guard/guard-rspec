@@ -302,7 +302,7 @@ describe Guard::RSpec::Runner do
 
             it 'runs without notification formatter' do
               subject.should_receive(:system).with(
-                'bundle exec rspec --failure-exit-code 2 spec'
+                'bundle exec rspec -f progress --failure-exit-code 2 spec'
               ).and_return(true)
 
               subject.run(['spec'])
@@ -382,16 +382,40 @@ describe Guard::RSpec::Runner do
     end
   end
 
-  describe '#default_formatter' do
-    before { Dir.stub(:pwd).and_return(@fixture_path) }
-    it 'returns formatter from .rspec file' do
-      subject.default_formatter.should eq '-f documentation'
+  describe '#parsed_or_default_formatter' do
+    context '.rspec file exists' do
+      before do
+        Dir.stub(:pwd).and_return(@fixture_path)
+      end
+
+      context 'and includes a --format option' do
+        before do
+          File.stub(:read).and_return("--colour\n--format documentation")
+        end
+
+        it 'returns the formatter from .rspec file' do
+          subject.parsed_or_default_formatter.should eq '-f documentation'
+        end
+      end
+
+      context 'but doesn\'t include a --format option' do
+        before do
+          File.stub(:read).and_return("--colour")
+        end
+
+        it 'returns progress formatter' do
+          subject.parsed_or_default_formatter.should eq '-f progress'
+        end
+      end
     end
-    context 'if .rspec file no exists' do
+
+    context '.rspec file doesn\'t exists' do
       before { File.stub(:exist?).and_return(false) }
+
       it 'returns progress formatter' do
-        subject.default_formatter.should eq '-f progress'
+        subject.parsed_or_default_formatter.should eq '-f progress'
       end
     end
   end
+
 end
