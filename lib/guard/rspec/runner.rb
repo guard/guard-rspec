@@ -79,8 +79,8 @@ module Guard
       def rspec_arguments(paths, options)
         arg_parts = []
         arg_parts << options[:cli]
-        arg_parts << parsed_or_default_formatter unless options[:cli] =~ formatter_regex
         if @options[:notification]
+          arg_parts << parsed_or_default_formatter unless options[:cli] =~ formatter_regex
           arg_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
           arg_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
         end
