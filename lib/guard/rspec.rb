@@ -42,17 +42,7 @@ module Guard
       @failed_paths = []
     end
 
-    def run_on_additions(paths)
-      run(paths)
-    end
-
-    def run_on_modifications(paths)
-      run(paths)
-    end
-
-  private
-
-    def run(paths)
+    def run_on_changes(paths)
       paths += @failed_paths if @options[:keep_failed]
       paths  = @inspector.clean(paths)
 
@@ -70,6 +60,11 @@ module Guard
 
         throw :task_has_failed
       end
+    end
+
+  private
+
+    def run(paths)
     end
 
     def remove_failed(paths)
