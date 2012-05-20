@@ -22,13 +22,13 @@ describe Guard::RSpec do
       inspector.stub(:clean).and_return(['spec/foo'], ['spec/bar'])
 
       runner.should_receive(:run).with(['spec/foo']) { false }
-      expect { subject.run_on_change(['spec/foo']) }.to throw_symbol :task_has_failed
+      expect { subject.run_on_changes(['spec/foo']) }.to throw_symbol :task_has_failed
 
       runner.should_receive(:run) { true }
       expect { subject.run_all }.to_not throw_symbol # this actually clears the failed paths
 
       runner.should_receive(:run).with(['spec/bar']) { true }
-      subject.run_on_change(['spec/bar'])
+      subject.run_on_changes(['spec/bar'])
     end
   end
 
@@ -104,25 +104,25 @@ describe Guard::RSpec do
     it_should_behave_like 'clear failed paths'
   end
 
-  describe '#run_on_change' do
+  describe '#run_on_changes' do
     before { inspector.stub(:clean => ['spec/foo']) }
 
     it 'runs rspec with paths' do
       runner.should_receive(:run).with(['spec/foo']) { true }
 
-      subject.run_on_change(['spec/foo'])
+      subject.run_on_changes(['spec/foo'])
     end
 
     context 'the changed specs pass after failing' do
       it 'calls #run_all' do
         runner.should_receive(:run).with(['spec/foo']) { false }
 
-        expect { subject.run_on_change(['spec/foo']) }.to throw_symbol :task_has_failed
+        expect { subject.run_on_changes(['spec/foo']) }.to throw_symbol :task_has_failed
 
         runner.should_receive(:run).with(['spec/foo']) { true }
         subject.should_receive(:run_all)
 
-        expect { subject.run_on_change(['spec/foo']) }.to_not throw_symbol
+        expect { subject.run_on_changes(['spec/foo']) }.to_not throw_symbol
       end
 
       context ':all_after_pass option is false' do
@@ -131,12 +131,12 @@ describe Guard::RSpec do
         it "doesn't call #run_all" do
           runner.should_receive(:run).with(['spec/foo']) { false }
 
-          expect { subject.run_on_change(['spec/foo']) }.to throw_symbol :task_has_failed
+          expect { subject.run_on_changes(['spec/foo']) }.to throw_symbol :task_has_failed
 
           runner.should_receive(:run).with(['spec/foo']) { true }
           subject.should_not_receive(:run_all)
 
-          expect { subject.run_on_change(['spec/foo']) }.to_not throw_symbol
+          expect { subject.run_on_changes(['spec/foo']) }.to_not throw_symbol
         end
       end
     end
@@ -147,7 +147,7 @@ describe Guard::RSpec do
 
         subject.should_not_receive(:run_all)
 
-        subject.run_on_change(['spec/foo'])
+        subject.run_on_changes(['spec/foo'])
       end
     end
 
@@ -157,23 +157,23 @@ describe Guard::RSpec do
       inspector.should_receive(:clean).with(['spec/bar']).and_return(['spec/bar'])
       runner.should_receive(:run).with(['spec/bar']) { false }
 
-      expect { subject.run_on_change(['spec/bar']) }.to throw_symbol :task_has_failed
+      expect { subject.run_on_changes(['spec/bar']) }.to throw_symbol :task_has_failed
 
       inspector.should_receive(:clean).with(['spec/foo', 'spec/bar']).and_return(['spec/foo', 'spec/bar'])
       runner.should_receive(:run).with(['spec/foo', 'spec/bar']) { true }
 
-      subject.run_on_change(['spec/foo'])
+      subject.run_on_changes(['spec/foo'])
 
       inspector.should_receive(:clean).with(['spec/foo']).and_return(['spec/foo'])
       runner.should_receive(:run).with(['spec/foo']) { true }
 
-      subject.run_on_change(['spec/foo'])
+      subject.run_on_changes(['spec/foo'])
     end
 
     it "throws task_has_failed if specs doesn't pass" do
       runner.should_receive(:run).with(['spec/foo']) { false }
 
-      expect { subject.run_on_change(['spec/foo']) }.to throw_symbol :task_has_failed
+      expect { subject.run_on_changes(['spec/foo']) }.to throw_symbol :task_has_failed
     end
   end
 
