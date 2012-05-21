@@ -390,11 +390,11 @@ describe Guard::RSpec::Runner do
 
       context 'and includes a --format option' do
         before do
-          File.stub(:read).and_return("--colour\n--format documentation")
+          File.stub(:read).and_return("--colour\n--format RSpec::Instafail")
         end
 
         it 'returns the formatter from .rspec file' do
-          subject.parsed_or_default_formatter.should eq '-f documentation'
+          subject.parsed_or_default_formatter.should eq '-f RSpec::Instafail'
         end
       end
 
