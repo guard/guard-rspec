@@ -211,7 +211,7 @@ module Guard
       end
 
       def formatter_regex
-        @formatter_regex ||= /(?:^|\s)(?:-f\s*|--format(?:=|\s+))(\w+)/
+        @formatter_regex ||= /(?:^|\s)(?:-f\s*|--format(?:=|\s+))([\w:]+)/
       end
 
     end
