@@ -124,9 +124,9 @@ module Guard
           port = argv[idx + 1].to_i
         end
         port = ENV["RSPEC_DRB"] || 8989 unless port && port > 0
-
         ret = drb_service(port.to_i).run(argv, $stderr, $stdout)
-        ret == 0
+
+        [0, true].include?(ret)
       rescue DRb::DRbConnError
         # Fall back to the shell runner; we don't want to mangle the environment!
         run_via_shell(paths, options)

@@ -85,34 +85,60 @@ describe Guard::RSpec::Runner do
             service_double
           }
 
-          it 'does not notify notifies when RSpec fails to execute and using drb' do
+          context 'RSpec 1' do
+            it 'returns false when RSpec fails to execute' do
+              service.should_receive(:run) { false }
+
+              subject.run(['spec']).should be_false
+            end
+            it 'returns true when RSpec succeeds to execute' do
+              service.should_receive(:run) { true }
+
+              subject.run(['spec']).should be_true
+            end
+          end
+
+          context 'RSpec 2' do
+            it 'returns false when RSpec fails to execute' do
+              service.should_receive(:run) { 1 }
+
+              subject.run(['spec']).should be_false
+            end
+            it 'returns true when RSpec succeeds to execute' do
+              service.should_receive(:run) { 0 }
+
+              subject.run(['spec']).should be_true
+            end
+          end
+
+          it 'does not notify when RSpec fails to execute' do
             service.should_receive(:run) { 1 }
             Guard::Notifier.should_not_receive(:notify)
 
             subject.run(['spec'])
           end
 
-          it 'should fall back to the command runner with an inactive server' do
+          it 'falls back to the command runner with an inactive server' do
             service.should_receive(:run).and_raise(DRb::DRbConnError)
             subject.should_receive(:run_via_shell)
 
             subject.run(['spec'])
           end
 
-          it 'should default to DRb port 8989' do
+          it 'defaults to DRb port 8989' do
             service.should_receive(:run) { 0 }
             subject.run(['spec'])
             service.port.should == 8989
           end
 
-          it 'should honor RSPEC_DRB' do
+          it 'honors RSPEC_DRB' do
             ENV['RSPEC_DRB'] = '12345'
             service.should_receive(:run) { 0 }
             subject.run(['spec'])
             service.port.should == 12345
           end
 
-          it 'should honor --drb-port' do
+          it 'honors --drb-port' do
             service.should_receive(:run) { 0 }
             subject.run(['spec'], cli: '--drb --drb-port 2222')
             service.port.should == 2222
