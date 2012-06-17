@@ -342,6 +342,21 @@ describe Guard::RSpec::Runner do
             end
           end
         end
+
+        describe ':turnip' do
+          context ':turnip => true' do
+            subject { described_class.new(:turnip => true) }
+
+            it 'runs with Turnip support enabled' do
+              subject.should_receive(:system).with(
+                "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+                '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 -r turnip/rspec spec'
+              ).and_return(true)
+
+              subject.run(['spec'])
+            end
+          end
+        end
       end
     end
 

@@ -96,6 +96,12 @@ guard 'rspec', :spec_paths => "test" do
   # ...
 end
 ```
+[Turnip](https://github.com/jnicklas/turnip) is supported (Ruby 1.9.X only), but you must enable it:
+``` ruby
+guard 'rspec', :turnip => true do
+  # ...
+end
+```
 
 
 Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and have no effect anymore.
@@ -114,6 +120,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :keep_failed => false        # keep failed specs until they pass, default: true
 :run_all => { :cli => "-p" } # cli arguments to use when running all specs, default: same as :cli
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
+:turnip => true              # enable turnip support; default: false
 ```
 
 ### DRb mode

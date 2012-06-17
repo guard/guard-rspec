@@ -11,7 +11,8 @@ module Guard
           :binstubs     => false,
           :rvm          => nil,
           :cli          => nil,
-          :notification => true
+          :notification => true,
+          :turnip       => false
         }.merge(options)
 
         deprecations_warnings
@@ -85,6 +86,7 @@ module Guard
           arg_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
         end
         arg_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
+        arg_parts << "-r turnip/rspec" if @options[:turnip]
         arg_parts << paths.join(' ')
 
         arg_parts.compact.join(' ')
