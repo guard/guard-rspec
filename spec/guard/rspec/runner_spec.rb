@@ -298,9 +298,9 @@ describe Guard::RSpec::Runner do
           context ':bundler => false, :binstubs => true' do
             subject { described_class.new(:bundler => false, :binstubs => true) }
 
-            it 'runs without Bundler and binstubs' do
+            it 'runs without Bundler and with binstubs' do
               subject.should_receive(:system).with(
-                "rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+                "bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
               ).and_return(true)
 
@@ -311,9 +311,9 @@ describe Guard::RSpec::Runner do
           context ':bundler => true, :binstubs => true' do
             subject { described_class.new(:bundler => true, :binstubs => true) }
 
-            it 'runs with Bundler and binstubs' do
+            it 'runs without Bundler and binstubs' do
               subject.should_receive(:system).with(
-                "bundle exec bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+                "bin/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
               ).and_return(true)
 
@@ -324,9 +324,9 @@ describe Guard::RSpec::Runner do
           context ':bundler => true, :binstubs => "dir"' do
             subject { described_class.new(:bundler => true, :binstubs => 'dir') }
 
-            it 'runs with Bundler and binstubs in custom directory' do
+            it 'runs without Bundler and binstubs in custom directory' do
               subject.should_receive(:system).with(
-                "bundle exec dir/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+                "dir/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
                 '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
               ).and_return(true)
 

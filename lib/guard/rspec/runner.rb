@@ -47,7 +47,7 @@ module Guard
       def failure_exit_code_supported?
         @failure_exit_code_supported ||= begin
           cmd_parts = []
-          cmd_parts << "bundle exec" if bundler?
+          cmd_parts << "bundle exec" if bundle_exec?
           cmd_parts << rspec_executable
           cmd_parts << "--help"
           `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
@@ -95,7 +95,7 @@ module Guard
       def rspec_command(paths, options)
         cmd_parts = []
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
-        cmd_parts << "bundle exec" if bundler?
+        cmd_parts << "bundle exec" if bundle_exec?
         cmd_parts << rspec_executable
         cmd_parts << rspec_arguments(paths, options)
         cmd_parts.compact.join(' ')
@@ -185,7 +185,7 @@ module Guard
 
       def binstubs?
         if @binstubs.nil?
-          @binstubs = bundler? && @options[:binstubs]
+          @binstubs = !!@options[:binstubs]
         else
           @binstubs
         end
@@ -197,6 +197,10 @@ module Guard
         else
           @options[:binstubs]
         end
+      end
+
+      def bundle_exec?
+        bundler? && !binstubs?
       end
 
       def determine_rspec_version
