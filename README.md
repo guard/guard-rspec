@@ -123,6 +123,8 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :turnip => true              # enable turnip support; default: false
 ```
 
+You can also use a custom binstubs directory using `:binstubs => 'some-dir'`.
+
 ### DRb mode
 
 When you specify `--drb` within `:cli`, guard-rspec will circumvent the `rspec` command line tool by
