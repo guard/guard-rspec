@@ -40,7 +40,7 @@ module Guard
       def rspec_executable
         @rspec_executable ||= begin
           exec = rspec_class.downcase
-          binstubs? ? "bin/#{exec}" : exec
+          binstubs? ? "#{binstubs}/#{exec}" : exec
         end
       end
 
@@ -188,6 +188,14 @@ module Guard
           @binstubs = bundler? && @options[:binstubs]
         else
           @binstubs
+        end
+      end
+
+      def binstubs
+        if @options[:binstubs] == true
+          "bin"
+        else
+          @options[:binstubs]
         end
       end
 

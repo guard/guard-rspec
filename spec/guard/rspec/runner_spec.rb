@@ -320,6 +320,19 @@ describe Guard::RSpec::Runner do
               subject.run(['spec'])
             end
           end
+
+          context ':bundler => true, :binstubs => "dir"' do
+            subject { described_class.new(:bundler => true, :binstubs => 'dir') }
+
+            it 'runs with Bundler and binstubs in custom directory' do
+              subject.should_receive(:system).with(
+                "bundle exec dir/rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+                '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
+              ).and_return(true)
+
+              subject.run(['spec'])
+            end
+          end
         end
 
         describe ':notification' do
