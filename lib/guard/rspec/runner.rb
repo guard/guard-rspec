@@ -1,3 +1,5 @@
+require 'drb/drb'
+
 module Guard
   class RSpec
     class Runner

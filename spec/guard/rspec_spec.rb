@@ -9,7 +9,7 @@ describe Guard::RSpec do
   end
   subject { described_class.new }
 
-  let(:inspector) { mock(described_class::Inspector, :excluded= => nil, :spec_paths= => nil, :clean => []) }
+  let(:inspector) { mock(described_class::Inspector, :excluded= => nil, :spec_paths => ['spec'], :clean => []) }
   let(:runner)    { mock(described_class::Runner, :set_rspec_version => nil, :rspec_version => nil) }
 
   before do
@@ -70,7 +70,7 @@ describe Guard::RSpec do
     end
 
     it "should run all specs specified by the 'spec_paths' option" do
-      subject = described_class.new([], :spec_paths => ['spec', 'spec/fixtures/other_spec_path'])
+      inspector.stub(:spec_paths) { ['spec', 'spec/fixtures/other_spec_path'] }
       runner.should_receive(:run).with(['spec', 'spec/fixtures/other_spec_path'], anything) { true }
 
       subject.run_all
