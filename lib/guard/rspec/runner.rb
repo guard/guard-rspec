@@ -1,4 +1,5 @@
 require 'drb/drb'
+require 'rspec'
 
 module Guard
   class RSpec
@@ -67,13 +68,13 @@ module Guard
 
       def parsed_or_default_formatter
         @parsed_or_default_formatter ||= begin
-          file_name = "#{Dir.pwd}/.rspec"
-          parsed_formatter = if File.exist?(file_name)
-            formatters = File.read(file_name).scan(formatter_regex).flatten
-            formatters.map { |formatter| "-f #{formatter}" }.join(' ')
-          end
-
-          parsed_formatter.nil? || parsed_formatter.empty? ? '-f progress' : parsed_formatter
+          # Use RSpec's parser to parse formatters
+          formatters = ::RSpec::Core::ConfigurationOptions.new([]).parse_options[:formatters]
+          # Use a default formatter if none exists.
+          # RSpec's parser returns an array in the format [[formatter, output], ...], so match their format
+          formatters = [['progress']] if formatters.nil? || formatters.empty?
+          # Construct a matching command line option
+          formatters.map { |f| '-f ' + f[0] }.join ' '
         end
       end
 
