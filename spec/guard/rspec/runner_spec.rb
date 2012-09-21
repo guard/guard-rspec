@@ -437,9 +437,12 @@ describe Guard::RSpec::Runner do
   end
 
   describe '#parsed_or_default_formatter' do
+    OPTIONS_FILE = /\.rspec/
+
     context '.rspec file exists' do
       before do
         Dir.stub(:pwd).and_return(@fixture_path)
+        stub_with_fallback(File, :exist?).with(OPTIONS_FILE).and_return(true)
       end
 
       context 'and includes a --format option' do
@@ -452,6 +455,17 @@ describe Guard::RSpec::Runner do
         end
       end
 
+      context 'and includes a --format option in ERb' do
+        before do
+          stub_with_fallback(File, :read).with(OPTIONS_FILE).
+             and_return("--colour\n--format <%= 'doc' + 'umentation' %>")
+        end
+
+        it 'returns the formatter from .rspec file after evaluting ERb' do
+          subject.parsed_or_default_formatter.should eq '-f documentation'
+        end
+      end
+
       context 'but doesn\'t include a --format option' do
         before do
           File.stub(:read).and_return("--colour")
@@ -459,6 +473,17 @@ describe Guard::RSpec::Runner do
 
         it 'returns progress formatter' do
           subject.parsed_or_default_formatter.should eq '-f progress'
+        end
+      end
+
+      context 'but includes a commented --format option' do
+        before do
+          stub_with_fallback(File, :read).with(OPTIONS_FILE).
+             and_return("--colour\n<%# '--format documentation' %>")
+        end
+
+        it 'ignores the commented option' do
+          subject.parsed_or_default_formatter.should_not include('documentation')
         end
       end
     end

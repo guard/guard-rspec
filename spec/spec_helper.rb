@@ -14,3 +14,13 @@ RSpec.configure do |config|
   end
 
 end
+
+# Creates a stub that falls back to original behavior unless an argument matcher matches.
+# Example:
+#   stub_with_fallback(File, :exist?).with(/txt/).and_return(true)
+#   # calls unstubbed File.exist? for anything that doesn't match /txt/.
+def stub_with_fallback(obj, method)
+  original_method = obj.method(method)
+  obj.stub(method).with(anything()) { |*args| original_method.call(*args) }
+  return obj.stub(method)
+end
