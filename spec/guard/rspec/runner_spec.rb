@@ -439,15 +439,19 @@ describe Guard::RSpec::Runner do
   describe '#parsed_or_default_formatter' do
     OPTIONS_FILE = /\.rspec/
 
+    def stub_options_file(method, value)
+      stub_with_fallback(File, method).with(OPTIONS_FILE).and_return(value)
+    end
+
     context '.rspec file exists' do
       before do
         Dir.stub(:pwd).and_return(@fixture_path)
-        stub_with_fallback(File, :exist?).with(OPTIONS_FILE).and_return(true)
+        stub_options_file(:exist?, true)
       end
 
       context 'and includes a --format option' do
         before do
-          File.stub(:read).and_return("--colour\n--format RSpec::Instafail")
+          stub_options_file(:read, "--colour\n--format RSpec::Instafail")
         end
 
         it 'returns the formatter from .rspec file' do
@@ -457,8 +461,7 @@ describe Guard::RSpec::Runner do
 
       context 'and includes a --format option in ERb' do
         before do
-          stub_with_fallback(File, :read).with(OPTIONS_FILE).
-             and_return("--colour\n--format <%= 'doc' + 'umentation' %>")
+          stub_options_file(:read, "--colour\n--format <%= 'doc' + 'umentation' %>")
         end
 
         it 'returns the formatter from .rspec file after evaluting ERb' do
@@ -468,7 +471,7 @@ describe Guard::RSpec::Runner do
 
       context 'but doesn\'t include a --format option' do
         before do
-          File.stub(:read).and_return("--colour")
+          stub_options_file(:read, "--colour")
         end
 
         it 'returns progress formatter' do
@@ -478,8 +481,7 @@ describe Guard::RSpec::Runner do
 
       context 'but includes a commented --format option' do
         before do
-          stub_with_fallback(File, :read).with(OPTIONS_FILE).
-             and_return("--colour\n<%# '--format documentation' %>")
+          stub_options_file(:read, "--colour\n<%# '--format documentation' %>")
         end
 
         it 'ignores the commented option' do
@@ -489,7 +491,7 @@ describe Guard::RSpec::Runner do
     end
 
     context '.rspec file doesn\'t exists' do
-      before { File.stub(:exist?).and_return(false) }
+      before { stub_options_file(:exist?, false) }
 
       it 'returns progress formatter' do
         subject.parsed_or_default_formatter.should eq '-f progress'
