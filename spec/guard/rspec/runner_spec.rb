@@ -443,6 +443,8 @@ describe Guard::RSpec::Runner do
       stub_with_fallback(File, method).with(OPTIONS_FILE).and_return(value)
     end
 
+    let(:formatters) { subject.parsed_or_default_formatter }
+
     context '.rspec file exists' do
       before do
         Dir.stub(:pwd).and_return(@fixture_path)
@@ -455,7 +457,7 @@ describe Guard::RSpec::Runner do
         end
 
         it 'returns the formatter from .rspec file' do
-          subject.parsed_or_default_formatter.should eq '-f RSpec::Instafail'
+          formatters.should eq '-f RSpec::Instafail'
         end
 
         context 'using ERb syntax' do
@@ -464,18 +466,37 @@ describe Guard::RSpec::Runner do
           end
 
           it 'evalutes ERb expressions' do
-            subject.parsed_or_default_formatter.should eq '-f documentation'
+            formatters.should eq '-f documentation'
           end
         end
 
         context 'while specifying an output file' do
-          it 'specifies the output file'
+          before do
+            stub_options_file(:read, "--format documentation --out doc/specs.txt")
+          end
+
+          it 'specifies the output file' do
+            formatters.should eq '-f documentation -o doc/specs.txt'
+          end
         end
       end
 
       context 'and includes multiple --format options' do
-        it 'returns all the formatters from .rspec file'
-        it 'specifies all the output files in the same order'
+        before do
+          stub_options_file(:read, "--format html --out doc/specs.html " +
+                                   "--format progress " +
+                                   "--format documentation --out doc/specs.txt")
+        end
+
+        it 'returns all the formatters from .rspec file' do
+          formatters.should include('-f html', '-f progress', '-f documentation')
+        end
+
+        it 'returns the output files for the specified formatters' do
+          formatters.should include('-f html -o doc/specs.html',
+                                    '-f documentation -o doc/specs.txt')
+          formatters.should_not include('-f progress -o') 
+        end
       end
 
       context 'but doesn\'t include a --format option' do
@@ -484,11 +505,17 @@ describe Guard::RSpec::Runner do
         end
 
         it 'returns progress formatter' do
-          subject.parsed_or_default_formatter.should eq '-f progress'
+          formatters.should eq '-f progress'
         end
 
         context 'yet includes a --out option' do
-          it 'returns progress formatter with the output file option'
+          before do
+            stub_options_file(:read, "--out /dev/null")
+          end
+
+          it 'returns progress formatter with the output file option' do
+            formatters.should eq '-f progress -o /dev/null'
+          end
         end
       end
 
@@ -498,7 +525,7 @@ describe Guard::RSpec::Runner do
         end
 
         it 'ignores the commented option' do
-          subject.parsed_or_default_formatter.should_not include('documentation')
+          formatters.should_not include('documentation')
         end
       end
     end
@@ -507,7 +534,7 @@ describe Guard::RSpec::Runner do
       before { stub_options_file(:exist?, false) }
 
       it 'returns progress formatter' do
-        subject.parsed_or_default_formatter.should eq '-f progress'
+        formatters.should eq '-f progress'
       end
     end
   end
