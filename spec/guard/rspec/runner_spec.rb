@@ -457,16 +457,25 @@ describe Guard::RSpec::Runner do
         it 'returns the formatter from .rspec file' do
           subject.parsed_or_default_formatter.should eq '-f RSpec::Instafail'
         end
+
+        context 'using ERb syntax' do
+          before do
+            stub_options_file(:read, "--colour\n--format <%= 'doc' + 'umentation' %>")
+          end
+
+          it 'evalutes ERb expressions' do
+            subject.parsed_or_default_formatter.should eq '-f documentation'
+          end
+        end
+
+        context 'while specifying an output file' do
+          it 'specifies the output file'
+        end
       end
 
-      context 'and includes a --format option in ERb' do
-        before do
-          stub_options_file(:read, "--colour\n--format <%= 'doc' + 'umentation' %>")
-        end
-
-        it 'returns the formatter from .rspec file after evaluting ERb' do
-          subject.parsed_or_default_formatter.should eq '-f documentation'
-        end
+      context 'and includes multiple --format options' do
+        it 'returns all the formatters from .rspec file'
+        it 'specifies all the output files in the same order'
       end
 
       context 'but doesn\'t include a --format option' do
@@ -476,6 +485,10 @@ describe Guard::RSpec::Runner do
 
         it 'returns progress formatter' do
           subject.parsed_or_default_formatter.should eq '-f progress'
+        end
+
+        context 'yet includes a --out option' do
+          it 'returns progress formatter with the output file option'
         end
       end
 
