@@ -69,12 +69,12 @@ module Guard
       def parsed_or_default_formatter
         @parsed_or_default_formatter ||= begin
           # Use RSpec's parser to parse formatters
-          formatters = ::RSpec::Core::ConfigurationOptions.new([]).parse_options[:formatters]
+          formatters = ::RSpec::Core::ConfigurationOptions.new([]).parse_options()[:formatters]
           # Use a default formatter if none exists.
           # RSpec's parser returns an array in the format [[formatter, output], ...], so match their format
           formatters = [['progress']] if formatters.nil? || formatters.empty?
-          # Construct a matching command line option
-          formatters.map { |f| '-f ' + f[0] }.join ' '
+          # Construct a matching command line option, including output target
+          formatters.map { |formatter| "-f #{formatter.join ' -o '}" }.join ' '
         end
       end
 
