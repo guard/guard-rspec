@@ -50,7 +50,6 @@ module Guard
       def failure_exit_code_supported?
         @failure_exit_code_supported ||= begin
           cmd_parts = []
-          cmd_parts << environment_variables
           cmd_parts << "bundle exec" if bundle_exec?
           cmd_parts << rspec_executable
           cmd_parts << "--help"
@@ -103,8 +102,8 @@ module Guard
 
         def rspec_command(paths, options)
           cmd_parts = []
-          cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
           cmd_parts << environment_variables
+          cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
           cmd_parts << "bundle exec" if bundle_exec?
           cmd_parts << rspec_executable
           cmd_parts << rspec_arguments(paths, options)
