@@ -96,6 +96,13 @@ guard 'rspec', :spec_paths => "test" do
   # ...
 end
 ```
+If you want to set an environment variable, you can configure `:env` option with a hash:
+
+``` ruby
+guard 'rspec', :env => {'RAILS_ENV' => 'guard'} do
+  # ...
+end
+```
 [Turnip](https://github.com/jnicklas/turnip) is supported (Ruby 1.9.X only), but you must enable it:
 ``` ruby
 guard 'rspec', :turnip => true do
