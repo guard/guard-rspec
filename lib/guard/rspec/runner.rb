@@ -14,7 +14,8 @@ module Guard
           :rvm          => nil,
           :cli          => nil,
           :notification => true,
-          :turnip       => false
+          :turnip       => false,
+          :zeus         => false
         }.merge(options)
 
         deprecations_warnings
@@ -98,6 +99,7 @@ module Guard
         cmd_parts = []
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundle_exec?
+        cmd_parts << 'zeus' if zeus?
         cmd_parts << rspec_executable
         cmd_parts << rspec_arguments(paths, options)
         cmd_parts.compact.join(' ')
@@ -191,6 +193,10 @@ module Guard
         else
           @binstubs
         end
+      end
+
+      def zeus?
+        @zeus = @options[:zeus].nil? ? false : @options[:zeus]
       end
 
       def binstubs

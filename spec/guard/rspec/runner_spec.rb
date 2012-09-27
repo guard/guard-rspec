@@ -202,6 +202,20 @@ describe Guard::RSpec::Runner do
           end
         end
 
+        describe ':zeus' do
+          context ":zeus => true" do
+            subject { described_class.new(:zeus => true) }
+
+            it 'runs with zeus' do
+              subject.should_receive(:system).with('bundle exec zeus rspec ' <<
+                "-f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+              '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
+              )
+              subject.run(['spec'])
+            end
+          end
+        end
+
         describe ':cli' do
           context ":cli => '--color --drb --fail-fast'" do
             subject { described_class.new(:cli => '--color --drb --fail-fast') }
