@@ -196,7 +196,7 @@ module Guard
       end
 
       def zeus?
-        @zeus = @options[:zeus].nil? ? false : @options[:zeus]
+        @zeus = @options[:zeus] || false
       end
 
       def binstubs
