@@ -14,6 +14,7 @@ module Guard
           :binstubs     => false,
           :rvm          => nil,
           :cli          => nil,
+          :env          => nil,
           :notification => true,
           :turnip       => false
         }.merge(options)
@@ -80,6 +81,11 @@ module Guard
 
     private
 
+      def environment_variables
+        return if @options[:env].nil?
+        "export " + @options[:env].map {|key, value| "#{key}=#{value}"}.join(' ') + ';'
+      end
+
       def rspec_arguments(paths, options)
         arg_parts = []
         arg_parts << options[:cli]
@@ -97,6 +103,7 @@ module Guard
 
       def rspec_command(paths, options)
         cmd_parts = []
+        cmd_parts << environment_variables
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundle_exec?
         cmd_parts << rspec_executable
@@ -230,7 +237,6 @@ module Guard
       def formatter_regex
         @formatter_regex ||= /(?:^|\s)(?:-f\s*|--format(?:=|\s+))([\w:]+)/
       end
-
     end
   end
 end
