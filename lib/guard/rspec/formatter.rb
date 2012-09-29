@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/../rspec"
+require 'guard/rspec'
 require 'guard/notifier'
 require "rspec/core/formatters/base_formatter"
 
