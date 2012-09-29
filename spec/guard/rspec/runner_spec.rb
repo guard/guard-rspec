@@ -370,6 +370,21 @@ describe Guard::RSpec::Runner do
             end
           end
         end
+
+        describe ':env' do
+          context ":env => {'RAILS_ENV' => 'blue'}" do
+            subject { described_class.new(:env => {'RAILS_ENV' => 'blue'}) }
+
+            it 'sets the Rails environment' do
+              subject.should_receive(:system).with(
+                "export RAILS_ENV=blue; bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
+                '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
+                ).and_return(true)
+
+              subject.run(['spec'])
+            end
+          end
+        end
       end
     end
 
