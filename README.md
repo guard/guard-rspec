@@ -2,7 +2,7 @@
 
 RSpec guard allows to automatically & intelligently launch specs when files are modified.
 
-* Compatible with RSpec 1.x & RSpec 2.x (>= 2.4 needed for the notification feature).
+* Compatible with RSpec >= 2.11 (use guard-rspec 1.2.x for older release, including RSpec 1.x)
 * Tested against Ruby 1.8.7, 1.9.2, 1.9.3, REE and the latest versions of JRuby & Rubinius.
 
 ## Install
@@ -66,14 +66,6 @@ Please read [Guard doc](https://github.com/guard/guard#readme) for more informat
 
 ## Options
 
-By default, Guard::RSpec automatically detect your RSpec version (with the `spec_helper.rb` syntax or with Bundler) but you can force the version with the `:version` option:
-
-``` ruby
-guard 'rspec', :version => 2 do
-  # ...
-end
-```
-
 You can pass any of the standard RSpec CLI options using the `:cli` option:
 
 ``` ruby
@@ -116,7 +108,6 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 ### List of available options:
 
 ``` ruby
-:version => 1                # force use RSpec version 1, default: 2
 :cli => "-c -f doc"          # pass arbitrary RSpec CLI arguments, default: "-f progress"
 :bundler => false            # use "bundle exec" to run the RSpec command, default: true
 :binstubs => true            # use "bin/rspec" to run the RSpec command (takes precedence over :bundle), default: false

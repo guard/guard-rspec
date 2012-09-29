@@ -1,7 +1,14 @@
 require "#{File.dirname(__FILE__)}/../rspec"
 require 'guard/notifier'
+require "rspec/core/formatters/base_formatter"
 
-module Guard::RSpec::Formatter
+class Guard::RSpec::Formatter < RSpec::Core::Formatters::BaseFormatter
+
+  def dump_summary(duration, total, failures, pending)
+    message = guard_message(total, failures, pending, duration)
+    image   = guard_image(failures, pending)
+    notify(message, image)
+  end
 
   def guard_message(example_count, failure_count, pending_count, duration)
     message = "#{example_count} examples, #{failure_count} failures"

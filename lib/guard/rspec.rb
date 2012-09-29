@@ -24,7 +24,7 @@ module Guard
 
     # Call once when guard starts
     def start
-      UI.info "Guard::RSpec is running, with RSpec #{@runner.rspec_version}!"
+      UI.info "Guard::RSpec is running"
       run_all if @options[:all_on_start]
     end
 

@@ -4,7 +4,6 @@ require 'rspec'
 module Guard
   class RSpec
     class Runner
-      attr_reader :rspec_version
 
       FAILURE_EXIT_CODE = 2
 
@@ -37,15 +36,8 @@ module Guard
         end
       end
 
-      def rspec_version
-        @rspec_version ||= @options[:version] || determine_rspec_version
-      end
-
       def rspec_executable
-        @rspec_executable ||= begin
-          exec = rspec_class.downcase
-          binstubs? ? "#{binstubs}/#{exec}" : exec
-        end
+        @rspec_executable ||= binstubs? ? "#{binstubs}/rspec" : "rspec"
       end
 
       def failure_exit_code_supported?
@@ -56,15 +48,6 @@ module Guard
           cmd_parts << "--help"
           `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
         end
-      end
-
-      def rspec_class
-        @rspec_class ||= case rspec_version
-                         when 1
-                           "Spec"
-                         when 2
-                           "RSpec"
-                         end
       end
 
       def parsed_or_default_formatter
@@ -91,8 +74,8 @@ module Guard
         arg_parts << options[:cli]
         if @options[:notification]
           arg_parts << parsed_or_default_formatter unless options[:cli] =~ formatter_regex
-          arg_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
-          arg_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
+          arg_parts << "-r #{File.dirname(__FILE__)}/formatter.rb"
+          arg_parts << "-f Guard::RSpec::Formatter --out /dev/null"
         end
         arg_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
         arg_parts << "-r turnip/rspec" if @options[:turnip]
@@ -145,20 +128,15 @@ module Guard
       end
 
       def drb_used?
-        if @drb_used.nil?
-          @drb_used = @options[:cli] && @options[:cli].include?('--drb')
-        else
-          @drb_used
-        end
+        @drb_used ||= @options[:cli] && @options[:cli].include?('--drb')
       end
 
-      # RSpec 1 & 2 use the same DRb call signature, and we can avoid loading a large chunk of rspec
+      # W we can avoid loading a large chunk of rspec
       # just to let DRb know what to do.
       #
       # For reference:
       #
-      # * RSpec 1: https://github.com/myronmarston/rspec-1/blob/master/lib/spec/runner/drb_command_line.rb
-      # * RSpec 2: https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/drb_command_line.rb
+      # * RSpec: https://github.com/rspec/rspec-core/blob/master/lib/rspec/core/drb_command_line.rb
       def drb_service(port)
         require "drb/drb"
 
@@ -178,50 +156,23 @@ module Guard
       end
 
       def bundler_allowed?
-        if @bundler_allowed.nil?
-          @bundler_allowed = File.exist?("#{Dir.pwd}/Gemfile")
-        else
-          @bundler_allowed
-        end
+        @bundler_allowed ||= File.exist?("#{Dir.pwd}/Gemfile")
       end
 
       def bundler?
-        if @bundler.nil?
-          @bundler = bundler_allowed? && @options[:bundler]
-        else
-          @bundler
-        end
+        @bundler ||= bundler_allowed? && @options[:bundler]
       end
 
       def binstubs?
-        if @binstubs.nil?
-          @binstubs = !!@options[:binstubs]
-        else
-          @binstubs
-        end
+        @binstubs ||= !!@options[:binstubs]
       end
 
       def binstubs
-        if @options[:binstubs] == true
-          "bin"
-        else
-          @options[:binstubs]
-        end
+        @options[:binstubs] == true ? "bin" : @options[:binstubs]
       end
 
       def bundle_exec?
         bundler? && !binstubs?
-      end
-
-      def determine_rspec_version
-        if File.exist?("#{Dir.pwd}/spec/spec_helper.rb")
-          File.new("#{Dir.pwd}/spec/spec_helper.rb").read.include?("Spec::Runner") ? 1 : 2
-        elsif bundler_allowed?
-          ENV['BUNDLE_GEMFILE'] = "#{Dir.pwd}/Gemfile"
-          `bundle show rspec`.include?("/rspec-1.") ? 1 : 2
-        else
-          2
-        end
       end
 
       def deprecations_warnings
@@ -231,6 +182,10 @@ module Guard
             @options.delete(key)
             UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}
           end
+        end
+        if @options.key?(:version)
+            @options.delete(:version)
+            UI.info %{DEPRECATION WARNING: The :version option is deprecated. Only RSpec 2 is now supported.}
         end
       end
 
