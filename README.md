@@ -119,6 +119,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :run_all => { :cli => "-p" } # cli arguments to use when running all specs, default: same as :cli
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
 :turnip => true              # enable turnip support; default: false
+:zeus => true                # enable zeus support; default: false
 ```
 
 You can also use a custom binstubs directory using `:binstubs => 'some-dir'`.
