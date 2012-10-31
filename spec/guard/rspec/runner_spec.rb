@@ -192,8 +192,8 @@ describe Guard::RSpec::Runner do
 
             it 'runs with zeus' do
               subject.should_receive(:system).with('bundle exec zeus rspec ' <<
-                "-f progress -r #{@lib_path.join('guard/rspec/formatters/notification_rspec.rb')} " <<
-              '-f Guard::RSpec::Formatter::NotificationRSpec --out /dev/null --failure-exit-code 2 spec'
+                "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+              '-f Guard::RSpec::Formatter --out /dev/null --failure-exit-code 2 spec'
               )
               subject.run(['spec'])
             end
