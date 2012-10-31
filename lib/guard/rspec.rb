@@ -6,6 +6,8 @@ module Guard
     autoload :Runner,    'guard/rspec/runner'
     autoload :Inspector, 'guard/rspec/inspector'
 
+    attr_accessor :last_failed, :failed_paths
+
     def initialize(watchers = [], options = {})
       super
       @options = {
@@ -43,14 +45,14 @@ module Guard
     end
 
     def run_on_changes(paths)
-      paths += @failed_paths if @options[:keep_failed]
+      paths += failed_paths if @options[:keep_failed]
       paths  = @inspector.clean(paths)
 
       if passed = @runner.run(paths)
         remove_failed(paths)
 
         # run all the specs if the run before this one failed
-        if @last_failed && @options[:all_after_pass]
+        if last_failed && @options[:all_after_pass]
           @last_failed = false
           run_all
         end
