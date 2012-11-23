@@ -120,6 +120,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
 :turnip => true              # enable turnip support; default: false
 :zeus => true                # enable zeus support; default: false
+:focus_on_failed => false    # focus on the first 10 failed specs first, rerun till they pass
 ```
 
 You can also use a custom binstubs directory using `:binstubs => 'some-dir'`.
