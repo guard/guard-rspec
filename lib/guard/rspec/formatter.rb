@@ -9,6 +9,7 @@ class Guard::RSpec::Formatter < RSpec::Core::Formatters::BaseFormatter
 
     # if this fails don't kill everything
     begin
+      FileUtils.mkdir_p('tmp')
       File.open("./tmp/rspec_guard_result","w") do |f|
         f.puts failed_specs.join("\n")
       end
