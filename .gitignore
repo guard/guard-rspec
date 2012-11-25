@@ -3,6 +3,8 @@ pkg/*
 .bundle
 Gemfile.lock
 *.rbc
+tmp/*
+*.swp
 
 ## MAC OS
 .DS_Store
@@ -11,3 +13,4 @@ Gemfile.lock
 .fseventsd
 Desktop DB
 Desktop DF
+

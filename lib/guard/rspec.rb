@@ -11,6 +11,7 @@ module Guard
     def initialize(watchers = [], options = {})
       super
       @options = {
+        :focus_on_failed => false,
         :all_after_pass => true,
         :all_on_start   => true,
         :keep_failed    => true,
@@ -45,8 +46,20 @@ module Guard
     end
 
     def run_on_changes(paths)
-      paths += failed_paths if @options[:keep_failed]
-      paths  = @inspector.clean(paths)
+
+      if @last_failed && @options[:focus_on_failed]
+        path = './tmp/rspec_guard_result'
+        if File.exist?(path)
+          paths = File.open(path) { |file| file.read.split("\n") }
+          File.delete(path)
+
+          # some sane limit, stuff will explode if all tests fail ... cap at 10
+          paths = paths[0..10]
+        end
+      else
+        paths += failed_paths if @options[:keep_failed]
+        paths  = @inspector.clean(paths)
+      end
 
       if passed = @runner.run(paths)
         remove_failed(paths)
