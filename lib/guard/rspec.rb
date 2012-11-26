@@ -58,8 +58,9 @@ module Guard
         end
       else
         paths += failed_paths if @options[:keep_failed]
-        paths  = @inspector.clean(paths)
       end
+      
+      paths  = @inspector.clean(paths)
 
       if passed = @runner.run(paths)
         remove_failed(paths)
