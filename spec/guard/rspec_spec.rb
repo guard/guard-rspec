@@ -4,7 +4,7 @@ describe Guard::RSpec do
   let(:default_options) do
     {
       :all_after_pass => true, :all_on_start => true, :keep_failed => true,
-      :spec_paths => ['spec'], :run_all => {}
+      :spec_paths => ['spec'], :run_all => {}, :focus_on_failed => false
     }
   end
   subject { described_class.new }
