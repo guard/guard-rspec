@@ -47,21 +47,36 @@ module Guard
 
     def run_on_changes(paths)
 
+      focused = false
       if @last_failed && @options[:focus_on_failed]
         path = './tmp/rspec_guard_result'
         if File.exist?(path)
-          paths = File.open(path) { |file| file.read.split("\n") }
+          single_spec = paths && paths.length == 1 && paths[0].include?("_spec") ? paths[0] : nil
+          failed_specs = File.open(path) { |file| file.read.split("\n") }
           File.delete(path)
+          
+          if single_spec
+            failed_specs = failed_specs.select{|p| p.include? single_spec}
+          end
 
-          # some sane limit, stuff will explode if all tests fail ... cap at 10
-          paths = paths[0..10]
+          if failed_specs.any?
+            # some sane limit, stuff will explode if all tests fail ... cap at 10
+            paths = failed_specs[0..10]
+            focused = true
+          end
+
+          # switch focus to the single spec
+          if single_spec
+            focused = true
+          end
         end
-      else
-        paths += failed_paths if @options[:keep_failed]
       end
       
-      paths  = @inspector.clean(paths)
-
+      unless focused
+        paths += failed_paths if @options[:keep_failed]
+        paths  = @inspector.clean(paths)
+      end
+      
       if passed = @runner.run(paths)
         remove_failed(paths)
 
