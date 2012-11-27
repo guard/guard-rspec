@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'fileutils'
 
 describe Guard::RSpec do
   let(:default_options) do
@@ -175,6 +176,31 @@ describe Guard::RSpec do
 
       expect { subject.run_on_changes(['spec/foo']) }.to throw_symbol :task_has_failed
     end
+
+
+    describe "focus_on_failed" do 
+      before do
+        FileUtils.mkdir_p('tmp')
+        File.open('./tmp/rspec_guard_result', 'w') do |f|
+          f.puts("./a_spec.rb:1\n./a_spec.rb:7")
+        end
+        @subject = described_class.new([], :focus_on_failed => true)
+        @subject.last_failed = true
+      end
+      it "switches focus if a single spec changes" do
+        runner.should_receive(:run).with(['b_spec.rb']) { false }
+        lambda { @subject.run_on_changes(['b_spec.rb']) }.should throw_symbol(:task_has_failed)
+      end
+      it "keeps focus if a single spec remains" do 
+        runner.should_receive(:run).with(['./a_spec.rb:1', './a_spec.rb:7']) { false }
+        lambda { @subject.run_on_changes(['a_spec.rb']) }.should throw_symbol(:task_has_failed)
+      end
+      it "keeps focus if random stuff changes" do 
+        runner.should_receive(:run).with(['./a_spec.rb:1', './a_spec.rb:7']) { false }
+        lambda { @subject.run_on_changes(['bob.rb','bill.rb']) }.should throw_symbol(:task_has_failed)
+      end
+    end
+
   end
 
 end
