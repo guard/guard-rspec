@@ -3,19 +3,14 @@ source :rubygems
 gemspec
 
 gem 'rake'
-gem 'listen', :github => 'guard/listen'
+gem 'listen'
 
 # The development group will no be
 # installed on Travis CI.
 #
 group :development do
 
-  platform :ruby_19 do
-    gem 'coolline'
-  end
-
   require 'rbconfig'
-
   if RbConfig::CONFIG['target_os'] =~ /darwin/i
     gem 'growl', :require => false
     gem 'rb-fsevent', :require => false
