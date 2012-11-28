@@ -124,7 +124,7 @@ describe Guard::RSpec::Runner do
 
           it 'honors --drb-port' do
             service.should_receive(:run) { 0 }
-            subject.run(['spec'], cli: '--drb --drb-port 2222')
+            subject.run(['spec'], :cli => '--drb --drb-port 2222')
             service.port.should == 2222
           end
         end
