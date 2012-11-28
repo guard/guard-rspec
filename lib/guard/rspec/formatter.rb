@@ -5,7 +5,7 @@ require "rspec/core/formatters/base_formatter"
 class Guard::RSpec::Formatter < RSpec::Core::Formatters::BaseFormatter
 
   def dump_summary(duration, total, failures, pending)
-    failed_specs = examples.keep_if{|e| e.execution_result[:status] == "failed"}.map{|s| s.metadata[:location]}
+    failed_specs = examples.delete_if{|e| e.execution_result[:status] != "failed"}.map{|s| s.metadata[:location]}
 
     # if this fails don't kill everything
     begin
