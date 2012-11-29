@@ -6,7 +6,7 @@ module Guard
     autoload :Runner,    'guard/rspec/runner'
     autoload :Inspector, 'guard/rspec/inspector'
 
-    attr_accessor :last_failed, :failed_paths
+    attr_accessor :last_failed, :failed_paths, :runner
 
     def initialize(watchers = [], options = {})
       super
