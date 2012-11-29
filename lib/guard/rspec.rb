@@ -6,7 +6,7 @@ module Guard
     autoload :Runner,    'guard/rspec/runner'
     autoload :Inspector, 'guard/rspec/inspector'
 
-    attr_accessor :last_failed, :failed_paths
+    attr_accessor :last_failed, :failed_paths, :runner, :inspector
 
     def initialize(watchers = [], options = {})
       super
@@ -54,7 +54,7 @@ module Guard
           single_spec = paths && paths.length == 1 && paths[0].include?("_spec") ? paths[0] : nil
           failed_specs = File.open(path) { |file| file.read.split("\n") }
           File.delete(path)
-          
+
           if single_spec
             failed_specs = failed_specs.select{|p| p.include? single_spec}
           end
@@ -71,12 +71,12 @@ module Guard
           end
         end
       end
-      
+
       unless focused
         paths += failed_paths if @options[:keep_failed]
         paths  = @inspector.clean(paths)
       end
-      
+
       if passed = @runner.run(paths)
         remove_failed(paths)
 

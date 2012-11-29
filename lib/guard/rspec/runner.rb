@@ -7,6 +7,8 @@ module Guard
 
       FAILURE_EXIT_CODE = 2
 
+      attr_accessor :options
+
       def initialize(options = {})
         @options = {
           :bundler      => true,
