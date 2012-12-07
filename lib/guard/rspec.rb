@@ -47,8 +47,10 @@ module Guard
 
     def run_on_changes(paths)
 
+      original_paths = paths.dup
+
       focused = false
-      if @last_failed && @options[:focus_on_failed]
+      if last_failed && @options[:focus_on_failed]
         path = './tmp/rspec_guard_result'
         if File.exist?(path)
           single_spec = paths && paths.length == 1 && paths[0].include?("_spec") ? paths[0] : nil
@@ -72,22 +74,31 @@ module Guard
         end
       end
 
-      unless focused
+      if focused
+        add_failed(original_paths)
+        add_failed(paths.map{|p| p.split(":")[0]})
+      else
         paths += failed_paths if @options[:keep_failed]
-        paths  = @inspector.clean(paths)
+        paths  = @inspector.clean(paths).uniq
       end
 
       if passed = @runner.run(paths)
-        remove_failed(paths)
+        unless focused
+          remove_failed(paths)
+        end
 
+        if last_failed && focused
+          run_on_changes(failed_paths)
         # run all the specs if the run before this one failed
-        if last_failed && @options[:all_after_pass]
+        elsif last_failed && @options[:all_after_pass]
           @last_failed = false
           run_all
         end
       else
         @last_failed = true
-        add_failed(paths)
+        unless focused
+          add_failed(paths)
+        end
 
         throw :task_has_failed
       end
@@ -103,7 +114,10 @@ module Guard
     end
 
     def add_failed(paths)
-      @failed_paths += paths if @options[:keep_failed]
+      if @options[:keep_failed]
+        @failed_paths += paths 
+        @failed_paths.uniq!
+      end
     end
 
   end
