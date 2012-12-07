@@ -184,7 +184,7 @@ describe Guard::RSpec do
         File.open('./tmp/rspec_guard_result', 'w') do |f|
           f.puts("./a_spec.rb:1\n./a_spec.rb:7")
         end
-        @subject = described_class.new([], :focus_on_failed => true)
+        @subject = described_class.new([], :focus_on_failed => true, :keep_failed => true)
         @subject.last_failed = true
       end
       it "switches focus if a single spec changes" do
@@ -198,6 +198,24 @@ describe Guard::RSpec do
       it "keeps focus if random stuff changes" do 
         runner.should_receive(:run).with(['./a_spec.rb:1', './a_spec.rb:7']) { false }
         lambda { @subject.run_on_changes(['bob.rb','bill.rb']) }.should throw_symbol(:task_has_failed)
+      end
+      it "reruns the tests on the file if keep_failed is true and focused tests pass" do 
+
+        # explanation of test: 
+        #
+        # If we detect any change, we first check the last rspec failure, we attempt to focus. 
+        # As soon as that passes we run all the specs that failed up until now
+        #
+
+        runner.should_receive(:run).with(['./a_spec.rb:1', './a_spec.rb:7']) { true }
+        runner.should_receive(:run).with(['./a_spec.rb', './b_spec']) { true }
+        runner.should_receive(:run).with(['spec'], :message => "Running all specs") { true }
+
+        inspector.stub(:clean) do |ary|
+          ary
+        end
+
+        @subject.run_on_changes(['./a_spec.rb','./b_spec']) 
       end
     end
 
