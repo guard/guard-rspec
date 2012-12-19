@@ -55,20 +55,23 @@ module Guard
         if File.exist?(path)
           single_spec = paths && paths.length == 1 && paths[0].include?("_spec") ? paths[0] : nil
           failed_specs = File.open(path) { |file| file.read.split("\n") }
+
           File.delete(path)
 
-          if single_spec
+          if single_spec && @inspector.clean([single_spec]).length == 1
             failed_specs = failed_specs.select{|p| p.include? single_spec}
           end
-
+          
           if failed_specs.any?
-            # some sane limit, stuff will explode if all tests fail ... cap at 10
+            # some sane limit, stuff will explode if all tests fail 
+            #   ... cap at 10
+
             paths = failed_specs[0..10]
             focused = true
           end
 
           # switch focus to the single spec
-          if single_spec
+          if single_spec and failed_specs.length > 0
             focused = true
           end
         end
