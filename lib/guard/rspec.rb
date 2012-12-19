@@ -71,7 +71,7 @@ module Guard
           end
 
           # switch focus to the single spec
-          if single_spec and failed_specs.length == 1
+          if single_spec and failed_specs.length > 0
             focused = true
           end
         end
