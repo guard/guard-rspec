@@ -102,6 +102,12 @@ guard 'rspec', :turnip => true do
 end
 ```
 
+[ParallelTests](https://github.com/grosser/parallel_tests) is supported, but you must enable it:
+``` ruby
+guard 'rspec', :parallel => true, :parallel_cli => '-n 2' do
+  # ...
+end
+```
 
 Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and have no effect anymore.
 
@@ -121,6 +127,8 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :turnip => true              # enable turnip support; default: false
 :zeus => true                # enable zeus support; default: false
 :focus_on_failed => false    # focus on the first 10 failed specs first, rerun till they pass
+:parallel => true            # run all specs in parallel using [ParallelTests](https://github.com/grosser/parallel_tests) gem, default: false
+:parallel_cli => "-n 2"      # pass arbitrary Parallel Tests arguments, default: ""
 ```
 
 You can also use a custom binstubs directory using `:binstubs => 'some-dir'`.
