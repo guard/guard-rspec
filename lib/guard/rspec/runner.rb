@@ -40,7 +40,8 @@ module Guard
       end
 
       def rspec_executable
-        @rspec_executable ||= binstubs? ? "#{binstubs}/rspec" : "rspec"
+        command = parallel? ? 'parallel_rspec' : 'rspec'
+        @rspec_executable ||= binstubs? ? "#{binstubs}/#{command}" : command
       end
 
       def failure_exit_code_supported?
@@ -82,6 +83,15 @@ module Guard
         end
         arg_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
         arg_parts << "-r turnip/rspec" if @options[:turnip]
+        arg_parts << paths.join(' ') unless paths.nil?
+
+        arg_parts.compact.join(' ')
+      end
+
+      def parallel_rspec_arguments(paths, options)
+        arg_parts = []
+        arg_parts << options[:parallel_cli]
+        arg_parts << "-o '#{rspec_arguments(nil, options)}'"
         arg_parts << paths.join(' ')
 
         arg_parts.compact.join(' ')
@@ -92,9 +102,10 @@ module Guard
         cmd_parts << environment_variables
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundle_exec?
-        cmd_parts << 'zeus' if zeus?
+        cmd_parts << 'zeus' if zeus? and !parallel?
         cmd_parts << rspec_executable
-        cmd_parts << rspec_arguments(paths, options)
+        cmd_parts << rspec_arguments(paths, options) if !parallel?
+        cmd_parts << parallel_rspec_arguments(paths, options) if parallel?
         cmd_parts.compact.join(' ')
       end
 
@@ -173,6 +184,10 @@ module Guard
 
       def zeus?
         @options[:zeus] || false
+      end
+
+      def parallel?
+        @options[:parallel] || false
       end
 
       def binstubs
