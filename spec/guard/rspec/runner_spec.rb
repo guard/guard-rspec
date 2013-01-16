@@ -197,6 +197,17 @@ describe Guard::RSpec::Runner do
               )
               subject.run(['spec'])
             end
+
+            context ":binstubs => true" do
+              subject { described_class.new(:zeus => true, :binstubs => true) }
+              it 'runs with zeus' do
+                subject.should_receive(:system).with('bin/zeus rspec ' <<
+                  "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+                )
+                subject.run(['spec'])
+              end
+            end
           end
         end
 
@@ -210,6 +221,17 @@ describe Guard::RSpec::Runner do
               '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
               )
               subject.run(['spec'])
+            end
+
+            context ":binstubs => true" do
+              subject { described_class.new(:spring => true, :binstubs => true) }
+              it 'runs with zeus' do
+                subject.should_receive(:system).with('bin/spring rspec ' <<
+                  "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+                )
+                subject.run(['spec'])
+              end
             end
           end
         end
