@@ -200,6 +200,20 @@ describe Guard::RSpec::Runner do
           end
         end
 
+        describe ':spring' do
+          context ":spring => true" do
+            subject { described_class.new(:spring => true) }
+
+            it 'runs with spring' do
+              subject.should_receive(:system).with('bundle exec spring rspec ' <<
+                "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+              '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+              )
+              subject.run(['spec'])
+            end
+          end
+        end
+
         describe ':cli' do
           context ":cli => '--color --drb --fail-fast'" do
             subject { described_class.new(:cli => '--color --drb --fail-fast') }

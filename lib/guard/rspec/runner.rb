@@ -17,6 +17,7 @@ module Guard
           :cli          => nil,
           :env          => nil,
           :notification => true,
+          :spring       => false,
           :turnip       => false,
           :zeus         => false
         }.merge(options)
@@ -93,6 +94,7 @@ module Guard
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundle_exec?
         cmd_parts << 'zeus' if zeus?
+        cmd_parts << 'spring' if spring?
         cmd_parts << rspec_executable
         cmd_parts << rspec_arguments(paths, options)
         cmd_parts.compact.join(' ')
@@ -173,6 +175,10 @@ module Guard
 
       def zeus?
         @options[:zeus] || false
+      end
+
+      def spring?
+        @options[:spring] || false
       end
 
       def binstubs
