@@ -101,7 +101,12 @@ guard 'rspec', :turnip => true do
   # ...
 end
 ```
-
+[Spring](https://github.com/jonleighton/spring) is supported (Ruby 1.9.X / Rails 3.2+ only), but you must enable it:
+``` ruby
+guard 'rspec', :spring => true do
+  # ...
+end
+```
 
 Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and have no effect anymore.
 
@@ -118,6 +123,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :keep_failed => false        # keep failed specs until they pass, default: true
 :run_all => { :cli => "-p" } # cli arguments to use when running all specs, default: same as :cli
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
+:spring => true              # enable spring support; default: false
 :turnip => true              # enable turnip support; default: false
 :zeus => true                # enable zeus support; default: false
 :focus_on_failed => false    # focus on the first 10 failed specs first, rerun till they pass
