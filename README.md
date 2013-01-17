@@ -207,3 +207,9 @@ Author
 ------
 
 [Thibaud Guillaume-Gentil](https://github.com/thibaudgg)
+
+Contributors
+------------
+
+[https://github.com/guard/guard-rspec/contributors](https://github.com/guard/guard-rspec/contributors)
+
