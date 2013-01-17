@@ -17,6 +17,7 @@ module Guard
           :cli          => nil,
           :env          => nil,
           :notification => true,
+          :spring       => false,
           :turnip       => false,
           :zeus         => false
         }.merge(options)
@@ -40,7 +41,7 @@ module Guard
       end
 
       def rspec_executable
-        @rspec_executable ||= binstubs? ? "#{binstubs}/rspec" : "rspec"
+        @rspec_executable ||= (binstubs? && !executable_prefix?) ? "#{binstubs}/rspec" : "rspec"
       end
 
       def failure_exit_code_supported?
@@ -92,7 +93,7 @@ module Guard
         cmd_parts << environment_variables
         cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
         cmd_parts << "bundle exec" if bundle_exec?
-        cmd_parts << 'zeus' if zeus?
+        cmd_parts << executable_prefix if executable_prefix?
         cmd_parts << rspec_executable
         cmd_parts << rspec_arguments(paths, options)
         cmd_parts.compact.join(' ')
@@ -171,8 +172,28 @@ module Guard
         @binstubs ||= !!@options[:binstubs]
       end
 
+      def executable_prefix?
+        zeus? || spring?
+      end
+
+      def executable_prefix
+        prefix = binstubs? ? "#{binstubs}/" : ''
+        if zeus?
+          prefix << 'zeus'
+        elsif spring?
+          prefix << 'spring'
+        else
+          prefix = nil
+        end
+        return prefix
+      end
+
       def zeus?
         @options[:zeus] || false
+      end
+
+      def spring?
+        @options[:spring] || false
       end
 
       def binstubs
