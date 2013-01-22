@@ -138,16 +138,13 @@ directly communicating with the RSpec DRb server.  This avoids the extra overhea
 shell, bundler and loading RSpec's environment just to send a DRb message.  It shaves off a
 second or two before the specs start to run; they should run almost immediately.
 
-
-Notification
-------------
+## Notification
 
 The notification feature is only available for RSpec < 2, and RSpec >= 2.4 (due to the multiple-formatters feature that was present in RSpec 1, was removed in RSpec 2 and reintroduced in RSpec 2.4). So if you are using a version between 2 and 2.4, you should disable the notification with <tt>:notification => false</tt>. Otherwise, nothing will be displayed in the terminal when your specs will run.
 
 The best solution is still to update RSpec to the latest version!
 
-Formatters
-----------
+## Formatters
 
 The `:formatter` option has been removed since CLI arguments can be passed through the `:cli` option. If you want to use the former Instafail formatter, you need to use [rspec-instafail](http://rubygems.org/gems/rspec-instafail) gem instead:
 
@@ -163,8 +160,7 @@ end
 
 Default formatter is the `progress` formatter (same as RSpec default).
 
-Running a subset of all specs
------------
+## Running a subset of all specs
 
 The `:all_on_start` and `:all_after_pass` options cause all specs located in the `spec` directory to be run.  If there
 are some specs you want to skip, you can tag them with RSpec metadata (such as `:slow => true`)
@@ -188,28 +184,29 @@ group 'unit-tests' do
 end
 ```
 
+## Development
 
-Development
------------
+* Documentation hosted at [RubyDoc](http://rubydoc.info/github/guard/guard-rspec/master/frames).
+* Source hosted at [GitHub](https://github.com/guard/guard-rspec).
 
-* Source hosted at [GitHub](https://github.com/guard/guard-rspec)
-* Report issues/Questions/Feature requests on [GitHub Issues](https://github.com/guard/guard-rspec/issues)
+Pull requests are very welcome! Please try to follow these simple rules if applicable:
 
-Pull requests are very welcome! Make sure your patches are well tested. Please create a topic branch for every separate change
-you make.
+* Please create a topic branch for every separate change you make.
+* Make sure your patches are well tested. All specs run with `rake spec:portability` must pass.
+* Update the [README](https://github.com/guard/guard-rspec/blob/master/README.md).
+* Please **do not change** the version number.
 
-Testing
--------
+For questions please join us in our [Google group](http://groups.google.com/group/guard-dev) or on
+`#guard` (irc.freenode.net).
+
+### Testing
 
 Please run `rake spec:prepare_fixtures` once before launching specs.
 
-Author
-------
+### Author
 
-[Thibaud Guillaume-Gentil](https://github.com/thibaudgg)
+[Thibaud Guillaume-Gentil](https://github.com/thibaudgg) ([@thibaudgg](http://twitter.com/thibaudgg))
 
-Contributors
-------------
+### Contributors
 
 [https://github.com/guard/guard-rspec/contributors](https://github.com/guard/guard-rspec/contributors)
-
