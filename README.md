@@ -142,6 +142,8 @@ second or two before the specs start to run; they should run almost immediately.
 
 The notification feature is only available for RSpec < 2, and RSpec >= 2.4 (due to the multiple-formatters feature that was present in RSpec 1, was removed in RSpec 2 and reintroduced in RSpec 2.4). So if you are using a version between 2 and 2.4, you should disable the notification with <tt>:notification => false</tt>. Otherwise, nothing will be displayed in the terminal when your specs will run.
 
+Note that setting the environment variable `SPEC_OPTS` can cause notifications to fail.
+
 The best solution is still to update RSpec to the latest version!
 
 ## Formatters
