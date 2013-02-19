@@ -9,6 +9,23 @@ describe Guard::RSpec::Runner do
 
   describe '.initialize' do
 
+    describe 'handling of environment variable SPEC_OPTS' do
+      it "shows warning if SPEC_OPTS is set" do
+        ENV['SPEC_OPTS'] = '-f p'
+        Guard::UI.should_receive(:warning).with(
+          "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications."
+        ).ordered
+        described_class.new
+        ENV['SPEC_OPTS'] = nil # otherwise other specs pick it up and fail
+      end
+      it "does not show warning if SPEC_OPTS is unset" do
+        Guard::UI.should_not_receive(:warning).with(
+          "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications."
+        ).ordered
+        described_class.new
+      end
+    end
+
     describe 'shows warnings for deprecated options' do
       [:color, :drb, [:fail_fast, 'fail-fast'], [:formatter, 'format']].each do |option|
         key, value = option.is_a?(Array) ? option : [option, option.to_s]

@@ -22,6 +22,10 @@ module Guard
           :zeus         => false
         }.merge(options)
 
+        unless ENV['SPEC_OPTS'].nil?
+          UI.warning "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications."
+        end      
+
         deprecations_warnings
       end
 
