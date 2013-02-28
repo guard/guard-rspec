@@ -5,6 +5,7 @@ Gemfile.lock
 *.rbc
 tmp/*
 *.swp
+.rvmrc
 
 ## MAC OS
 .DS_Store

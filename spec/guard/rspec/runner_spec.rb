@@ -52,13 +52,27 @@ describe Guard::RSpec::Runner do
         Dir.stub(:pwd).and_return(@fixture_path.join('empty'))
       end
 
-      it 'runs with RSpec 2 and without bundler' do
-        subject.should_receive(:system).with(
-          "rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
-          '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
-        ).and_return(true)
+      context ':parallel => false' do
+        it 'runs with RSpec 2 and without bundler' do
+          subject.should_receive(:system).with(
+            "rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+            '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+          ).and_return(true)
 
-        subject.run(['spec'])
+          subject.run(['spec'])
+        end
+      end
+      context ':parallel => true' do
+        subject { described_class.new(:parallel => true) }
+
+        it 'runs with Parallel Tests and without bundler' do
+          subject.should_receive(:system).with(
+            "parallel_rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+            "-f Guard::RSpec::Formatter --failure-exit-code 2 spec"
+          ).and_return(true)
+
+          subject.run(['spec'])
+        end
       end
     end
 
@@ -67,13 +81,27 @@ describe Guard::RSpec::Runner do
         Dir.stub(:pwd).and_return(@fixture_path.join('rspec2'))
       end
 
-      it 'runs with RSpec 2 and with Bundler' do
-        subject.should_receive(:system).with(
-          "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
-          '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
-        ).and_return(true)
+      context ':parallel => false' do
+        it 'runs with RSpec 2 and with Bundler' do
+          subject.should_receive(:system).with(
+            "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+            '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+          ).and_return(true)
 
-        subject.run(['spec'])
+          subject.run(['spec'])
+        end
+      end
+      context ':parallel => true' do
+        subject { described_class.new(:parallel => true) }
+
+        it 'runs with Parallel Tests and without bundler' do
+          subject.should_receive(:system).with(
+            "bundle exec parallel_rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+            "-f Guard::RSpec::Formatter --failure-exit-code 2 spec"
+          ).and_return(true)
+
+          subject.run(['spec'])
+        end
       end
 
       describe 'notification' do
@@ -224,6 +252,19 @@ describe Guard::RSpec::Runner do
                 )
                 subject.run(['spec'])
               end
+            end
+          end
+
+          context ':zeus => true, :parallel => true' do
+            subject { described_class.new(:zeus => true, :parallel => true) }
+
+            it 'runs with Parallel Tests and without zeus' do
+              subject.should_receive(:system).with(
+                "bundle exec parallel_rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                "-f Guard::RSpec::Formatter --failure-exit-code 2 spec"
+              ).and_return(true)
+
+              subject.run(['spec'])
             end
           end
         end
@@ -431,6 +472,22 @@ describe Guard::RSpec::Runner do
                 "export RAILS_ENV=blue; bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
                 '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
                 ).and_return(true)
+
+              subject.run(['spec'])
+            end
+          end
+        end
+
+        describe ':parallel' do
+          context ":parallel_cli => '-n 2', :cli => '--color --drb --fail-fast'" do
+            subject { described_class.new(:parallel => true, :parallel_cli => '-n 2', :cli => '--color --drb --fail-fast') }
+
+            it 'runs with CLI options passed to RSpec' do
+              subject.should_receive(:system).with(
+                "bundle exec parallel_rspec -n 2 -f progress " <<
+                "-r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                "-f Guard::RSpec::Formatter --failure-exit-code 2 spec"
+              ).and_return(true)
 
               subject.run(['spec'])
             end
