@@ -24,7 +24,7 @@ module Guard
 
         unless ENV['SPEC_OPTS'].nil?
           UI.warning "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications."
-        end      
+        end
 
         deprecations_warnings
       end
@@ -45,7 +45,8 @@ module Guard
       end
 
       def rspec_executable
-        @rspec_executable ||= (binstubs? && !executable_prefix?) ? "#{binstubs}/rspec" : "rspec"
+        command = parallel? ? 'parallel_rspec' : 'rspec'
+        @rspec_executable ||= (binstubs? && !executable_prefix?) ? "#{binstubs}/#{command}" : command
       end
 
       def failure_exit_code_supported?
@@ -92,6 +93,21 @@ module Guard
         arg_parts.compact.join(' ')
       end
 
+      def parallel_rspec_arguments(paths, options)
+        arg_parts = []
+        arg_parts << options[:parallel_cli]
+        if @options[:notification]
+          arg_parts << parsed_or_default_formatter unless options[:cli] =~ formatter_regex
+          arg_parts << "-r #{File.dirname(__FILE__)}/formatter.rb"
+          arg_parts << "-f Guard::RSpec::Formatter"
+        end
+        arg_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
+        #arg_parts << "-r turnip/rspec" if @options[:turnip]
+        arg_parts << paths.join(' ')
+
+        arg_parts.compact.join(' ')
+      end
+
       def rspec_command(paths, options)
         cmd_parts = []
         cmd_parts << environment_variables
@@ -99,7 +115,8 @@ module Guard
         cmd_parts << "bundle exec" if bundle_exec?
         cmd_parts << executable_prefix if executable_prefix?
         cmd_parts << rspec_executable
-        cmd_parts << rspec_arguments(paths, options)
+        cmd_parts << rspec_arguments(paths, options) if !parallel?
+        cmd_parts << parallel_rspec_arguments(paths, options) if parallel?
         cmd_parts.compact.join(' ')
       end
 
@@ -182,9 +199,9 @@ module Guard
 
       def executable_prefix
         prefix = binstubs? ? "#{binstubs}/" : ''
-        if zeus?
+        if zeus? && !parallel?
           prefix << 'zeus'
-        elsif spring?
+        elsif spring? && !parallel?
           prefix << 'spring'
         else
           prefix = nil
@@ -194,6 +211,10 @@ module Guard
 
       def zeus?
         @options[:zeus] || false
+      end
+
+      def parallel?
+        @options[:parallel] || false
       end
 
       def spring?
