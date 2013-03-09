@@ -96,13 +96,7 @@ module Guard
       def parallel_rspec_arguments(paths, options)
         arg_parts = []
         arg_parts << options[:parallel_cli]
-        if @options[:notification]
-          arg_parts << parsed_or_default_formatter unless options[:cli] =~ formatter_regex
-          arg_parts << "-r #{File.dirname(__FILE__)}/formatter.rb"
-          arg_parts << "-f Guard::RSpec::Formatter"
-        end
-        arg_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
-        #arg_parts << "-r turnip/rspec" if @options[:turnip]
+        arg_parts << "-o '#{rspec_arguments([], options).strip}'"
         arg_parts << paths.join(' ')
 
         arg_parts.compact.join(' ')
