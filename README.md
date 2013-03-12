@@ -129,6 +129,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :keep_failed => false        # keep failed specs until they pass, default: true
 :run_all => { :cli => "-p" } # cli arguments to use when running all specs, default: same as :cli
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
+:exclude => "spec/foo/**/*"  # exclude files based on glob
 :spring => true              # enable spring support; default: false
 :turnip => true              # enable turnip support; default: false
 :zeus => true                # enable zeus support; default: false
