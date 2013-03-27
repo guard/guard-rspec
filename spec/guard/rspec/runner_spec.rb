@@ -258,9 +258,9 @@ describe Guard::RSpec::Runner do
           context ':zeus => true, :parallel => true' do
             subject { described_class.new(:zeus => true, :parallel => true) }
 
-            it 'runs with Parallel Tests and without zeus' do
+            it 'runs with Parallel Tests and with zeus' do
               subject.should_receive(:system).with(
-                "bundle exec parallel_rspec -o '-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                "bundle exec zeus parallel_rspec -o '-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
                 "-f Guard::RSpec::Formatter --failure-exit-code 2' spec"
               ).and_return(true)
 
