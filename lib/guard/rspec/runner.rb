@@ -193,7 +193,7 @@ module Guard
 
       def executable_prefix
         prefix = binstubs? ? "#{binstubs}/" : ''
-        if zeus? && !parallel?
+        if zeus?
           prefix << 'zeus'
         elsif spring? && !parallel?
           prefix << 'spring'
