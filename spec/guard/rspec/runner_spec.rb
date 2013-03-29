@@ -26,6 +26,36 @@ describe Guard::RSpec::Runner do
       end
     end
 
+    describe "shows warnings when using zeus and bundler together" do
+      it 'shows warning if :bundler => true, :zeus => true' do
+        Guard::UI.should_receive(:warning).with(
+          "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+        ).ordered
+        described_class.new(bundler: true, zeus: true)
+      end
+
+      it 'does not show warning if :bundler => false, :zeus => true' do
+        Guard::UI.should_not_receive(:warning).with(
+          "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+        ).ordered
+        described_class.new(bundler: false, zeus: true)
+      end
+
+      it 'does not show warning if :bundler => true, :zeus => false' do
+        Guard::UI.should_not_receive(:warning).with(
+          "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+        ).ordered
+        described_class.new(bundler: true, zeus: false)
+      end
+
+      it 'does not show warning if :zeus => true, :binstubs => true' do
+        Guard::UI.should_not_receive(:warning).with(
+          "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+        ).ordered
+        described_class.new(zeus: true, binstubs: true)
+      end
+    end
+
     describe 'shows warnings for deprecated options' do
       [:color, :drb, [:fail_fast, 'fail-fast'], [:formatter, 'format']].each do |option|
         key, value = option.is_a?(Array) ? option : [option, option.to_s]
@@ -232,11 +262,11 @@ describe Guard::RSpec::Runner do
         end
 
         describe ':zeus' do
-          context ":zeus => true" do
-            subject { described_class.new(:zeus => true) }
+          context ":zeus => true", ":bundler => false" do
+            subject { described_class.new(:zeus => true, :bundler => false) }
 
             it 'runs with zeus' do
-              subject.should_receive(:system).with('bundle exec zeus rspec ' <<
+              subject.should_receive(:system).with('zeus rspec ' <<
                 "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
               '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
               )
@@ -255,12 +285,12 @@ describe Guard::RSpec::Runner do
             end
           end
 
-          context ':zeus => true, :parallel => true' do
-            subject { described_class.new(:zeus => true, :parallel => true) }
+          context ':zeus => true, :parallel => true, :bundler => false' do
+            subject { described_class.new(:zeus => true, :parallel => true, :bundler => false) }
 
             it 'runs with Parallel Tests and with zeus' do
               subject.should_receive(:system).with(
-                "bundle exec zeus parallel_rspec -o '-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                "zeus parallel_rspec -o '-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
                 "-f Guard::RSpec::Formatter --failure-exit-code 2' spec"
               ).and_return(true)
 
