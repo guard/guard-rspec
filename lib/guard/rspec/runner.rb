@@ -26,6 +26,10 @@ module Guard
           UI.warning "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications."
         end
 
+        if @options[:bundler] && @options[:zeus] && !@options[:binstubs]
+          UI.warning "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+        end
+
         deprecations_warnings
       end
 
@@ -193,7 +197,7 @@ module Guard
 
       def executable_prefix
         prefix = binstubs? ? "#{binstubs}/" : ''
-        if zeus? && !parallel?
+        if zeus?
           prefix << 'zeus'
         elsif spring? && !parallel?
           prefix << 'spring'
