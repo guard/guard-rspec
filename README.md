@@ -7,7 +7,7 @@ RSpec guard allows to automatically & intelligently launch specs when files are 
 
 ## Install
 
-Please be sure to have [Guard](https://github.com/guard/guard) installed before continue.
+Please be sure to have [Guard](https://github.com/guard/guard) installed before continuing.
 
 Install the gem:
 
@@ -31,11 +31,11 @@ $ guard init rspec
 
 ## Usage
 
-Please read [Guard usage doc](https://github.com/guard/guard#readme)
+Please read [Guard usage doc](https://github.com/guard/guard#readme).
 
 ## Guardfile
 
-RSpec guard can be really adapted to all kind of projects.
+RSpec guard can be adapted to all kinds of projects.
 
 ### Standard RubyGem project
 
@@ -81,14 +81,14 @@ guard 'rspec', :spec_paths => ["spec", "vendor/engines/reset/spec"] do
   # ...
 end
 ```
-If you have only one path to look, you can configure `:spec_paths` option with a string:
+If you have only one path to look in, you can configure the `:spec_paths` option with a string:
 
 ``` ruby
 guard 'rspec', :spec_paths => "test" do
   # ...
 end
 ```
-If you want to set an environment variable, you can configure `:env` option with a hash:
+If you want to set an environment variable, you can configure the `:env` option with a hash:
 
 ``` ruby
 guard 'rspec', :env => {'RAILS_ENV' => 'guard'} do
@@ -114,7 +114,7 @@ guard 'rspec', :parallel => true, :parallel_cli => '-n 2' do
 end
 ```
 
-Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and have no effect anymore.
+Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and no longer have effect.
 
 ### List of available options:
 
@@ -144,7 +144,7 @@ You can also use a custom binstubs directory using `:binstubs => 'some-dir'`.
 
 When you specify `--drb` within `:cli`, guard-rspec will circumvent the `rspec` command line tool by
 directly communicating with the RSpec DRb server.  This avoids the extra overhead incurred by your
-shell, bundler and loading RSpec's environment just to send a DRb message.  It shaves off a
+shell, bundler and loading RSpec's environment just to send a DRb message. It shaves off a
 second or two before the specs start to run; they should run almost immediately.
 
 ## Notification
@@ -157,7 +157,7 @@ The best solution is still to update RSpec to the latest version!
 
 ## Formatters
 
-The `:formatter` option has been removed since CLI arguments can be passed through the `:cli` option. If you want to use the former Instafail formatter, you need to use [rspec-instafail](http://rubygems.org/gems/rspec-instafail) gem instead:
+The `:formatter` option has been removed since CLI arguments can be passed through the `:cli` option. If you want to use the former Instafail formatter, you need to use the [rspec-instafail](http://rubygems.org/gems/rspec-instafail) gem instead:
 
 ``` ruby
 # in your Gemfile
@@ -173,12 +173,12 @@ Default formatter is the `progress` formatter (same as RSpec default).
 
 ## Running a subset of all specs
 
-The `:all_on_start` and `:all_after_pass` options cause all specs located in the `spec` directory to be run.  If there
+The `:all_on_start` and `:all_after_pass` options cause all specs located in the `spec` directory to be run. If there
 are some specs you want to skip, you can tag them with RSpec metadata (such as `:slow => true`)
 and skip them with the cli `--tag` option (i.e. `--tag ~slow`).
 
 You can also use option :spec_paths to override paths used when running all specs.
-You can use this feature to create multiple groups of guarded specs with distinct paths, and execute each in own process:
+You can use this feature to create multiple groups of guarded specs with distinct paths, and execute each in its own process:
 
 ``` ruby
 # in your Guardfile
