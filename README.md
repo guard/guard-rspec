@@ -114,7 +114,7 @@ guard 'rspec', :parallel => true, :parallel_cli => '-n 2' do
 end
 ```
 
-Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and have no longer have effect.
+Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and no longer have effect.
 
 ### List of available options:
 
