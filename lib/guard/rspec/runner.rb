@@ -167,7 +167,7 @@ module Guard
         # Make sure we have a listener running
         unless @drb_listener_running
           begin
-            DRb.start_service("druby://localhost:0")
+            DRb.start_service("druby://127.0.0.1:0")
           rescue SocketError, Errno::EADDRNOTAVAIL
             DRb.start_service("druby://:0")
           end
