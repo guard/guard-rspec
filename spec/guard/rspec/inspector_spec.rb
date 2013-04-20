@@ -130,6 +130,17 @@ describe Guard::RSpec::Inspector do
         end
       end
     end
+
+    context "with spec_file_extension set to .spec.rb" do
+      before { subject.spec_file_extension = '.spec.rb' }
+      let(:files) { [
+        'spec/fixtures/file_extensions/underscore_spec.rb',
+        'spec/fixtures/file_extensions/dot.spec.rb'] }
+      it "accepts .spec.rb files" do
+        subject.clean(files).should == [files.last]
+      end
+    end
+
   end
 
 end

@@ -16,6 +16,7 @@ module Guard
         :all_on_start   => true,
         :keep_failed    => true,
         :spec_paths     => ["spec"],
+        :spec_file_extension => "_spec.rb",
         :run_all        => {}
       }.merge(options)
       @last_failed  = false
