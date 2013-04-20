@@ -130,6 +130,14 @@ describe Guard::RSpec::Inspector do
         end
       end
     end
+
+    context "with spec file ending with .spec.rb" do
+      let(:files) { ['spec/fixtures/file_extensions/dot.spec.rb'] }
+
+      it "accepts .spec.rb files" do
+        subject.clean(files).should eq [files.last]
+      end
+    end
   end
 
 end
