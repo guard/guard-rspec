@@ -5,6 +5,7 @@ module Guard
       def initialize(options = {})
         self.excluded   = options[:exclude]
         self.spec_paths = options[:spec_paths]
+        self.spec_file_extension = options[:spec_file_extension]
       end
 
       def excluded
@@ -21,6 +22,14 @@ module Guard
 
       def spec_paths=(paths)
         @spec_paths = Array(paths)
+      end
+
+      def spec_file_extension
+        @spec_file_extension ||= '_spec.rb'
+      end
+
+      def spec_file_extension=(extension)
+        @spec_file_extension = extension.to_s
       end
 
       def clean(paths)
@@ -51,7 +60,7 @@ module Guard
       end
 
       def spec_files
-        @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*_spec.rb")] }.flatten
+        @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*#{spec_file_extension}")] }.flatten
       end
 
       def feature_files
