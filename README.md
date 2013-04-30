@@ -3,7 +3,7 @@
 RSpec guard allows to automatically & intelligently launch specs when files are modified.
 
 * Compatible with RSpec >= 2.11 (use guard-rspec 1.2.x for older release, including RSpec 1.x)
-* Tested against Ruby 1.8.7, 1.9.2, 1.9.3, REE and the latest versions of JRuby & Rubinius.
+* Tested against Ruby 1.8.7, 1.9.3, 2.0.0, REE and the latest versions of JRuby & Rubinius.
 
 ## Install
 
