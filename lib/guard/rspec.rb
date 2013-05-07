@@ -12,9 +12,9 @@ module Guard
       super
       @options = {
         :focus_on_failed => false,
-        :all_after_pass => true,
-        :all_on_start   => true,
-        :keep_failed    => true,
+        :all_after_pass => false,
+        :all_on_start   => false,
+        :keep_failed    => false,
         :spec_paths     => ["spec"],
         :run_all        => {}
       }.merge(options)
@@ -61,9 +61,9 @@ module Guard
           if single_spec && @inspector.clean([single_spec]).length == 1
             failed_specs = failed_specs.select{|p| p.include? single_spec}
           end
-          
+
           if failed_specs.any?
-            # some sane limit, stuff will explode if all tests fail 
+            # some sane limit, stuff will explode if all tests fail
             #   ... cap at 10
 
             paths = failed_specs[0..10]
@@ -118,7 +118,7 @@ module Guard
 
     def add_failed(paths)
       if @options[:keep_failed]
-        @failed_paths += paths 
+        @failed_paths += paths
         @failed_paths.uniq!
       end
     end

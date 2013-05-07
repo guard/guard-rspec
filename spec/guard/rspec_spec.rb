@@ -4,7 +4,7 @@ require 'fileutils'
 describe Guard::RSpec do
   let(:default_options) do
     {
-      :all_after_pass => true, :all_on_start => true, :keep_failed => true,
+      :all_after_pass => false, :all_on_start => false, :keep_failed => false,
       :spec_paths => ['spec'], :run_all => {}, :focus_on_failed => false
     }
   end
@@ -48,16 +48,16 @@ describe Guard::RSpec do
   end
 
   describe '#start' do
-    it 'calls #run_all' do
-      subject.should_receive(:run_all)
+    it "doesn't call #run_all" do
+      subject.should_not_receive(:run_all)
       subject.start
     end
 
-    context ':all_on_start option is false' do
-      let(:subject) { subject = described_class.new([], :all_on_start => false) }
+    context ':all_on_start option is true' do
+      let(:subject) { subject = described_class.new([], :all_on_start => true) }
 
-      it "doesn't call #run_all" do
-        subject.should_not_receive(:run_all)
+      it 'calls #run_all' do
+        subject.should_receive(:run_all)
         subject.start
       end
     end
@@ -115,6 +115,8 @@ describe Guard::RSpec do
     end
 
     context 'the changed specs pass after failing' do
+      subject { described_class.new([], :all_after_pass => true) }
+
       it 'calls #run_all' do
         runner.should_receive(:run).with(['spec/foo']) { false }
 
@@ -153,7 +155,7 @@ describe Guard::RSpec do
     end
 
     it 'keeps failed spec and rerun them later' do
-      subject = described_class.new([], :all_after_pass => false)
+      subject = described_class.new([], :keep_failed => true, :all_after_pass => false)
 
       inspector.should_receive(:clean).with(['spec/bar']).and_return(['spec/bar'])
       runner.should_receive(:run).with(['spec/bar']) { false }
@@ -177,13 +179,13 @@ describe Guard::RSpec do
       expect { subject.run_on_changes(['spec/foo']) }.to throw_symbol :task_has_failed
     end
 
-    describe "#run_on_changes focus_on_failed" do 
+    describe "#run_on_changes focus_on_failed" do
       before do
         FileUtils.mkdir_p('tmp')
         File.open('./tmp/rspec_guard_result', 'w') do |f|
           f.puts("./a_spec.rb:1\n./a_spec.rb:7")
         end
-        @subject = described_class.new([], :focus_on_failed => true, :keep_failed => true)
+        @subject = described_class.new([], :focus_on_failed => true, :keep_failed => true, :all_after_pass => true)
         @subject.last_failed = true
 
         inspector.stub(:clean){|ary| ary}
@@ -193,22 +195,21 @@ describe Guard::RSpec do
         runner.should_receive(:run).with(['b_spec.rb']).and_return(false)
         lambda { @subject.run_on_changes(['b_spec.rb']) }.should throw_symbol(:task_has_failed)
       end
-      
-      it "keeps focus if a single spec remains" do 
+
+      it "keeps focus if a single spec remains" do
         runner.should_receive(:run).with(['./a_spec.rb:1', './a_spec.rb:7']) { false }
         lambda { @subject.run_on_changes(['a_spec.rb']) }.should throw_symbol(:task_has_failed)
       end
-      
-      it "keeps focus if random stuff changes" do 
+
+      it "keeps focus if random stuff changes" do
         runner.should_receive(:run).with(['./a_spec.rb:1', './a_spec.rb:7']) { false }
         lambda { @subject.run_on_changes(['bob.rb','bill.rb']) }.should throw_symbol(:task_has_failed)
       end
 
-      it "reruns the tests on the file if keep_failed is true and focused tests pass" do 
-
-        # explanation of test: 
+      it "reruns the tests on the file if keep_failed is true and focused tests pass" do
+        # explanation of test:
         #
-        # If we detect any change, we first check the last rspec failure, we attempt to focus. 
+        # If we detect any change, we first check the last rspec failure, we attempt to focus.
         # As soon as that passes we run all the specs that failed up until now
         #
 
@@ -216,7 +217,7 @@ describe Guard::RSpec do
         runner.should_receive(:run).with(['./a_spec.rb', './b_spec']) { true }
         runner.should_receive(:run).with(['spec'], :message => "Running all specs") { true }
 
-        @subject.run_on_changes(['./a_spec.rb','./b_spec']) 
+        @subject.run_on_changes(['./a_spec.rb','./b_spec'])
       end
     end
   end

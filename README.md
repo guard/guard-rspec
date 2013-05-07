@@ -40,7 +40,7 @@ RSpec guard can be adapted to all kinds of projects.
 ### Standard RubyGem project
 
 ``` ruby
-guard 'rspec' do
+guard :rspec do
   watch(%r{^spec/.+_spec\.rb$})
   watch(%r{^lib/(.+)\.rb$})     { |m| "spec/lib/#{m[1]}_spec.rb" }
   watch('spec/spec_helper.rb')  { "spec" }
@@ -50,7 +50,7 @@ end
 ### Typical Rails app
 
 ``` ruby
-guard 'rspec' do
+guard :rspec do
   watch('spec/spec_helper.rb')                        { "spec" }
   watch('config/routes.rb')                           { "spec/routing" }
   watch('app/controllers/application_controller.rb')  { "spec/controllers" }
@@ -130,9 +130,9 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :binstubs => true            # use "bin/rspec" to run the RSpec command (takes precedence over :bundle), default: false
 :rvm => ['1.8.7', '1.9.2']   # directly run your specs on multiple Rubies, default: nil
 :notification => false       # display Growl (or Libnotify) notification after the specs are done running, default: true
-:all_after_pass => false     # run all specs after changed specs pass, default: true
-:all_on_start => false       # run all the specs at startup, default: true
-:keep_failed => false        # keep failed specs until they pass, default: true
+:all_after_pass => true     # run all specs after changed specs pass, default: false
+:all_on_start => true       # run all the specs at startup, default: false
+:keep_failed => true        # keep failed specs until they pass, default: false
 :run_all => { :cli => "-p" } # cli arguments to use when running all specs, default: same as :cli
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
 :exclude => "spec/foo/**/*"  # exclude files based on glob
