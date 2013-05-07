@@ -19,7 +19,8 @@ module Guard
           :notification => true,
           :spring       => false,
           :turnip       => false,
-          :zeus         => false
+          :zeus         => false,
+          :foreman      => false
         }.merge(options)
 
         unless ENV['SPEC_OPTS'].nil?
@@ -109,7 +110,8 @@ module Guard
       def rspec_command(paths, options)
         cmd_parts = []
         cmd_parts << environment_variables
-        cmd_parts << "rvm #{@options[:rvm].join(',')} exec" if @options[:rvm].respond_to?(:join)
+        cmd_parts << "rvm #{options[:rvm].join(',')} exec" if options[:rvm].respond_to?(:join)
+        cmd_parts << bin_command('foreman run') if foreman?
         cmd_parts << "bundle exec" if bundle_exec?
         cmd_parts << executable_prefix if executable_prefix?
         cmd_parts << rspec_executable
@@ -121,7 +123,7 @@ module Guard
       def run_via_shell(paths, options)
         success = system(rspec_command(paths, options))
 
-        if @options[:notification] && !drb_used? && !success && rspec_command_exited_with_an_exception?
+        if options[:notification] && !drb_used? && !success && rspec_command_exited_with_an_exception?
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
@@ -192,35 +194,39 @@ module Guard
       end
 
       def executable_prefix?
-        zeus? || spring?
+        zeus? || spring? || foreman?
       end
 
       def executable_prefix
-        prefix = binstubs? ? "#{binstubs}/" : ''
         if zeus?
-          prefix << 'zeus'
+          bin_command('zeus')
         elsif spring? && !parallel?
-          prefix << 'spring'
-        else
-          prefix = nil
+          bin_command('spring')
         end
-        return prefix
       end
 
       def zeus?
-        @options[:zeus] || false
+        @options.fetch(:zeus, false)
       end
 
       def parallel?
-        @options[:parallel] || false
+        @options.fetch(:parallel, false)
       end
 
       def spring?
-        @options[:spring] || false
+        @options.fetch(:spring, false)
+      end
+
+      def foreman?
+        @options.fetch(:foreman, false)
       end
 
       def binstubs
         @options[:binstubs] == true ? "bin" : @options[:binstubs]
+      end
+
+      def bin_command(command)
+        binstubs? ? "#{binstubs}/#{command}" : command
       end
 
       def bundle_exec?

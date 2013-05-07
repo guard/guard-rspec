@@ -2,7 +2,7 @@
 
 RSpec guard allows to automatically & intelligently launch specs when files are modified.
 
-* Compatible with RSpec >= 2.11 (use guard-rspec 1.2.x for older release, including RSpec 1.x)
+* Compatible with RSpec >= 2.13 (use guard-rspec 1.2.x for older release, including RSpec 1.x)
 * Tested against Ruby 1.8.7, 1.9.3, 2.0.0, REE and the latest versions of JRuby & Rubinius.
 
 ## Install
@@ -113,6 +113,12 @@ guard 'rspec', :parallel => true, :parallel_cli => '-n 2' do
   # ...
 end
 ```
+[Foreman](https://github.com/ddollar/foreman) is supported, but you must enable it:
+``` ruby
+guard 'rspec', :foreman => true do
+  # ...
+end
+```
 
 Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated and no longer have effect.
 
@@ -133,6 +139,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :spring => true              # enable spring support; default: false
 :turnip => true              # enable turnip support; default: false
 :zeus => true                # enable zeus support; default: false
+:foreman => true             # enable foreman support; default: false
 :focus_on_failed => false    # focus on the first 10 failed specs first, rerun till they pass
 :parallel => true            # run all specs in parallel using [ParallelTests](https://github.com/grosser/parallel_tests) gem, default: false
 :parallel_cli => "-n 2"      # pass arbitrary Parallel Tests arguments, default: ""

@@ -157,7 +157,7 @@ describe Guard::RSpec::Runner do
             service_double
           }
 
-          context 'RSpec 2' do
+          context 'RSpec' do
             it 'returns false when RSpec fails to execute' do
               service.should_receive(:run) { 1 }
 
@@ -320,6 +320,57 @@ describe Guard::RSpec::Runner do
                 )
                 subject.run(['spec'])
               end
+            end
+          end
+        end
+
+        describe ':foreman' do
+          context ":foreman => true", ":bundler => false" do
+            subject { described_class.new(:foreman => true, :bundler => false) }
+
+            it 'runs with foreman' do
+              subject.should_receive(:system).with('foreman run rspec ' <<
+                "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+              '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+              )
+              subject.run(['spec'])
+            end
+
+            context ":binstubs => true" do
+              subject { described_class.new(:foreman => true, :binstubs => true) }
+              it 'runs with foreman' do
+                subject.should_receive(:system).with('bin/foreman run rspec ' <<
+                  "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+                )
+                subject.run(['spec'])
+              end
+            end
+          end
+
+          context ':foreman => true, :bundler => true' do
+            subject { described_class.new(:foreman => true, :bundler => true) }
+
+            it 'runs with bundler and foreman' do
+              subject.should_receive(:system).with(
+                "foreman run bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                "-f Guard::RSpec::Formatter --failure-exit-code 2 spec"
+              ).and_return(true)
+
+              subject.run(['spec'])
+            end
+          end
+
+          context ':foreman => true, :parallel => true, :bundler => false' do
+            subject { described_class.new(:foreman => true, :parallel => true, :bundler => false) }
+
+            it 'runs with Parallel Tests and with foreman' do
+              subject.should_receive(:system).with(
+                "foreman run parallel_rspec -o '-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                "-f Guard::RSpec::Formatter --failure-exit-code 2' spec"
+              ).and_return(true)
+
+              subject.run(['spec'])
             end
           end
         end
