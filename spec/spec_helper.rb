@@ -1,6 +1,6 @@
 require 'rspec'
 require 'guard/rspec'
-ENV["GUARD_ENV"] = 'test'
+Guard::UI.options = { :level => :warn }
 
 RSpec.configure do |config|
   config.color_enabled = true
@@ -12,7 +12,6 @@ RSpec.configure do |config|
     @fixture_path = Pathname.new(File.expand_path('../fixtures/', __FILE__))
     @lib_path     = Pathname.new(File.expand_path('../../lib/', __FILE__))
   end
-
 end
 
 # Creates a stub that falls back to original behavior unless an argument matcher matches.
