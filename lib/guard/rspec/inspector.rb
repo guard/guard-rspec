@@ -2,21 +2,15 @@ module Guard
   class RSpec
     class Inspector
 
-      def initialize(options = {})
-        self.excluded   = options[:exclude]
-        self.spec_paths = options[:spec_paths]
-      end
+      attr_accessor :excluded, :spec_paths
 
-      def excluded
-        @excluded || []
+      def initialize(options = {})
+        self.excluded   = options.fetch(:exclude, [])
+        self.spec_paths = options.fetch(:spec_paths, [])
       end
 
       def excluded=(pattern)
         @excluded = Dir[pattern.to_s]
-      end
-
-      def spec_paths
-        @spec_paths || []
       end
 
       def spec_paths=(paths)
