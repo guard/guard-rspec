@@ -29,30 +29,60 @@ describe Guard::RSpec::Runner do
     describe "shows warnings when using zeus and bundler together" do
       it 'shows warning if :bundler => true, :zeus => true' do
         Guard::UI.should_receive(:warning).with(
-          "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+          "Running Zeus within bundler is waste of time. Bundler option is set to false, when using Zeus."
         ).ordered
         described_class.new(bundler: true, zeus: true)
       end
 
       it 'does not show warning if :bundler => false, :zeus => true' do
         Guard::UI.should_not_receive(:warning).with(
-          "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+          "Running Zeus within bundler is waste of time. Bundler option is set to false, when using Zeus."
         ).ordered
         described_class.new(bundler: false, zeus: true)
       end
 
       it 'does not show warning if :bundler => true, :zeus => false' do
         Guard::UI.should_not_receive(:warning).with(
-          "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+          "Running Zeus within bundler is waste of time. Bundler option is set to false, when using Zeus."
         ).ordered
         described_class.new(bundler: true, zeus: false)
       end
 
       it 'does not show warning if :zeus => true, :binstubs => true' do
         Guard::UI.should_not_receive(:warning).with(
-          "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+          "Running Zeus within bundler is waste of time. Bundler option is set to false, when using Zeus."
         ).ordered
         described_class.new(zeus: true, binstubs: true)
+      end
+    end
+
+    describe "shows warnings when using spring and bundler together" do
+      it 'shows warning if :bundler => true, :spring => true' do
+        Guard::UI.should_receive(:warning).with(
+          "Running Spring within bundler is waste of time. Bundler option is set to false, when using Spring."
+        ).ordered
+        described_class.new(bundler: true, spring: true)
+      end
+
+      it 'does not show warning if :bundler => false, :spring => true' do
+        Guard::UI.should_not_receive(:warning).with(
+          "Running Spring within bundler is waste of time. Bundler option is set to false, when using Spring."
+        ).ordered
+        described_class.new(bundler: false, spring: true)
+      end
+
+      it 'does not show warning if :bundler => true, :spring => false' do
+        Guard::UI.should_not_receive(:warning).with(
+          "Running Spring within bundler is waste of time. Bundler option is set to false, when using Spring."
+        ).ordered
+        described_class.new(bundler: true, spring: false)
+      end
+
+      it 'does not show warning if :spring => true, :binstubs => true' do
+        Guard::UI.should_not_receive(:warning).with(
+          "Running Spring within bundler is waste of time. Bundler option is set to false, when using Spring."
+        ).ordered
+        described_class.new(spring: true, binstubs: true)
       end
     end
 
@@ -285,6 +315,17 @@ describe Guard::RSpec::Runner do
             end
           end
 
+          context ":zeus => true", ":bundler => true"  do
+            subject { described_class.new(:zeus => true, :bundle => true) }
+            it 'runs with zeus but always without bundler' do
+              subject.should_receive(:system).with('zeus rspec ' <<
+                "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+              '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+              )
+              subject.run(['spec'])
+            end
+          end
+
           context ':zeus => true, :parallel => true, :bundler => false' do
             subject { described_class.new(:zeus => true, :parallel => true, :bundler => false) }
 
@@ -301,10 +342,10 @@ describe Guard::RSpec::Runner do
 
         describe ':spring' do
           context ":spring => true" do
-            subject { described_class.new(:spring => true) }
+            subject { described_class.new(:spring => true, :bundler => false) }
 
             it 'runs with spring' do
-              subject.should_receive(:system).with('bundle exec spring rspec ' <<
+              subject.should_receive(:system).with('spring rspec ' <<
                 "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
               '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
               )
@@ -313,8 +354,19 @@ describe Guard::RSpec::Runner do
 
             context ":binstubs => true" do
               subject { described_class.new(:spring => true, :binstubs => true) }
-              it 'runs with zeus' do
+              it 'runs with spring' do
                 subject.should_receive(:system).with('bin/spring rspec ' <<
+                  "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+                )
+                subject.run(['spec'])
+              end
+            end
+
+            context ":bundle => true" do
+              subject { described_class.new(:spring => true, :bundle => true) }
+              it 'runs with spring but always without bundler' do
+                subject.should_receive(:system).with('spring rspec ' <<
                   "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
                 '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
                 )

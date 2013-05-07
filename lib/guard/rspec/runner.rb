@@ -27,8 +27,12 @@ module Guard
           UI.warning "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications."
         end
 
-        if @options[:bundler] && @options[:zeus] && !@options[:binstubs]
-          UI.warning "Running Zeus within bundler is waste of time. It is recommended to set bundler option to false, when using zeus."
+        if options[:bundler] && !options[:binstubs]
+          if options[:zeus]
+            UI.warning "Running Zeus within bundler is waste of time. Bundler option is set to false, when using Zeus."
+          elsif options[:spring]
+            UI.warning "Running Spring within bundler is waste of time. Bundler option is set to false, when using Spring."
+          end
         end
 
         deprecations_warnings
@@ -182,7 +186,7 @@ module Guard
       end
 
       def bundler_allowed?
-        @bundler_allowed ||= File.exist?("#{Dir.pwd}/Gemfile")
+        @bundler_allowed ||= (File.exist?("#{Dir.pwd}/Gemfile") && !zeus? && !spring?)
       end
 
       def bundler?
