@@ -1,3 +1,6 @@
+require 'coveralls'
+Coveralls.wear!
+
 require 'rspec'
 require 'guard/rspec'
 Guard::UI.options = { :level => :warn }

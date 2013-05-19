@@ -13,19 +13,6 @@ task :default => :custom_spec
 
 namespace :spec do
 
-  desc "Run all specs on multiple ruby versions (requires rvm and bundler)"
-  task :portability do
-    %w[1.8.7 1.9.2 rbx jruby].each do |version|
-      system <<-BASH
-        bash -c 'source ~/.rvm/scripts/rvm;
-                 rvm #{version};
-                 echo "--------- version #{version} ----------\n";
-                 rake spec:prepare_fixtures;
-                 rake spec;'
-      BASH
-    end
-  end
-
   desc "Run bundle install on each fixtures directories with Gemfile"
   task :prepare_fixtures do
     Dir.foreach("spec/fixtures") do |dir|
