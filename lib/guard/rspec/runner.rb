@@ -214,7 +214,8 @@ module Guard
       end
 
       def parallel?
-        options.fetch(:parallel, false)
+        parallel = options.fetch(:parallel, false)
+        (run_all = options[:run_all]) ? (run_all[:parallel] || parallel) : parallel
       end
 
       def spring?
