@@ -627,9 +627,10 @@ describe Guard::RSpec::Runner do
           end
         end
 
-        describe ':run_all' do
-          context ':parallel => true' do
-            subject { described_class.new(:run_all => {:parallel => true}) }
+        describe ':run_all =>' do
+          context '{:parallel => true}' do
+            options = { :run_all => {:parallel => true} }
+            subject { described_class.new(options) }
 
             it 'runs with parallel_rspec' do
               subject.should_receive(:system).with(
@@ -637,7 +638,30 @@ describe Guard::RSpec::Runner do
                 "-o '-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} -f Guard::RSpec::Formatter --failure-exit-code 2' spec"
               ).and_return(true)
 
+              subject.run(['spec'], options[:run_all].merge(:run_all_specs => true))
+            end
+
+            it 'does not use parallel_rspec unless #run_all was called' do
+              subject.should_receive(:system).with(
+                "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+              ).and_return(true)
+
               subject.run(['spec'])
+            end
+          end
+
+          context '{:parallel => false}' do
+            options = { :run_all => {:parallel => false} }
+            subject { described_class.new(options) }
+
+            it 'does not use parallel_rspec' do
+              subject.should_receive(:system).with(
+                "bundle exec rspec -f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+              ).and_return(true)
+
+              subject.run(['spec'], options[:run_all].merge(:run_all_specs => true))
             end
           end
         end
