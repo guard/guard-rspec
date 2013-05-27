@@ -77,11 +77,17 @@ describe Guard::RSpec do
       subject.run_all
     end
 
+    it 'passes the :run_all_specs argument' do
+      runner.should_receive(:run).with(['spec'], (hash_including(:run_all_specs => true))) { true }
+
+      subject.run_all
+    end
+
     it 'passes the :run_all options' do
       subject = described_class.new([], {
-        :rvm => ['1.8.7', '1.9.2'], :cli => '--color', :run_all => { :cli => '--format progress' }
+        :rvm => ['1.8.7', '1.9.2'], :cli => '--color', :run_all => { :cli => '--format progress', :parallel => true, :parallel_cli => '-n 42' }
       })
-      runner.should_receive(:run).with(['spec'], hash_including(:cli => '--format progress')) { true }
+      runner.should_receive(:run).with(['spec'], hash_including(:cli => '--format progress', :parallel => true, :parallel_cli => '-n 42')) { true }
 
       subject.run_all
     end
@@ -215,7 +221,7 @@ describe Guard::RSpec do
 
         runner.should_receive(:run).with(['./a_spec.rb:1', './a_spec.rb:7']) { true }
         runner.should_receive(:run).with(['./a_spec.rb', './b_spec']) { true }
-        runner.should_receive(:run).with(['spec'], :message => "Running all specs") { true }
+        runner.should_receive(:run).with(['spec'], :message => "Running all specs", :run_all_specs => true) { true }
 
         @subject.run_on_changes(['./a_spec.rb','./b_spec'])
       end

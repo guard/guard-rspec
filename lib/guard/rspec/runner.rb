@@ -53,8 +53,8 @@ module Guard
         end
       end
 
-      def rspec_executable
-        command = parallel? ? 'parallel_rspec' : 'rspec'
+      def rspec_executable(runtime_options = {})
+        command = parallel?(runtime_options) ? 'parallel_rspec' : 'rspec'
         @rspec_executable ||= (binstubs? && !executable_prefix?) ? "#{binstubs}/#{command}" : command
       end
 
@@ -118,9 +118,9 @@ module Guard
         cmd_parts << bin_command('foreman run') if foreman?
         cmd_parts << "bundle exec" if bundle_exec?
         cmd_parts << executable_prefix if executable_prefix?
-        cmd_parts << rspec_executable
-        cmd_parts << rspec_arguments(paths, options) if !parallel?
-        cmd_parts << parallel_rspec_arguments(paths, options) if parallel?
+        cmd_parts << rspec_executable(options)
+        cmd_parts << rspec_arguments(paths, options) if !parallel?(options)
+        cmd_parts << parallel_rspec_arguments(paths, options) if parallel?(options)
         cmd_parts.compact.join(' ')
       end
 
@@ -213,9 +213,12 @@ module Guard
         options.fetch(:zeus, false)
       end
 
-      def parallel?
-        parallel = options.fetch(:parallel, false)
-        (run_all = options[:run_all]) ? (run_all[:parallel] || parallel) : parallel
+      def parallel?(runtime_options = {})
+        if runtime_options[:run_all_specs]
+          runtime_options[:parallel]
+        else
+          options.fetch(:parallel, false)
+        end
       end
 
       def spring?
