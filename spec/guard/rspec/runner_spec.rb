@@ -626,6 +626,21 @@ describe Guard::RSpec::Runner do
             end
           end
         end
+
+        describe ':run_all' do
+          context ':parallel => true' do
+            subject { described_class.new(:run_all => {:parallel => true}) }
+
+            it 'runs with parallel_rspec' do
+              subject.should_receive(:system).with(
+                'bundle exec parallel_rspec ' <<
+                "-o '-f progress -r /Users/achou/Workspace/guard-rspec/lib/guard/rspec/formatter.rb -f Guard::RSpec::Formatter --failure-exit-code 2' spec"
+              ).and_return(true)
+
+              subject.run(['spec'])
+            end
+          end
+        end
       end
     end
   end

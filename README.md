@@ -134,7 +134,7 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :all_after_pass => true     # run all specs after changed specs pass, default: false
 :all_on_start => true       # run all the specs at startup, default: false
 :keep_failed => true        # keep failed specs until they pass, default: false
-:run_all => { :cli => "-p" } # cli arguments to use when running all specs, default: same as :cli
+:run_all => { :cli => "-p", :parallel => true, :parallel_cli => '-n 2' } # cli arguments to use when running all specs, default: same as :cli; parallel_rspec arguments, default:  same as :parallel_cli
 :spec_paths => ["spec"]      # specify an array of paths that contain spec files
 :exclude => "spec/foo/**/*"  # exclude files based on glob
 :spring => true              # enable spring support; default: false
