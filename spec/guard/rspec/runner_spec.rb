@@ -634,7 +634,7 @@ describe Guard::RSpec::Runner do
             it 'runs with parallel_rspec' do
               subject.should_receive(:system).with(
                 'bundle exec parallel_rspec ' <<
-                "-o '-f progress -r /Users/achou/Workspace/guard-rspec/lib/guard/rspec/formatter.rb -f Guard::RSpec::Formatter --failure-exit-code 2' spec"
+                "-o '-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} -f Guard::RSpec::Formatter --failure-exit-code 2' spec"
               ).and_return(true)
 
               subject.run(['spec'])
