@@ -292,13 +292,45 @@ describe Guard::RSpec::Runner do
         end
 
         describe ':zeus' do
+
+          let(:zeus_guard_env_file) { subject.send :zeus_guard_env_file }
+
+          context 'Guard Environments are Passed to Zeus' do
+
+            subject { described_class.new(:zeus => true, :bundler => false) }
+
+            let(:options) { { :notification => true } }
+            let(:paths) { ['spec'] }
+
+            it 'created a .rb file for rspec to require' do
+              expect(zeus_guard_env_file).to be_kind_of(Tempfile)
+              expect(subject.send :rspec_arguments, paths, options).to match(/-r #{zeus_guard_env_file.path}/)
+            end
+
+            it "file sets value for ENV['GUARD_NOTIFICATIONS']" do
+              ENV['GUARD_NOTIFICATIONS'] = "---\n- :name: :growl\n  :options: {}\n- :name: :terminal_title\n  :options: {}\n"
+              zeus_guard_env_file.open
+              expect(zeus_guard_env_file.read).to match(/ENV\['GUARD_NOTIFICATIONS'\]="---\\n- :name: :growl\\n  :options: {}\\n- :name: :terminal_title\\n  :options: {}\\n"/)
+              zeus_guard_env_file.close
+            end
+
+            it "file sets value for ENV['GUARD_NOTIFY']" do
+              ENV['GUARD_NOTIFY'] = 'true'
+              zeus_guard_env_file.open
+              expect(zeus_guard_env_file.read).to match(/ENV\['GUARD_NOTIFY'\]="true"/)
+              zeus_guard_env_file.close
+            end
+
+          end
+
           context ":zeus => true", ":bundler => false" do
             subject { described_class.new(:zeus => true, :bundler => false) }
 
             it 'runs with zeus' do
               subject.should_receive(:system).with('zeus rspec ' <<
-                "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
-              '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+                "-f progress -r #{zeus_guard_env_file.path} " <<
+                "-r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
               )
               subject.run(['spec'])
             end
@@ -307,8 +339,9 @@ describe Guard::RSpec::Runner do
               subject { described_class.new(:zeus => true, :binstubs => true) }
               it 'runs with zeus' do
                 subject.should_receive(:system).with('bin/zeus rspec ' <<
-                  "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
-                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+                  "-f progress -r #{zeus_guard_env_file.path} " <<
+                  "-r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                  '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
                 )
                 subject.run(['spec'])
               end
@@ -319,8 +352,9 @@ describe Guard::RSpec::Runner do
             subject { described_class.new(:zeus => true, :bundle => true) }
             it 'runs with zeus but always without bundler' do
               subject.should_receive(:system).with('zeus rspec ' <<
-                "-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
-              '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+                "-f progress -r #{zeus_guard_env_file.path} " <<
+                "-r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
               )
               subject.run(['spec'])
             end
@@ -331,8 +365,9 @@ describe Guard::RSpec::Runner do
 
             it 'runs with Parallel Tests and with zeus' do
               subject.should_receive(:system).with(
-                "zeus parallel_rspec -o '-f progress -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
-                "-f Guard::RSpec::Formatter --failure-exit-code 2' spec"
+                "zeus parallel_rspec -o '-f progress -r #{zeus_guard_env_file.path} " <<
+                  "-r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                  "-f Guard::RSpec::Formatter --failure-exit-code 2' spec"
               ).and_return(true)
 
               subject.run(['spec'])

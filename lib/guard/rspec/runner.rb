@@ -92,6 +92,7 @@ module Guard
         arg_parts << options[:cli]
         if options[:notification]
           arg_parts << parsed_or_default_formatter unless options[:cli] =~ formatter_regex
+          arg_parts << "-r #{zeus_guard_env_file.path}" if zeus?
           arg_parts << "-r #{File.dirname(__FILE__)}/formatter.rb"
           arg_parts << "-f Guard::RSpec::Formatter"
         end
@@ -100,6 +101,18 @@ module Guard
         arg_parts << paths.join(' ')
 
         arg_parts.compact.join(' ')
+      end
+
+      def zeus_guard_env_file
+        unless @zeus_guard_env_file
+          @zeus_guard_env_file = Tempfile.new(['zeus_guard_env','.rb'])
+          @zeus_guard_env_file.puts '# Extra settings for Guard when using Zeus'
+          @zeus_guard_env_file.puts "ENV['GUARD_NOTIFICATIONS']=#{ENV['GUARD_NOTIFICATIONS'].inspect}" if ENV['GUARD_NOTIFICATIONS']
+          @zeus_guard_env_file.puts "ENV['GUARD_NOTIFY']=#{ENV['GUARD_NOTIFY'].inspect}" if ENV['GUARD_NOTIFY']
+          @zeus_guard_env_file.close
+        end
+
+        @zeus_guard_env_file
       end
 
       def parallel_rspec_arguments(paths, options)
