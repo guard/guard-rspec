@@ -17,6 +17,7 @@ module Guard
           :rvm          => nil,
           :cli          => nil,
           :env          => nil,
+	  :launchy	=> nil,
           :notification => true,
           :spring       => false,
           :turnip       => false,
@@ -145,7 +146,7 @@ module Guard
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
-	if options[:launchy].present?
+	if options[:launchy]
 	   Launchy.open(options[:launchy])
 	end
         success
