@@ -145,6 +145,7 @@ module Guard
         end
 
         success
+	system("spec_results.html")
       end
 
       def rspec_command_exited_with_an_exception?
