@@ -1,5 +1,6 @@
 require 'drb/drb'
 require 'rspec'
+require 'launchy'
 
 module Guard
   class RSpec
@@ -145,7 +146,7 @@ module Guard
         end
 
         success
-	system("spec_results.html")
+	Launchy::Browser.run("./spec_results.html")
       end
 
       def rspec_command_exited_with_an_exception?
