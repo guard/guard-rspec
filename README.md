@@ -62,7 +62,6 @@ guard :rspec do
   watch(%r{^app/controllers/(.+)_(controller)\.rb$})  { |m| ["spec/routing/#{m[1]}_routing_spec.rb", "spec/#{m[2]}s/#{m[1]}_#{m[2]}_spec.rb", "spec/acceptance/#{m[1]}_spec.rb"] }
 end
 ```
-
 Please read [Guard doc](https://github.com/guard/guard#readme) for more information about the Guardfile DSL.
 
 ## Options
@@ -144,9 +143,20 @@ Former `:color`, `:drb`, `:fail_fast` and `:formatter` options are deprecated an
 :focus_on_failed => false    # focus on the first 10 failed specs first, rerun till they pass
 :parallel => true            # run all specs in parallel using [ParallelTests](https://github.com/grosser/parallel_tests) gem, default: false
 :parallel_cli => "-n 2"      # pass arbitrary Parallel Tests arguments, default: ""
+:launchy => nil              # pass a path to an rspec results file, e.g. ./tmp/spec_results.html
 ```
 
 You can also use a custom binstubs directory using `:binstubs => 'some-dir'`.
+
+### Using Launchy to view rspec results
+guard-rspec can be configured to launch a results file in lieu of outputing rspec results to the terminal.
+Configure your Guardfile with the launchy option
+``` ruby
+guard 'rspec', :cli=>'--color --format html --out ./tmp/spec_results.html' do
+  :launchy => "./tmp/spec_results.html"
+  # ...
+end
+```
 
 ### DRb mode
 
