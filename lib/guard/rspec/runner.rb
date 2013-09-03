@@ -145,8 +145,10 @@ module Guard
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
+	if options[:launchy].present?
+	   Launchy.open(options[:launchy])
+	end
         success
-	Launchy::Browser.run("./spec_results.html")
       end
 
       def rspec_command_exited_with_an_exception?
