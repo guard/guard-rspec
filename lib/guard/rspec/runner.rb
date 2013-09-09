@@ -106,6 +106,7 @@ module Guard
       def zeus_guard_env_file
         unless @zeus_guard_env_file
           @zeus_guard_env_file = Tempfile.new(['zeus_guard_env','.rb'])
+          @zeus_guard_env_file.puts '# encoding: UTF-8'
           @zeus_guard_env_file.puts '# Extra settings for Guard when using Zeus'
           @zeus_guard_env_file.puts "ENV['GUARD_NOTIFICATIONS']=#{ENV['GUARD_NOTIFICATIONS'].inspect}" if ENV['GUARD_NOTIFICATIONS']
           @zeus_guard_env_file.puts "ENV['GUARD_NOTIFY']=#{ENV['GUARD_NOTIFY'].inspect}" if ENV['GUARD_NOTIFY']
