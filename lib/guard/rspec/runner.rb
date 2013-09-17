@@ -1,6 +1,7 @@
 require 'drb/drb'
 require 'rspec'
 require 'launchy'
+require 'pathname'
 
 module Guard
   class RSpec
@@ -146,10 +147,13 @@ module Guard
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
-	if options[:launchy]
-	   Launchy.open(options[:launchy])
-	end
         success
+	if options[:launchy]
+	   pn = Pathname.new(options[:launchy])
+	   if pn.exist?
+	      Launchy.open(options[:launchy])
+   	   end
+	end
       end
 
       def rspec_command_exited_with_an_exception?
