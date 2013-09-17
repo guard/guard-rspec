@@ -10,7 +10,6 @@ module Guard
       FAILURE_EXIT_CODE = 2
 
       attr_accessor :options
-
       def initialize(options = {})
         @options = {
           :bundler      => true,
@@ -18,7 +17,7 @@ module Guard
           :rvm          => nil,
           :cli          => nil,
           :env          => nil,
-	  :launchy	=> nil,
+	        :launchy	    => nil,
           :notification => true,
           :spring       => false,
           :turnip       => false,
@@ -63,27 +62,27 @@ module Guard
 
       def failure_exit_code_supported?
         @failure_exit_code_supported ||= begin
-          cmd_parts = []
-          cmd_parts << "bundle exec" if bundle_exec?
-          cmd_parts << rspec_executable
-          cmd_parts << "--help"
-          `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
+        cmd_parts = []
+        cmd_parts << "bundle exec" if bundle_exec?
+        cmd_parts << rspec_executable
+        cmd_parts << "--help"
+        `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
         end
       end
 
       def parsed_or_default_formatter
         @parsed_or_default_formatter ||= begin
-          # Use RSpec's parser to parse formatters
-          formatters = ::RSpec::Core::ConfigurationOptions.new([]).parse_options()[:formatters]
-          # Use a default formatter if none exists.
-          # RSpec's parser returns an array in the format [[formatter, output], ...], so match their format
-          formatters = [['progress']] if formatters.nil? || formatters.empty?
-          # Construct a matching command line option, including output target
-          formatters.map { |formatter| "-f #{formatter.join ' -o '}" }.join ' '
+        # Use RSpec's parser to parse formatters
+        formatters = ::RSpec::Core::ConfigurationOptions.new([]).parse_options()[:formatters]
+        # Use a default formatter if none exists.
+        # RSpec's parser returns an array in the format [[formatter, output], ...], so match their format
+        formatters = [['progress']] if formatters.nil? || formatters.empty?
+        # Construct a matching command line option, including output target
+        formatters.map { |formatter| "-f #{formatter.join ' -o '}" }.join ' '
         end
       end
 
-    private
+      private
 
       def environment_variables
         return if options[:env].nil?
@@ -112,7 +111,7 @@ module Guard
           @zeus_guard_env_file.puts '# Extra settings for Guard when using Zeus'
           @zeus_guard_env_file.puts "ENV['GUARD_NOTIFICATIONS']=#{ENV['GUARD_NOTIFICATIONS'].inspect}" if ENV['GUARD_NOTIFICATIONS']
           @zeus_guard_env_file.puts "ENV['GUARD_NOTIFY']=#{ENV['GUARD_NOTIFY'].inspect}" if ENV['GUARD_NOTIFY']
-          @zeus_guard_env_file.close
+        @zeus_guard_env_file.close
         end
 
         @zeus_guard_env_file
@@ -147,13 +146,13 @@ module Guard
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
+        if options[:launchy]
+          pn = Pathname.new(options[:launchy])
+          if pn.exist?
+            Launchy.open(options[:launchy])
+          end
+        end
         success
-	if options[:launchy]
-	   pn = Pathname.new(options[:launchy])
-	   if pn.exist?
-	      Launchy.open(options[:launchy])
-   	   end
-	end
       end
 
       def rspec_command_exited_with_an_exception?
@@ -168,16 +167,16 @@ module Guard
 
         # The user can specify --drb-port for rspec, we need to honor it.
         if idx = argv.index("--drb-port")
-          port = argv[idx + 1].to_i
+        port = argv[idx + 1].to_i
         end
         port = ENV["RSPEC_DRB"] || 8989 unless port && port > 0
         ret = drb_service(port.to_i).run(argv, $stderr, $stdout)
 
         [0, true].include?(ret)
       rescue DRb::DRbConnError
-        # Fall back to the shell runner; we don't want to mangle the environment!
+      # Fall back to the shell runner; we don't want to mangle the environment!
         run_via_shell(paths, options)
-      end
+        end
 
       def drb_used?
         @drb_used ||= options[:cli] && options[:cli].include?('--drb')
@@ -272,8 +271,8 @@ module Guard
           end
         end
         if options.key?(:version)
-            @options.delete(:version)
-            UI.info %{DEPRECATION WARNING: The :version option is deprecated. Only RSpec 2 is now supported.}
+          @options.delete(:version)
+          UI.info %{DEPRECATION WARNING: The :version option is deprecated. Only RSpec 2 is now supported.}
         end
       end
 
