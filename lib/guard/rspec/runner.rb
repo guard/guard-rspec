@@ -1,6 +1,5 @@
 require 'drb/drb'
 require 'rspec'
-require 'launchy'
 require 'pathname'
 
 module Guard
@@ -62,23 +61,23 @@ module Guard
 
       def failure_exit_code_supported?
         @failure_exit_code_supported ||= begin
-        cmd_parts = []
-        cmd_parts << "bundle exec" if bundle_exec?
-        cmd_parts << rspec_executable
-        cmd_parts << "--help"
-        `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
+          cmd_parts = []
+          cmd_parts << "bundle exec" if bundle_exec?
+          cmd_parts << rspec_executable
+          cmd_parts << "--help"
+          `#{cmd_parts.join(' ')}`.include? "--failure-exit-code"
         end
       end
 
       def parsed_or_default_formatter
         @parsed_or_default_formatter ||= begin
-        # Use RSpec's parser to parse formatters
-        formatters = ::RSpec::Core::ConfigurationOptions.new([]).parse_options()[:formatters]
-        # Use a default formatter if none exists.
-        # RSpec's parser returns an array in the format [[formatter, output], ...], so match their format
-        formatters = [['progress']] if formatters.nil? || formatters.empty?
-        # Construct a matching command line option, including output target
-        formatters.map { |formatter| "-f #{formatter.join ' -o '}" }.join ' '
+          # Use RSpec's parser to parse formatters
+          formatters = ::RSpec::Core::ConfigurationOptions.new([]).parse_options()[:formatters]
+          # Use a default formatter if none exists.
+          # RSpec's parser returns an array in the format [[formatter, output], ...], so match their format
+          formatters = [['progress']] if formatters.nil? || formatters.empty?
+          # Construct a matching command line option, including output target
+          formatters.map { |formatter| "-f #{formatter.join ' -o '}" }.join ' '
         end
       end
 
@@ -111,7 +110,7 @@ module Guard
           @zeus_guard_env_file.puts '# Extra settings for Guard when using Zeus'
           @zeus_guard_env_file.puts "ENV['GUARD_NOTIFICATIONS']=#{ENV['GUARD_NOTIFICATIONS'].inspect}" if ENV['GUARD_NOTIFICATIONS']
           @zeus_guard_env_file.puts "ENV['GUARD_NOTIFY']=#{ENV['GUARD_NOTIFY'].inspect}" if ENV['GUARD_NOTIFY']
-        @zeus_guard_env_file.close
+          @zeus_guard_env_file.close
         end
 
         @zeus_guard_env_file
@@ -147,6 +146,7 @@ module Guard
         end
 
         if options[:launchy]
+          require 'launchy'
           pn = Pathname.new(options[:launchy])
           if pn.exist?
             Launchy.open(options[:launchy])
@@ -167,14 +167,14 @@ module Guard
 
         # The user can specify --drb-port for rspec, we need to honor it.
         if idx = argv.index("--drb-port")
-        port = argv[idx + 1].to_i
+          port = argv[idx + 1].to_i
         end
         port = ENV["RSPEC_DRB"] || 8989 unless port && port > 0
         ret = drb_service(port.to_i).run(argv, $stderr, $stdout)
 
         [0, true].include?(ret)
       rescue DRb::DRbConnError
-      # Fall back to the shell runner; we don't want to mangle the environment!
+        # Fall back to the shell runner; we don't want to mangle the environment!
         run_via_shell(paths, options)
         end
 
