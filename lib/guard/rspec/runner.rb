@@ -176,7 +176,7 @@ module Guard
       rescue DRb::DRbConnError
         # Fall back to the shell runner; we don't want to mangle the environment!
         run_via_shell(paths, options)
-        end
+      end
 
       def drb_used?
         @drb_used ||= options[:cli] && options[:cli].include?('--drb')
