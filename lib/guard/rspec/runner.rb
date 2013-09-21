@@ -1,5 +1,6 @@
 require 'drb/drb'
 require 'rspec'
+require 'pathname'
 
 module Guard
   class RSpec
@@ -8,7 +9,6 @@ module Guard
       FAILURE_EXIT_CODE = 2
 
       attr_accessor :options
-
       def initialize(options = {})
         @options = {
           :bundler      => true,
@@ -16,6 +16,7 @@ module Guard
           :rvm          => nil,
           :cli          => nil,
           :env          => nil,
+	        :launchy	    => nil,
           :notification => true,
           :spring       => false,
           :turnip       => false,
@@ -80,7 +81,7 @@ module Guard
         end
       end
 
-    private
+      private
 
       def environment_variables
         return if options[:env].nil?
@@ -145,6 +146,13 @@ module Guard
           Notifier.notify("Failed", :title => "RSpec results", :image => :failed, :priority => 2)
         end
 
+        if options[:launchy]
+          require 'launchy'
+          pn = Pathname.new(options[:launchy])
+          if pn.exist?
+            Launchy.open(options[:launchy])
+          end
+        end
         success
       end
 
@@ -264,8 +272,8 @@ module Guard
           end
         end
         if options.key?(:version)
-            @options.delete(:version)
-            UI.info %{DEPRECATION WARNING: The :version option is deprecated. Only RSpec 2 is now supported.}
+          @options.delete(:version)
+          UI.info %{DEPRECATION WARNING: The :version option is deprecated. Only RSpec 2 is now supported.}
         end
       end
 
