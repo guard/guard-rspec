@@ -700,6 +700,21 @@ describe Guard::RSpec::Runner do
             end
           end
         end
+        
+        describe ':launchy =>' do
+          it 'runs with Launchy to launch the rspec output file' do
+            require 'launchy'
+            options = {:launchy=>'./tmp/test.html', :cli=>"--format html --out ./tmp/test.html"}
+            subject { described_class.new(options) }
+              subject.should_receive(:system).with(
+                "bundle exec rspec --format html --out ./tmp/test.html -r #{@lib_path.join('guard/rspec/formatter.rb')} " <<
+                '-f Guard::RSpec::Formatter --failure-exit-code 2 spec'
+              ).and_return(true)
+              expect(FileTest).to receive(:exist?).and_return(true)
+              expect(Launchy).to receive(:open).with("./tmp/test.html").and_return(true)
+              subject.run(['spec'], options)
+          end
+        end
       end
     end
   end
