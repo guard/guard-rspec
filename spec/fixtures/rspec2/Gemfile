@@ -1,5 +1,0 @@
-source "http://rubygems.org"
-
-gem "rspec", ">= 2.4"
-gem "guard"
-gem "guard-rspec"

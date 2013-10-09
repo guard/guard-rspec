@@ -1,1 +1,0 @@
-# Empty file to test spec_paths option
