@@ -10,8 +10,8 @@ describe Guard::RSpec do
   end
   subject { described_class.new }
 
-  let(:inspector) { mock(described_class::Inspector, :excluded= => nil, :spec_paths => ['spec'], :clean => []) }
-  let(:runner)    { mock(described_class::Runner, :set_rspec_version => nil, :rspec_version => nil) }
+  let(:inspector) { double(described_class::Inspector, :excluded= => nil, :spec_paths => ['spec'], :clean => []) }
+  let(:runner)    { double(described_class::Runner, :set_rspec_version => nil, :rspec_version => nil) }
 
   before do
     described_class::Runner.stub(:new => runner)
