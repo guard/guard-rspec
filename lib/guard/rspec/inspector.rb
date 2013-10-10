@@ -9,7 +9,6 @@ module Guard
         @options = {
           focus_on_failed: true,
           keep_failed:     false,
-          exclude:         "[]",
           spec_paths:      %w[spec]
         }.merge(options)
 
@@ -55,24 +54,17 @@ module Guard
       def _clean(paths)
         paths.uniq!
         paths.compact!
-        paths.select! { |p| _spec_file?(p) || _feature_file?(p) }
-        paths.reject! { |p| _excluded?(p) }
+        paths = _select_only_spec_files(paths)
         paths
       end
 
-      def _spec_file?(path)
-        @spec_files ||= spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*[_.]spec.rb")] }.flatten
-        @spec_files.include?(path)
+      def _select_only_spec_files(paths)
+        spec_files = spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*[_.]spec.rb")] }
+        feature_files = spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*.feature")] }
+        files = (spec_files + feature_files).flatten
+        paths.select { |p| files.include?(p) }
       end
 
-      def _feature_file?(path)
-        @feature_files ||= spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*.feature")] }.flatten
-        @feature_files.include?(path)
-      end
-
-      def _excluded?(path)
-        Dir[options[:exclude]].include?(path)
-      end
     end
   end
 end

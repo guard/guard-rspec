@@ -42,32 +42,22 @@ describe Guard::RSpec::Inspector do
       expect(inspector.paths(paths + %w[foo])).to eq paths
     end
 
-    context "with excluded files" do
-      let(:options) { { exclude: 'spec/lib/guard/rspec/**/*' } }
-      let(:valid_paths) { %w[spec/lib/guard/rspec_spec.rb] }
+    context "with focused paths" do
+      before {
+        FileUtils.mkdir_p('tmp')
+        File.open(Guard::RSpec::Inspector::FOCUSED_FILE_PATH,'w') { |f|
+          f.puts 'spec/lib/guard/rspec/command_spec.rb'
+        }
+      }
 
-      it "excludes unvalid rspec file" do
-        expect(inspector.paths(paths + valid_paths)).to eq valid_paths
+      it "returns them" do
+        expect(inspector.paths(paths)).to eq %w[spec/lib/guard/rspec/command_spec.rb]
       end
     end
 
-    context "with focus_on_failed options" do
-      let(:options) { { focus_on_failed: true } }
-
-      context "with focused paths" do
-        before { File.open(Guard::RSpec::Inspector::FOCUSED_FILE_PATH,'w') { |f|
-          f.puts 'spec/lib/guard/rspec/command_spec.rb'
-        } }
-
-        it "returns them" do
-          expect(inspector.paths(paths)).to eq %w[spec/lib/guard/rspec/command_spec.rb]
-        end
-      end
-
-      context "without focused paths" do
-        it "returns new paths" do
-          expect(inspector.paths(paths)).to eq paths
-        end
+    context "without focused paths" do
+      it "returns new paths" do
+        expect(inspector.paths(paths)).to eq paths
       end
     end
 
