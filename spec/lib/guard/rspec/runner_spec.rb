@@ -14,7 +14,6 @@ describe Guard::RSpec::Runner do
   before {
     Guard::UI.stub(:info)
     Kernel.stub(:system) { true }
-    Guard::RSpec::Deprecator.stub(:deprecated_options)
     Guard::RSpec::Inspector.stub(:new) { inspector }
     Guard::RSpec::Command.stub(:new) { 'rspec' }
   }
@@ -22,11 +21,6 @@ describe Guard::RSpec::Runner do
   describe '.initialize' do
     it 'instanciates inspector with options' do
       expect(Guard::RSpec::Inspector).to receive(:new).with(default_options.merge(foo: :bar))
-      Guard::RSpec::Runner.new(foo: :bar)
-    end
-
-    it 'warns deprecated options' do
-      expect(Guard::RSpec::Deprecator).to receive(:deprecated_options).with(default_options.merge(foo: :bar))
       Guard::RSpec::Runner.new(foo: :bar)
     end
   end

@@ -1,6 +1,5 @@
 require 'guard/rspec/command'
 require 'guard/rspec/inspector'
-require 'guard/rspec/deprecator'
 
 module Guard
   class RSpec
@@ -15,7 +14,6 @@ module Guard
           launchy:        nil
         }.merge(options)
 
-        Deprecator.deprecated_options(@options)
         @inspector = Inspector.new(@options)
       end
 

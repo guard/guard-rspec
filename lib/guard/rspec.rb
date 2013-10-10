@@ -3,6 +3,7 @@ require 'guard/plugin'
 
 module Guard
   class RSpec < Plugin
+    require 'guard/rspec/deprecator'
     require 'guard/rspec/runner'
 
     attr_accessor :options, :runner
@@ -13,6 +14,7 @@ module Guard
         all_on_start: false
       }.merge(options)
 
+      Deprecator.warns_about_deprecated_options(@options)
       @runner = Runner.new(@options)
     end
 

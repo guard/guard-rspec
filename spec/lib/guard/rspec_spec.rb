@@ -5,11 +5,19 @@ describe Guard::RSpec do
   let(:options) { { } }
   let(:plugin) { Guard::RSpec.new(options) }
   let(:runner) { double(Guard::RSpec::Runner) }
-  before { Guard::RSpec::Runner.stub(:new) { runner } }
+  before {
+    Guard::RSpec::Deprecator.stub(:warns_about_deprecated_options)
+    Guard::RSpec::Runner.stub(:new) { runner }
+  }
 
   describe '.initialize' do
     it 'instanciates Runner with options' do
       expect(Guard::RSpec::Runner).to receive(:new).with(default_options.merge(foo: :bar))
+      Guard::RSpec.new(foo: :bar)
+    end
+
+    it 'warns deprecated options' do
+      expect(Guard::RSpec::Deprecator).to receive(:warns_about_deprecated_options).with(default_options.merge(foo: :bar))
       Guard::RSpec.new(foo: :bar)
     end
   end
