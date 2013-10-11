@@ -69,14 +69,14 @@ end
 ### List of available options:
 
 ``` ruby
-cmd: 'zeus rspec'         # specify a custom rpsec command to run (useful for supporting zeus, spring, ...), default: 'rspec'
-spec_paths: ['spec']      # specify a custom array of paths that contain spec files
-focus_on_failed: false    # focus on the first 10 failed specs first, rerun till they pass, default: true
-keep_failed: true         # keep failed specs until they pass (and add them to new one), default: false
-all_after_pass: true      # run all specs after changed specs pass, default: false
-all_on_start: true        # run all the specs at startup, default: false
-launchy: nil              # pass a path to an rspec results file, e.g. ./tmp/spec_results.html
-notification: false       # display notification (ie Growl) after the specs are done running, default: true
+cmd: 'zeus rspec'      # specify a custom rpsec command to run, default: 'rspec'
+spec_paths: ['spec']   # specify a custom array of paths that contain spec files
+focus_on_failed: false # focus on the first 10 failed specs, rerun till they pass, default: true
+keep_failed: true      # keep failed specs until they pass (add them to new ones), default: false
+all_after_pass: true   # run all specs after changed specs pass, default: false
+all_on_start: true     # run all the specs at startup, default: false
+launchy: nil           # pass a path to an rspec results file, e.g. ./tmp/spec_results.html
+notification: false    # display notification after the specs are done running, default: true
 run_all: { cmd: 'custom rspec command', message: 'custom message' } # Custom options to use when running all specs.
 ```
 
