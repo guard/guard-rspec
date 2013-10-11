@@ -70,6 +70,7 @@ module Guard
         return unless options[:all_after_pass]
         run_all
       end
+
     end
   end
 end

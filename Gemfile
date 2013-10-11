@@ -2,4 +2,10 @@ source "https://rubygems.org"
 
 gemspec
 
-gem 'coveralls', require: false
+group :test do
+  gem 'coveralls', require: false
+end
+
+group :tool do
+  gem 'ruby_gntp', require: false
+end

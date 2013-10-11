@@ -6,8 +6,6 @@ if ENV['CI']
   Coveralls.wear!
 end
 
-Guard::UI.options = { level: :warn }
-
 RSpec.configure do |config|
   config.color_enabled = true
   config.order = :random
