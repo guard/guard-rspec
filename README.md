@@ -86,7 +86,7 @@ guard-rspec can be configured to launch a results file in lieu of outputing rspe
 Configure your Guardfile with the launchy option:
 
 ``` ruby
-guard 'rspec', cmd: 'rspec -f html -o ./tmp/spec_results.html', launchy: './tmp/spec_results.html' do
+guard :rspec, cmd: 'rspec -f html -o ./tmp/spec_results.html', launchy: './tmp/spec_results.html' do
   # ...
 end
 ```
