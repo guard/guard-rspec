@@ -41,7 +41,7 @@ describe Guard::RSpec::Deprecator do
       end
     end
 
-    %w[color drb fail_fast formatter bundler binstubs rvm cli spring turnip zeus foreman].each do |option|
+    %w[color drb fail_fast formatter env bundler binstubs rvm cli spring turnip zeus foreman].each do |option|
       describe "with #{option} option" do
         let(:options) { { option.to_sym => 1 } }
 

@@ -36,43 +36,16 @@ module Guard
       end
 
       def _use_cmd_option
-        %w[color drb fail_fast formatter bundler binstubs rvm cli spring turnip zeus foreman].each do |option|
+        %w[color drb fail_fast formatter env bundler binstubs rvm cli spring turnip zeus foreman].each do |option|
           next unless options.key?(option.to_sym)
           _deprectated("The :#{option} option is deprecated. Please customize the new :cmd option to fit your need.")
         end
       end
 
-
       def _deprectated(message)
         UI.warning %{Guard::RSpec DEPRECATION WARNING: #{message}}
       end
 
-          # :bundler      => true,
-          # :binstubs     => false,
-          # :rvm          => nil,
-          # :cli          => nil,
-          # :env          => nil,
-          # :launchy      => nil,
-          # notification: true,
-          # :spring       => false,
-          # :turnip       => false,
-          # :zeus         => false,
-          # :foreman      => false
-
-
-          # def deprecations_warnings
-          #   [:color, :drb, [:fail_fast, "fail-fast"], [:formatter, "format"]].each do |option|
-          #     key, value = option.is_a?(Array) ? option : [option, option.to_s]
-          #     if options.key?(key)
-          #       @options.delete(key)
-          #       UI.info %{DEPRECATION WARNING: The :#{key} option is deprecated. Pass standard command line argument "--#{value}" to RSpec with the :cli option.}
-          #     end
-          #   end
-          #   if options.key?(:version)
-          #     @options.delete(:version)
-          #     UI.info %{DEPRECATION WARNING: The :version option is deprecated. Only RSpec 2 is now supported.}
-          #   end
-          # end
     end
   end
 end
