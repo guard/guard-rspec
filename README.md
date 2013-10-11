@@ -83,9 +83,10 @@ run_all: { cmd: 'custom rspec command', message: 'custom message' } # Custom opt
 ### Using Launchy to view rspec results
 
 guard-rspec can be configured to launch a results file in lieu of outputing rspec results to the terminal.
-Configure your Guardfile with the launchy option
+Configure your Guardfile with the launchy option:
+
 ``` ruby
-guard 'rspec', cmd: 'rspec --color --format html --out ./tmp/spec_results.html', launchy: './tmp/spec_results.html' do
+guard 'rspec', cmd: 'rspec -f html -o ./tmp/spec_results.html', launchy: './tmp/spec_results.html' do
   # ...
 end
 ```
