@@ -42,10 +42,18 @@ module Guard
 
       def _run(paths, failed_paths, options)
         command = Command.new(paths, options)
-        Kernel.system(command).tap do |success|
+        _without_bundler_env { Kernel.system(command) }.tap do |success|
           success ? inspector.clear_paths(paths) : _notify_failure
           _open_launchy
-          _run_all_after_pass if success && !failed_paths.empty?
+          _run_all_after_pass(success, failed_paths)
+        end
+      end
+
+      def _without_bundler_env
+        if defined?(Bundler)
+          Bundler.with_clean_env { yield }
+        else
+          yield
         end
       end
 
@@ -66,9 +74,9 @@ module Guard
         Launchy.open(options[:launchy]) if pn.exist?
       end
 
-      def _run_all_after_pass
+      def _run_all_after_pass(success, failed_paths)
         return unless options[:all_after_pass]
-        run_all
+        run_all if success && !failed_paths.empty?
       end
 
     end

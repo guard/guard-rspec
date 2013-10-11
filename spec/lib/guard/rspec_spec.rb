@@ -6,6 +6,7 @@ describe Guard::RSpec do
   let(:plugin) { Guard::RSpec.new(options) }
   let(:runner) { double(Guard::RSpec::Runner) }
   before {
+    Guard::UI.stub(:info)
     Guard::RSpec::Deprecator.stub(:warns_about_deprecated_options)
     Guard::RSpec::Runner.stub(:new) { runner }
   }
