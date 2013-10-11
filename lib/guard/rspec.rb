@@ -31,7 +31,7 @@ module Guard
       runner.reload
     end
 
-    def run_on_changes(paths)
+    def run_on_modifications(paths)
       return false if paths.empty?
       _throw_if_failed { runner.run(paths) }
     end

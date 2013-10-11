@@ -59,22 +59,22 @@ describe Guard::RSpec do
     end
   end
 
-  describe '#run_on_changes' do
+  describe '#run_on_modifications' do
     let(:paths) { %w[path1 path2] }
     it "runs all specs via runner" do
       expect(runner).to receive(:run).with(paths) { true }
-      plugin.run_on_changes(paths)
+      plugin.run_on_modifications(paths)
     end
 
     it "does nothing if paths empty" do
       expect(runner).to_not receive(:run)
-      plugin.run_on_changes([])
+      plugin.run_on_modifications([])
     end
 
     it "throws task_has_failed if runner return false" do
       runner.stub(:run) { false }
       expect(plugin).to receive(:throw).with(:task_has_failed)
-      plugin.run_on_changes(paths)
+      plugin.run_on_modifications(paths)
     end
   end
 
