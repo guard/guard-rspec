@@ -61,7 +61,7 @@ Please read [Guard doc](https://github.com/guard/guard#readme) for more informat
 Guard::RSpec 4.0 use now a more simple approach with the new `cmd` option that let you precisely define which rspec command will be launched on each run. As example if you want to support Spring with a custom formatter (progress by default) use:
 
 ``` ruby
-guard :rspec, cdm: 'spring rspec -f doc' do
+guard :rspec, cmd: 'spring rspec -f doc' do
   # ...
 end
 ```
