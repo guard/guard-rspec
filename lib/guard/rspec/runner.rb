@@ -50,8 +50,8 @@ module Guard
       end
 
       def _without_bundler_env
-        if defined?(Bundler)
-          Bundler.with_clean_env { yield }
+        if defined?(::Bundler)
+          ::Bundler.with_clean_env { yield }
         else
           yield
         end
