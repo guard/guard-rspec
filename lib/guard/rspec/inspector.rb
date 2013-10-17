@@ -62,7 +62,7 @@ module Guard
         spec_files = spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*[_.]spec.rb")] }
         feature_files = spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*.feature")] }
         files = (spec_files + feature_files).flatten
-        paths.select { |p| files.include?(p) }
+        paths.select { |p| files.include?(p) || spec_paths.include?(p) }
       end
 
     end

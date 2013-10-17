@@ -24,6 +24,10 @@ describe Guard::RSpec::Inspector do
       it "returns custom spec paths if no args" do
         expect(inspector.paths).to eq %w[custom_spec]
       end
+
+      it "returns spec path if given as argument" do
+        expect(inspector.paths(%w[custom_spec])).to eq %w[custom_spec]
+      end
     end
 
     it "returns new paths" do
@@ -40,6 +44,10 @@ describe Guard::RSpec::Inspector do
 
     it "returns only rspec file" do
       expect(inspector.paths(paths + %w[foo])).to eq paths
+    end
+
+    it "returns spec path if given as argument" do
+      expect(inspector.paths(%w[spec])).to eq %w[spec]
     end
 
     context "with focused paths" do
