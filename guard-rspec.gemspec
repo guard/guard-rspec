@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.test_files   = s.files.grep(%r{^spec/})
   s.require_path = 'lib'
 
-  s.add_dependency 'guard', '~> 2.0'
+  s.add_dependency 'guard', '>= 2.1.1'
   s.add_dependency 'rspec', '~> 2.14'
   s.add_development_dependency 'bundler', '>= 1.3.5'
   s.add_development_dependency 'rake'

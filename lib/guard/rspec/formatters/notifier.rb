@@ -33,7 +33,8 @@ module Guard::RSpec::Formatters
     end
 
     def _notify(message, status)
-      Guard::Notifier.notify(message, title: 'RSpec results', image: status, priority: _priority(status))
+      ::Guard::Notifier.turn_on(silent: true)
+      ::Guard::Notifier.notify(message, title: 'RSpec results', image: status, priority: _priority(status))
     end
 
     def _priority(status)

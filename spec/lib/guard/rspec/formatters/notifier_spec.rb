@@ -6,6 +6,16 @@ describe Guard::RSpec::Formatters::Notifier do
   let(:formatter) { Guard::RSpec::Formatters::Notifier.new(StringIO.new) }
 
   describe "#dump_summary" do
+    before {
+      Guard::Notifier.stub(:turn_on)
+      Guard::Notifier.stub(:notify)
+    }
+
+    it "turns on Notifier" do
+      expect(Guard::Notifier).to receive(:turn_on).with(silent: true)
+      formatter.dump_summary(123, 3, 0, 0)
+    end
+
     context "with only success" do
       it "notifies success" do
         expect(Guard::Notifier).to receive(:notify).with(
