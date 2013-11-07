@@ -44,7 +44,7 @@ module Guard
 
       def _focused_paths
         return nil unless options[:focus_on_failed]
-        File.open(FOCUSED_FILE_PATH).read.split("\n")[0..10]
+        File.open(FOCUSED_FILE_PATH) { |f| f.read.split("\n")[0..10] }
       rescue
         nil
       ensure
