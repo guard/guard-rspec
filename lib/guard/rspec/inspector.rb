@@ -54,15 +54,23 @@ module Guard
       def _clean(paths)
         paths.uniq!
         paths.compact!
-        paths = _select_only_spec_files(paths)
+
+        spec_dirs   = _select_only_spec_dirs(paths)
+        spec_files  = _select_only_spec_files(paths)
+        paths       = spec_dirs + spec_files
+
         paths
+      end
+
+      def _select_only_spec_dirs(paths)
+        paths.select { |p| File.directory?(p) || spec_paths.include?(p) }
       end
 
       def _select_only_spec_files(paths)
         spec_files = spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*[_.]spec.rb")] }
         feature_files = spec_paths.collect { |path| Dir[File.join(path, "**{,/*/**}", "*.feature")] }
         files = (spec_files + feature_files).flatten
-        paths.select { |p| files.include?(p) || spec_paths.include?(p) }
+        paths.select { |p| files.include?(p) }
       end
 
     end

@@ -46,6 +46,11 @@ describe Guard::RSpec::Inspector do
       expect(inspector.paths(paths + %w[foo])).to eq paths
     end
 
+    it "returns only rspec directory" do
+      File.stub(:directory?) { true }
+      expect(inspector.paths(%w[spec/foo])).to eq %w[spec/foo]
+    end
+
     it "returns spec path if given as argument" do
       expect(inspector.paths(%w[spec])).to eq %w[spec]
     end
