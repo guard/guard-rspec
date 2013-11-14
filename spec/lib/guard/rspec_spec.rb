@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Guard::RSpec do
-  let(:default_options) { { all_on_start: false } }
+  let(:default_options) { Guard::RSpec::Options::DEFAULTS }
   let(:options) { { } }
   let(:plugin) { Guard::RSpec.new(options) }
   let(:runner) { double(Guard::RSpec::Runner) }

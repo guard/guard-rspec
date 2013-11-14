@@ -2,11 +2,7 @@ require 'spec_helper'
 require 'launchy'
 
 describe Guard::RSpec::Runner do
-  let(:default_options) { {
-    all_after_pass:  false,
-    run_all: { message: 'Running all specs' },
-    launchy: nil,
-  } }
+  let(:default_options) { Guard::RSpec::Options::DEFAULTS }
   let(:options) { {} }
   let(:runner) { Guard::RSpec::Runner.new(options) }
   let(:inspector) { double(Guard::RSpec::Inspector) }

@@ -7,11 +7,7 @@ module Guard
       attr_accessor :options, :inspector
 
       def initialize(options = {})
-        @options = {
-          all_after_pass: false,
-          run_all:        { message: 'Running all specs' },
-          launchy:        nil
-        }.merge(options)
+        @options = Options.with_defaults(options)
         @inspector = Inspector.new(@options)
       end
 

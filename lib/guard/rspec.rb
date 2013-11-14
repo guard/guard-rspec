@@ -5,15 +5,13 @@ module Guard
   class RSpec < Plugin
     require 'guard/rspec/deprecator'
     require 'guard/rspec/runner'
+    require 'guard/rspec/options'
 
     attr_accessor :options, :runner
 
     def initialize(options = {})
       super
-      @options = {
-        all_on_start: false
-      }.merge(options)
-
+      @options = Options.with_defaults(options)
       Deprecator.warns_about_deprecated_options(@options)
       @runner = Runner.new(@options)
     end
@@ -41,7 +39,6 @@ module Guard
     def _throw_if_failed
       throw :task_has_failed unless yield
     end
-
   end
 end
 

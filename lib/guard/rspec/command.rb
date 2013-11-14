@@ -10,10 +10,7 @@ module Guard
 
       def initialize(paths, options = {})
         @paths = paths
-        @options = {
-          focus_on_failed: true,
-          cmd:             'rspec'
-        }.merge(options)
+        @options = Options.with_defaults(options)
         super(_parts.join(' '))
       end
 

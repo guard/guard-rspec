@@ -6,12 +6,7 @@ module Guard
       attr_accessor :options, :failed_paths, :spec_paths
 
       def initialize(options = {})
-        @options = {
-          focus_on_failed: true,
-          keep_failed:     false,
-          spec_paths:      %w[spec]
-        }.merge(options)
-
+        @options = Options.with_defaults(options)
         @failed_paths = []
         @spec_paths = @options[:spec_paths]
       end
