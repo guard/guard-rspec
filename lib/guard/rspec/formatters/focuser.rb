@@ -13,7 +13,7 @@ module Guard::RSpec::Formatters
     # Used for focus_on_failed options
     def _write_failed_paths_in_tmp
       FileUtils.mkdir_p('tmp')
-      File.open('./tmp/rspec_guard_result','w') do |f|
+      File.open(Guard::RSpec::Inspector::FOCUSED_FILE_PATH, 'w') do |f|
         f.puts _failed_paths.join("\n")
       end
     rescue
