@@ -2,7 +2,7 @@ require 'guard/rspec'
 require 'rspec/core/formatters/base_formatter'
 
 module Guard::RSpec::Formatters
-  class Focuser < ::RSpec::Core::Formatters::BaseFormatter
+  class Formatter < ::RSpec::Core::Formatters::BaseFormatter
 
     def dump_summary(duration, total, failures, pending)
       _write_failed_paths_in_tmp if failures > 0

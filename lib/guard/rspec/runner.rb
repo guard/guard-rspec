@@ -70,7 +70,7 @@ module Guard
 
       def _run_all_after_pass(success, failed_paths)
         return unless options[:all_after_pass]
-        run_all if success && !failed_paths.empty?
+        run_all if success && failed_paths.any?
       end
 
     end

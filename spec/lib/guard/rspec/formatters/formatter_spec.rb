@@ -1,9 +1,9 @@
 require 'spec_helper.rb'
 
-require 'guard/rspec/formatters/focuser'
+require 'guard/rspec/formatters/formatter'
 
-describe Guard::RSpec::Formatters::Focuser do
-  let(:formatter) { Guard::RSpec::Formatters::Focuser.new(StringIO.new) }
+describe Guard::RSpec::Formatters::Formatter do
+  let(:formatter) { Guard::RSpec::Formatters::Formatter.new(StringIO.new) }
 
   describe "#dump_summary" do
     context "with failures" do
