@@ -1,8 +1,6 @@
 module Guard
   class RSpec
     class Inspector
-      FOCUSED_FILE_PATH = './tmp/rspec_guard_result'
-
       attr_accessor :options, :failed_paths, :spec_paths
 
       def initialize(options = {})
@@ -29,6 +27,10 @@ module Guard
 
       private
 
+      def _temporary_file_path
+        Guard::RSpec::Formatters::Formatter::TEMPORARY_FILE_PATH
+      end
+
       def _paths(paths)
         _focused_paths || if options[:keep_failed]
           @failed_paths += _clean(paths)
@@ -39,11 +41,11 @@ module Guard
 
       def _focused_paths
         return nil unless options[:focus_on_failed]
-        File.open(FOCUSED_FILE_PATH) { |f| f.read.split("\n")[0..10] }
+        File.open(_temporary_file_path) { |f| f.read.split("\n")[1..11] }
       rescue
         nil
       ensure
-        File.exist?(FOCUSED_FILE_PATH) && File.delete(FOCUSED_FILE_PATH)
+        File.exist?(_temporary_file_path) && File.delete(_temporary_file_path)
       end
 
       def _clean(paths)

@@ -58,8 +58,8 @@ describe Guard::RSpec::Inspector do
     context "with focused paths" do
       before {
         FileUtils.mkdir_p('tmp')
-        File.open(Guard::RSpec::Inspector::FOCUSED_FILE_PATH,'w') { |f|
-          f.puts 'spec/lib/guard/rspec/command_spec.rb'
+        File.open(Guard::RSpec::Formatters::Formatter::TEMPORARY_FILE_PATH,'w') { |f|
+          f.puts "1 examples, 1 failures in 123.0 seconds\nspec/lib/guard/rspec/command_spec.rb"
         }
       }
 
