@@ -2,24 +2,19 @@ module Guard
   class RSpec
     module Options
       DEFAULTS = {
-          # Common
-          all_on_start: false,
-
-          # Runner specific
-          all_after_pass: false,
-          run_all:        { message: 'Running all specs' },
-          launchy:        nil,
-
-          # Command & Inspector specific
+          all_on_start:    false,
+          all_after_pass:  false,
+          run_all:         { message: 'Running all specs' },
           focus_on_failed: true,
-          cmd:             'rspec',
           keep_failed:     false,
-          spec_paths:      %w[spec]
+          spec_paths:      %w[spec],
+          cmd:             'rspec',
+          launchy:         nil
       }.freeze
 
       class << self
         def with_defaults(options = {})
-          _deep_merge(DEFAULTS, options)
+          _deep_merge(DEFAULTS, options).freeze
         end
 
         private

@@ -1,5 +1,7 @@
+require 'guard/rspec/inspectors/factory'
 require 'guard/rspec/command'
-require 'guard/rspec/inspector'
+require 'guard/rspec/formatters/formatter'
+require 'guard/rspec/notifier'
 
 module Guard
   class RSpec
@@ -7,36 +9,47 @@ module Guard
       attr_accessor :options, :inspector
 
       def initialize(options = {})
-        @options = Options.with_defaults(options)
-        @inspector = Inspector.new(@options)
+        @options = options
+        @inspector = Inspectors::Factory.create(@options)
       end
 
       def run_all
-        options = @options.merge(@options[:run_all])
+        paths = options[:spec_paths]
+        options = @options.merge(@options[:run_all]).freeze
+        return if paths.empty?
         ::Guard::UI.info(options[:message], reset: true)
-        _run(inspector.paths, [], options)
+        _run(true, paths, options)
       end
 
       def run(paths)
-        failed_paths = inspector.failed_paths
         paths = inspector.paths(paths)
         return if paths.empty?
         ::Guard::UI.info("Running: #{paths.join(' ')}", reset: true)
-        _run(paths, failed_paths, options)
+        _run(false, paths, options)
       end
 
       def reload
-        inspector.clear_paths
+        inspector.reload
       end
 
       private
 
-      def _run(paths, failed_paths, options)
+      def _run(all, paths, options)
         command = Command.new(paths, options)
         _without_bundler_env { Kernel.system(command) }.tap do |success|
-          success ? inspector.clear_paths(paths) : _notify_failure
-          _open_launchy
-          _run_all_after_pass(success, failed_paths)
+          if _command_success?(success)
+            summary, failed_paths = _command_output
+            if summary && failed_paths
+              inspector.failed(failed_paths)
+              Notifier.notify(summary)
+              _open_launchy
+              _run_all_after_pass if !all && success
+            else
+              Notifier.notify_failure
+            end
+          else
+            Notifier.notify_failure
+          end
         end
       end
 
@@ -48,13 +61,22 @@ module Guard
         end
       end
 
-      def _notify_failure
-        return unless command_exception?
-        ::Guard::Notifier.notify('Failed', title: 'RSpec results', image: :failed, priority: 2)
+      def _command_success?(success)
+        return false if success.nil?
+        [Command::FAILURE_EXIT_CODE, 0].include?($?.exitstatus)
       end
 
-      def command_exception?
-        $?.exitstatus != Command::FAILURE_EXIT_CODE
+      def _temporary_file_path
+        Formatters::Formatter::TEMPORARY_FILE_PATH
+      end
+
+      def _command_output
+        lines = File.readlines(_temporary_file_path)
+        [lines.first, lines[1..11].compact]
+      rescue
+        [nil, nil]
+      ensure
+        File.exist?(_temporary_file_path) && File.delete(_temporary_file_path)
       end
 
       def _open_launchy
@@ -64,11 +86,10 @@ module Guard
         ::Launchy.open(options[:launchy]) if pn.exist?
       end
 
-      def _run_all_after_pass(success, failed_paths)
+      def _run_all_after_pass
         return unless options[:all_after_pass]
-        run_all if success && failed_paths.any?
+        run_all
       end
-
     end
   end
 end

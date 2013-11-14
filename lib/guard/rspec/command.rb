@@ -10,7 +10,7 @@ module Guard
 
       def initialize(paths, options = {})
         @paths = paths
-        @options = Options.with_defaults(options)
+        @options = options
         super(_parts.join(' '))
       end
 

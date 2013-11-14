@@ -3,9 +3,9 @@ require 'guard/plugin'
 
 module Guard
   class RSpec < Plugin
+    require 'guard/rspec/options'
     require 'guard/rspec/deprecator'
     require 'guard/rspec/runner'
-    require 'guard/rspec/options'
 
     attr_accessor :options, :runner
 
@@ -17,7 +17,7 @@ module Guard
     end
 
     def start
-      ::Guard::UI.info "Guard::RSpec is running"
+      ::Guard::UI.info 'Guard::RSpec is running'
       run_all if options[:all_on_start]
     end
 
