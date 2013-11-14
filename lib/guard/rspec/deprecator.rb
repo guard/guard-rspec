@@ -22,7 +22,7 @@ module Guard
 
       def _spec_opts_env
         return if ENV['SPEC_OPTS'].nil?
-        UI.warning "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications."
+        UI.warning "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec."
       end
 
       def _version_option

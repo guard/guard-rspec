@@ -9,18 +9,15 @@ module Guard
       def initialize(options = {})
         @options = {
           all_after_pass: false,
-          notification:   true,
           run_all:        { message: 'Running all specs' },
           launchy:        nil
         }.merge(options)
-
         @inspector = Inspector.new(@options)
       end
 
       def run_all
         options = @options.merge(@options[:run_all])
         ::Guard::UI.info(options[:message], reset: true)
-
         _run(inspector.paths, [], options)
       end
 
@@ -28,9 +25,7 @@ module Guard
         failed_paths = inspector.failed_paths
         paths = inspector.paths(paths)
         return if paths.empty?
-
         ::Guard::UI.info("Running: #{paths.join(' ')}", reset: true)
-
         _run(paths, failed_paths, options)
       end
 
@@ -58,7 +53,6 @@ module Guard
       end
 
       def _notify_failure
-        return unless options[:notification]
         return unless command_exception?
         ::Guard::Notifier.notify('Failed', title: 'RSpec results', image: :failed, priority: 2)
       end

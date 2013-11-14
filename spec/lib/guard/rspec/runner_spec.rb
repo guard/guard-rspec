@@ -4,7 +4,6 @@ require 'launchy'
 describe Guard::RSpec::Runner do
   let(:default_options) { {
     all_after_pass:  false,
-    notification: true,
     run_all: { message: 'Running all specs' },
     launchy: nil,
   } }

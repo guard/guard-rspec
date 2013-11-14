@@ -10,13 +10,13 @@ describe Guard::RSpec::Deprecator do
       it "shows warning if SPEC_OPTS is set" do
         ENV['SPEC_OPTS'] = '-f p'
         expect(Guard::UI).to receive(:warning).with(
-          'The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications.')
+          'The SPEC_OPTS environment variable is present. This can conflict with guard-rspec.')
         deprecator.warns_about_deprecated_options
         ENV['SPEC_OPTS'] = nil # otherwise other specs pick it up and fail
       end
       it "does not show warning if SPEC_OPTS is unset" do
         expect(Guard::UI).to_not receive(:warning).with(
-          'The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications.')
+          'The SPEC_OPTS environment variable is present. This can conflict with guard-rspec.')
         deprecator.warns_about_deprecated_options
       end
     end

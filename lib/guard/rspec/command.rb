@@ -12,10 +12,8 @@ module Guard
         @paths = paths
         @options = {
           focus_on_failed: true,
-          notification: true,
-          cmd:          'rspec'
+          cmd:             'rspec'
         }.merge(options)
-
         super(_parts.join(' '))
       end
 
@@ -47,7 +45,6 @@ module Guard
       end
 
       def _notifier
-        return unless options[:notification]
         "-r #{File.dirname(__FILE__)}/formatters/notifier.rb -f Guard::RSpec::Formatters::Notifier"
       end
 
