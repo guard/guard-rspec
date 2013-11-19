@@ -6,11 +6,12 @@ require 'guard/rspec/notifier'
 module Guard
   class RSpec
     class Runner
-      attr_accessor :options, :inspector
+      attr_accessor :options, :inspector, :notifier
 
       def initialize(options = {})
         @options = options
         @inspector = Inspectors::Factory.create(@options)
+        @notifier = Notifier.new(@options)
       end
 
       def run_all
@@ -41,14 +42,14 @@ module Guard
             summary, failed_paths = _command_output
             if summary && failed_paths
               inspector.failed(failed_paths)
-              Notifier.notify(summary)
+              notifier.notify(summary)
               _open_launchy
               _run_all_after_pass if !all && success
             else
-              Notifier.notify_failure
+              notifier.notify_failure
             end
           else
-            Notifier.notify_failure
+            notifier.notify_failure
           end
         end
       end

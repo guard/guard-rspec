@@ -9,7 +9,8 @@ module Guard
           keep_failed:     false,
           spec_paths:      %w[spec],
           cmd:             'rspec',
-          launchy:         nil
+          launchy:         nil,
+          notification:    true
       }.freeze
 
       class << self

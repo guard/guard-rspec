@@ -5,11 +5,15 @@ describe Guard::RSpec::Runner do
   let(:options) { {} }
   let(:runner) { Guard::RSpec::Runner.new(options) }
   let(:inspector) { double(Guard::RSpec::Inspectors::SimpleInspector) }
+  let(:notifier) { double(Guard::RSpec::Notifier) }
   before {
     Guard::UI.stub(:info)
     Kernel.stub(:system) { true }
     Guard::RSpec::Inspectors::Factory.stub(:create) { inspector }
+    Guard::RSpec::Notifier.stub(:new) { notifier }
     Guard::RSpec::Command.stub(:new) { 'rspec' }
+    notifier.stub(:notify)
+    notifier.stub(:notify_failure)
   }
 
   describe '.initialize' do
@@ -18,7 +22,12 @@ describe Guard::RSpec::Runner do
 
       it 'instanciates inspector via Inspectors::Factory with custom options' do
         expect(Guard::RSpec::Inspectors::Factory).to receive(:create).with(foo: :bar)
-        Guard::RSpec::Runner.new(options)
+        runner
+      end
+
+      it 'instanciates notifier with custom options' do
+        expect(Guard::RSpec::Notifier).to receive(:new).with(foo: :bar)
+        runner
       end
     end
   end
@@ -61,7 +70,7 @@ describe Guard::RSpec::Runner do
   describe '#run' do
     let(:paths) { %w[spec_path1 spec_path2] }
     before {
-      runner.stub(:_command_output) { ['summary', []] }
+      runner.stub(:_command_output) { ['Summary', []] }
       inspector.stub(:paths) { paths }
       inspector.stub(:clear_paths) { true }
       inspector.stub(:failed)
@@ -112,7 +121,7 @@ describe Guard::RSpec::Runner do
 
     context 'with failed paths' do
       before {
-        runner.stub(:_command_output) { ['summary', %w[failed_spec other_failed_spec]] }
+        runner.stub(:_command_output) { ['Summary', %w[failed_spec other_failed_spec]] }
       }
 
       it 'notifies inspector about failed paths' do
@@ -122,13 +131,13 @@ describe Guard::RSpec::Runner do
     end
 
     it 'notifies success' do
-      expect(Guard::RSpec::Notifier).to receive(:notify).with('summary')
+      expect(notifier).to receive(:notify).with('Summary')
       runner.run(paths)
     end
 
     it 'notifies failure' do
       Kernel.stub(:system) { nil }
-      expect(Guard::RSpec::Notifier).to receive(:notify_failure)
+      expect(notifier).to receive(:notify_failure)
       runner.run(paths)
     end
   end
