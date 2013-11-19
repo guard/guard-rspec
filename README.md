@@ -69,7 +69,7 @@ end
 ### List of available options:
 
 ``` ruby
-cmd: 'zeus rspec'      # specify a custom rpsec command to run, default: 'rspec'
+cmd: 'zeus rspec'      # specify a custom rspec command to run, default: 'rspec'
 spec_paths: ['spec']   # specify a custom array of paths that contain spec files
 focus_on_failed: false # focus on the first 10 failed specs, rerun till they pass, default: true
 keep_failed: true      # keep failed specs until they pass (add them to new ones), default: false
