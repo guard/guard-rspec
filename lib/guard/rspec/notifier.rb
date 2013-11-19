@@ -25,7 +25,7 @@ module Guard
       private
 
       def _parse_summary(summary)
-        summary.match(/(\d+) failures( \((\d+) pending\))/) do |m|
+        summary.match(/(\d+) failures( \((\d+) pending\))?/) do |m|
           return m[1].to_i, m[3].to_i
         end
         [0, 0]
