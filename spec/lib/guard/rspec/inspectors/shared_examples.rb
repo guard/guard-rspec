@@ -4,14 +4,16 @@ shared_examples 'inspector' do |klass|
   let(:spec_paths) { %w[spec myspec] }
   let(:options) { { custom: 'value', spec_paths: spec_paths } }
   let(:inspector) { klass.new(options) }
+
+  # Use real paths because BaseInspector#_clean will be used to clean them
   let(:paths) { [
     'spec/lib/guard/rspec/inspectors/base_inspector_spec.rb',
     'spec/lib/guard/rspec/runner_spec.rb',
     'spec/lib/guard/rspec/deprecator_spec.rb'
   ] }
-  let(:failed_paths) { [
-    'spec/lib/guard/rspec/runner_spec.rb',
-    'spec/lib/guard/rspec/deprecator_spec.rb'
+  let(:failed_locations) { [
+    './spec/lib/guard/rspec/runner_spec.rb:12',
+    './spec/lib/guard/rspec/deprecator_spec.rb:55'
   ] }
 
   describe '.initialize' do
@@ -45,7 +47,7 @@ shared_examples 'inspector' do |klass|
 
   describe '#failed' do
     it 'is callable' do
-      expect { inspector.failed(failed_paths) }.not_to raise_error
+      expect { inspector.failed(failed_locations) }.not_to raise_error
     end
   end
 

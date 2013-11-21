@@ -6,6 +6,7 @@ describe Guard::RSpec::Runner do
   let(:runner) { Guard::RSpec::Runner.new(options) }
   let(:inspector) { double(Guard::RSpec::Inspectors::SimpleInspector) }
   let(:notifier) { double(Guard::RSpec::Notifier) }
+  let(:formatter_tmp_file) { Guard::RSpec::Formatter::TEMPORARY_FILE_PATH }
   before {
     Guard::UI.stub(:info)
     Kernel.stub(:system) { true }
@@ -70,7 +71,7 @@ describe Guard::RSpec::Runner do
   describe '#run' do
     let(:paths) { %w[spec_path1 spec_path2] }
     before {
-      runner.stub(:_command_output) { ['Summary', []] }
+      File.stub(:readlines).with(formatter_tmp_file) { %W{Summary\n} }
       inspector.stub(:paths) { paths }
       inspector.stub(:clear_paths) { true }
       inspector.stub(:failed)
@@ -121,11 +122,11 @@ describe Guard::RSpec::Runner do
 
     context 'with failed paths' do
       before {
-        runner.stub(:_command_output) { ['Summary', %w[failed_spec other_failed_spec]] }
+        File.stub(:readlines).with(formatter_tmp_file) { %W{Summary\n ./failed_spec.rb:123\n ./other/failed_spec.rb:77\n} }
       }
 
       it 'notifies inspector about failed paths' do
-        expect(inspector).to receive(:failed).with(%w[failed_spec other_failed_spec])
+        expect(inspector).to receive(:failed).with(%w[./failed_spec.rb:123 ./other/failed_spec.rb:77])
         runner.run(paths)
       end
     end

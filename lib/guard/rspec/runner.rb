@@ -67,17 +67,14 @@ module Guard
         [Command::FAILURE_EXIT_CODE, 0].include?($?.exitstatus)
       end
 
-      def _temporary_file_path
-        Formatter::TEMPORARY_FILE_PATH
-      end
-
       def _command_output
-        lines = File.readlines(_temporary_file_path)
-        [lines.first, lines[1..11].compact]
+        formatter_tmp_file = Formatter::TEMPORARY_FILE_PATH
+        lines = File.readlines(formatter_tmp_file)
+        [lines.first.strip, lines[1..11].map(&:strip).compact]
       rescue
         [nil, nil]
       ensure
-        File.exist?(_temporary_file_path) && File.delete(_temporary_file_path)
+        File.exist?(formatter_tmp_file) && File.delete(formatter_tmp_file)
       end
 
       def _open_launchy

@@ -6,23 +6,23 @@ module Guard
       # Inspector that remembers all failed paths and
       # returns that paths in future calls to #paths method
       class KeepingInspector < BaseInspector
-        attr_accessor :failed_paths
+        attr_accessor :failed_locations
 
         def initialize(options = {})
           super
-          @failed_paths = []
+          @failed_locations = []
         end
 
-        def paths(ps)
-          _clean(failed_paths + ps)
+        def paths(paths)
+          _clean(paths) | failed_locations
         end
 
-        def failed(ps)
-          @failed_paths = ps
+        def failed(locations)
+          @failed_locations = locations
         end
 
         def reload
-          @failed_paths = []
+          @failed_locations = []
         end
       end
     end

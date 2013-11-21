@@ -9,11 +9,11 @@ module Guard
           @spec_paths = @options[:spec_paths]
         end
 
-        def paths(ps)
+        def paths(paths)
           raise _abstract
         end
 
-        def failed(ps)
+        def failed(locations)
           raise _abstract
         end
 

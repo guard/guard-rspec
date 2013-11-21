@@ -4,11 +4,11 @@ module Guard
   class RSpec
     module Inspectors
       class SimpleInspector < BaseInspector
-        def paths(ps)
-          _clean(ps)
+        def paths(paths)
+          _clean(paths)
         end
 
-        def failed(ps)
+        def failed(locations)
           # Don't care
         end
 
