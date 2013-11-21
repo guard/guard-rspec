@@ -107,6 +107,14 @@ describe Guard::RSpec::Runner do
       runner.run(paths)
     end
 
+    it "does not clobber GUARD ENV vars" do
+      ENV['GUARD_NOTIFY'] = 'true'
+      Kernel.should_receive(:system) do
+        expect(ENV['GUARD_NOTIFY']).to eq 'true'
+      end
+      runner.run(paths)
+    end
+
     context "with all_after_pass option and old failed spec paths" do
       let(:options) { { all_after_pass: true } }
       before {
