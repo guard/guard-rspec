@@ -8,12 +8,10 @@ module Guard
       class Factory
         class << self
           def create(options = {})
-            if options[:focus_on_failed]
-              FocusedInspector.new(options)
-            elsif options[:keep_failed]
-              KeepingInspector.new(options)
-            else
-              SimpleInspector.new(options)
+            case options[:failed_mode]
+              when :focus ; FocusedInspector.new(options)
+              when :keep  ; KeepingInspector.new(options)
+              else        ; SimpleInspector.new(options)
             end
           end
 

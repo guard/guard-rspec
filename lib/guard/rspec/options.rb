@@ -5,8 +5,7 @@ module Guard
           all_on_start:    false,
           all_after_pass:  false,
           run_all:         { message: 'Running all specs' },
-          focus_on_failed: true,
-          keep_failed:     false,
+          failed_mode:     :focus,  # :keep and :none are other posibilities
           spec_paths:      %w[spec],
           cmd:             'rspec',
           launchy:         nil,
