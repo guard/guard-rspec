@@ -41,7 +41,7 @@ module Guard
       end
 
       def _guard_formatter
-        "-r #{File.dirname(__FILE__)}/formatters/formatter.rb -f Guard::RSpec::Formatters::Formatter"
+        "-r #{File.dirname(__FILE__)}/formatter.rb -f Guard::RSpec::Formatter"
       end
     end
   end

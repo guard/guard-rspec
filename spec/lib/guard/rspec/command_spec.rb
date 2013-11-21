@@ -17,7 +17,7 @@ describe Guard::RSpec::Command do
     end
 
     it "sets formatter" do
-      expect(command).to match %r{-r .*/lib/guard/rspec/formatters/formatter.rb -f Guard::RSpec::Formatters::Formatter}
+      expect(command).to match %r{-r .*/lib/guard/rspec/formatter.rb -f Guard::RSpec::Formatter}
     end
 
     context "with custom cmd" do

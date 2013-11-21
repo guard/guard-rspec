@@ -1,9 +1,9 @@
 require 'spec_helper.rb'
 
-require 'guard/rspec/formatters/formatter'
+require 'guard/rspec/formatter'
 
-describe Guard::RSpec::Formatters::Formatter do
-  let(:formatter) { Guard::RSpec::Formatters::Formatter.new(StringIO.new) }
+describe Guard::RSpec::Formatter do
+  let(:formatter) { Guard::RSpec::Formatter.new(StringIO.new) }
 
   describe '#dump_summary' do
     after { File.delete('./tmp/rspec_guard_result') }

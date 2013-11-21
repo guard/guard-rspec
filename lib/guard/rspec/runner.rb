@@ -1,6 +1,6 @@
 require 'guard/rspec/inspectors/factory'
 require 'guard/rspec/command'
-require 'guard/rspec/formatters/formatter'
+require 'guard/rspec/formatter'
 require 'guard/rspec/notifier'
 
 module Guard
@@ -68,7 +68,7 @@ module Guard
       end
 
       def _temporary_file_path
-        Formatters::Formatter::TEMPORARY_FILE_PATH
+        Formatter::TEMPORARY_FILE_PATH
       end
 
       def _command_output
