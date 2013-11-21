@@ -42,17 +42,21 @@ module Guard
 
       def _run(paths, failed_paths, options)
         command = Command.new(paths, options)
-        _without_bundler_env { Kernel.system(command) }.tap do |success|
+        _with_clean_env { Kernel.system(command) }.tap do |success|
           success ? inspector.clear_paths(paths) : _notify_failure
           _open_launchy
           _run_all_after_pass(success, failed_paths)
         end
       end
 
+      def _with_clean_env(&block)
+        defined?(::Bundler) ? _without_bundler_env(&block) : yield
+      end
+
       def _without_bundler_env
-        if defined?(::Bundler)
-          ::Bundler.with_clean_env { yield }
-        else
+        save_guard_env = ENV.select { |k, v| k[/^GUARD/] }
+        ::Bundler.with_clean_env do
+          save_guard_env.each { |k, v| ENV[k] = v }
           yield
         end
       end
