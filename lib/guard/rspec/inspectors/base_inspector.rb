@@ -27,6 +27,7 @@ module Guard
           'Must be implemented in subclass'
         end
 
+        # Leave only spec/feature files from spec_paths, remove others
         def _clean(paths)
           paths.uniq!
           paths.compact!

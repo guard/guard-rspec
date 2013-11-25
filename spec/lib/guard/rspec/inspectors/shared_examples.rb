@@ -25,7 +25,7 @@ shared_examples 'inspector' do |klass|
   end
 
   describe '#paths' do
-    it 'return paths' do
+    it 'returns paths when called first time' do
       expect(inspector.paths(paths)).to match_array(paths)
     end
 

@@ -21,16 +21,30 @@ describe klass do
     expect(inspector.paths(paths)).to eq(paths)
     inspector.failed(failed_locations)
 
-    expect(inspector.paths(other_paths)).to match_array(other_paths | failed_locations)
+    # other_paths and failed_locations contain the same spec (runner_spec.rb)
+    # so #paths should return that spec only once (omit location)
+    expect(inspector.paths(other_paths)).to match_array(
+      other_paths +
+      %w[./spec/lib/guard/rspec/deprecator_spec.rb:55]
+    )
     inspector.failed(other_failed_locations)
 
-    expect(inspector.paths([])).to match_array(other_failed_locations)
+    # Now it returns other failed locations
+    expect(inspector.paths(%w[spec/lib/guard/rspec/deprecator_spec.rb])).to match_array(
+      other_failed_locations +
+      %w[spec/lib/guard/rspec/deprecator_spec.rb]
+    )
+    inspector.failed(other_failed_locations)
+
+    # It returns runner_spec.rb without locations in that spec
+    expect(inspector.paths(%w[spec/lib/guard/rspec/runner_spec.rb])).to match_array([
+      './spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb:12',
+      'spec/lib/guard/rspec/runner_spec.rb'
+    ])
     inspector.failed([])
 
+    # Now there is no failed locations
     expect(inspector.paths(paths)).to match_array(paths)
-    inspector.failed([])
-
-    expect(inspector.paths([])).to eq([])
   end
 
   describe '#reload' do
