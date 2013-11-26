@@ -53,5 +53,24 @@ describe Guard::RSpec::Deprecator do
       end
     end
 
+    describe 'with keep_failed option' do
+      let(:options) { { keep_failed: true } }
+
+      it 'shows deprecation warning' do
+        expect(Guard::UI).to receive(:warning).with(
+          'Guard::RSpec DEPRECATION WARNING: The :keep_failed option is deprecated. Please set new :failed_mode option value to :keep instead. https://github.com/guard/guard-rspec#list-of-available-options')
+        deprecator.warns_about_deprecated_options
+      end
+    end
+
+    describe 'with focus_on_failed option' do
+      let(:options) { { focus_on_failed: true } }
+
+      it 'shows deprecation warning' do
+        expect(Guard::UI).to receive(:warning).with(
+          'Guard::RSpec DEPRECATION WARNING: The :focus_on_failed option is deprecated. Please set new :failed_mode option value to :focus instead. https://github.com/guard/guard-rspec#list-of-available-options')
+        deprecator.warns_about_deprecated_options
+      end
+    end
   end
 end
