@@ -10,12 +10,7 @@ module Guard
 
       def initialize(paths, options = {})
         @paths = paths
-        @options = {
-          focus_on_failed: true,
-          notification: true,
-          cmd:          'rspec'
-        }.merge(options)
-
+        @options = options
         super(_parts.join(' '))
       end
 
@@ -23,14 +18,13 @@ module Guard
 
       def _parts
         parts = [options[:cmd]]
-        parts << _formatter
-        parts << _notifier
-        parts << _focuser
+        parts << _visual_formatter
+        parts << _guard_formatter
         parts << "--failure-exit-code #{FAILURE_EXIT_CODE}"
         parts << paths.join(' ')
       end
 
-      def _formatter
+      def _visual_formatter
         return if _cmd_include_formatter?
         _rspec_formatters || '-f progress'
       end
@@ -46,16 +40,9 @@ module Guard
         options[:cmd] =~ /(?:^|\s)(?:-f\s*|--format(?:=|\s+))([\w:]+)/
       end
 
-      def _notifier
-        return unless options[:notification]
-        "-r #{File.dirname(__FILE__)}/formatters/notifier.rb -f Guard::RSpec::Formatters::Notifier"
+      def _guard_formatter
+        "-r #{File.dirname(__FILE__)}/formatter.rb -f Guard::RSpec::Formatter"
       end
-
-      def _focuser
-        return unless options[:focus_on_failed]
-        "-r #{File.dirname(__FILE__)}/formatters/focuser.rb -f Guard::RSpec::Formatters::Focuser"
-      end
-
     end
   end
 end

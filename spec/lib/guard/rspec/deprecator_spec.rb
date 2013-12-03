@@ -10,13 +10,13 @@ describe Guard::RSpec::Deprecator do
       it "shows warning if SPEC_OPTS is set" do
         ENV['SPEC_OPTS'] = '-f p'
         expect(Guard::UI).to receive(:warning).with(
-          'The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications.')
+          'The SPEC_OPTS environment variable is present. This can conflict with guard-rspec.')
         deprecator.warns_about_deprecated_options
         ENV['SPEC_OPTS'] = nil # otherwise other specs pick it up and fail
       end
       it "does not show warning if SPEC_OPTS is unset" do
         expect(Guard::UI).to_not receive(:warning).with(
-          'The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications.')
+          'The SPEC_OPTS environment variable is present. This can conflict with guard-rspec.')
         deprecator.warns_about_deprecated_options
       end
     end
@@ -53,5 +53,24 @@ describe Guard::RSpec::Deprecator do
       end
     end
 
+    describe 'with keep_failed option' do
+      let(:options) { { keep_failed: true } }
+
+      it 'shows deprecation warning' do
+        expect(Guard::UI).to receive(:warning).with(
+          'Guard::RSpec DEPRECATION WARNING: The :keep_failed option is deprecated. Please set new :failed_mode option value to :keep instead. https://github.com/guard/guard-rspec#list-of-available-options')
+        deprecator.warns_about_deprecated_options
+      end
+    end
+
+    describe 'with focus_on_failed option' do
+      let(:options) { { focus_on_failed: true } }
+
+      it 'shows deprecation warning' do
+        expect(Guard::UI).to receive(:warning).with(
+          'Guard::RSpec DEPRECATION WARNING: The :focus_on_failed option is deprecated. Focus mode is the default and can be changed using new :failed_mode option. https://github.com/guard/guard-rspec#list-of-available-options')
+        deprecator.warns_about_deprecated_options
+      end
+    end
   end
 end

@@ -69,15 +69,18 @@ end
 ### List of available options:
 
 ``` ruby
-cmd: 'zeus rspec'      # specify a custom rspec command to run, default: 'rspec'
-spec_paths: ['spec']   # specify a custom array of paths that contain spec files
-focus_on_failed: false # focus on the first 10 failed specs, rerun till they pass, default: true
-keep_failed: true      # keep failed specs until they pass (add them to new ones), default: false
-all_after_pass: true   # run all specs after changed specs pass, default: false
-all_on_start: true     # run all the specs at startup, default: false
-launchy: nil           # pass a path to an rspec results file, e.g. ./tmp/spec_results.html
-notification: false    # display notification after the specs are done running, default: true
-run_all: { cmd: 'custom rspec command', message: 'custom message' } # Custom options to use when running all specs.
+cmd: 'zeus rspec'      # Specify a custom rspec command to run, default: 'rspec'
+spec_paths: ['spec']   # Specify a custom array of paths that contain spec files
+failed_mode: :focus    # What to do with failed specs
+                       # Available values:
+                       #  :focus (default) - focus on the first 10 failed specs, rerun till they pass
+                       #  :keep - keep failed specs until they pass (add them to new ones)
+                       #  :none - just report
+all_after_pass: true   # Run all specs after changed specs pass, default: false
+all_on_start: true     # Run all the specs at startup, default: false
+launchy: nil           # Pass a path to an rspec results file, e.g. ./tmp/spec_results.html
+notification: false    # Display notification after the specs are done running, default: true
+run_all: { cmd: 'custom rspec command', message: 'custom message' } # Custom options to use when running all specs
 ```
 
 ### Using Launchy to view rspec results

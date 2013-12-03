@@ -16,12 +16,8 @@ describe Guard::RSpec::Command do
       expect(command).to match /--failure-exit-code 2/
     end
 
-    it "sets notifier formatter" do
-      expect(command).to match %r{-r .*/lib/guard/rspec/formatters/notifier.rb -f Guard::RSpec::Formatters::Notifier}
-    end
-
-    it "sets focuser formatter" do
-      expect(command).to match %r{-r .*/lib/guard/rspec/formatters/focuser.rb -f Guard::RSpec::Formatters::Focuser}
+    it "sets formatter" do
+      expect(command).to match %r{-r .*/lib/guard/rspec/formatter.rb -f Guard::RSpec::Formatter}
     end
 
     context "with custom cmd" do

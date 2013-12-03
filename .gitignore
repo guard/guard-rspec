@@ -6,3 +6,5 @@ pkg/*
 .rbx/*
 Gemfile.lock
 coverage/
+.ruby-version
+.ruby-gemset

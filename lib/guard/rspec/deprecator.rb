@@ -16,13 +16,15 @@ module Guard
         _version_option
         _exclude_option
         _use_cmd_option
+        _keep_failed_option
+        _focus_on_failed_option
       end
 
       private
 
       def _spec_opts_env
         return if ENV['SPEC_OPTS'].nil?
-        UI.warning "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec, particularly notifications."
+        UI.warning "The SPEC_OPTS environment variable is present. This can conflict with guard-rspec."
       end
 
       def _version_option
@@ -40,6 +42,16 @@ module Guard
           next unless options.key?(option.to_sym)
           _deprectated("The :#{option} option is deprecated. Please customize the new :cmd option to fit your need.")
         end
+      end
+
+      def _keep_failed_option
+        return unless options.key?(:keep_failed)
+        _deprectated('The :keep_failed option is deprecated. Please set new :failed_mode option value to :keep instead. https://github.com/guard/guard-rspec#list-of-available-options')
+      end
+
+      def _focus_on_failed_option
+        return unless options.key?(:focus_on_failed)
+        _deprectated('The :focus_on_failed option is deprecated. Focus mode is the default and can be changed using new :failed_mode option. https://github.com/guard/guard-rspec#list-of-available-options')
       end
 
       def _deprectated(message)
