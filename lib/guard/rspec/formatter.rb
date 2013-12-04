@@ -1,3 +1,4 @@
+require 'guard/rspec'
 require 'rspec/core/formatters/base_formatter'
 
 module Guard
