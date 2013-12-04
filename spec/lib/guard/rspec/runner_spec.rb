@@ -8,13 +8,13 @@ describe Guard::RSpec::Runner do
   let(:notifier) { double(Guard::RSpec::Notifier) }
   let(:formatter_tmp_file) { Guard::RSpec::Formatter::TEMPORARY_FILE_PATH }
   before {
-    Guard::UI.stub(:info)
-    Kernel.stub(:system) { true }
-    Guard::RSpec::Inspectors::Factory.stub(:create) { inspector }
-    Guard::RSpec::Notifier.stub(:new) { notifier }
-    Guard::RSpec::Command.stub(:new) { 'rspec' }
-    notifier.stub(:notify)
-    notifier.stub(:notify_failure)
+    allow(Guard::UI).to receive(:info)
+    allow(Kernel).to receive(:system) { true }
+    allow(Guard::RSpec::Inspectors::Factory).to receive(:create) { inspector }
+    allow(Guard::RSpec::Notifier).to receive(:new) { notifier }
+    allow(Guard::RSpec::Command).to receive(:new) { 'rspec' }
+    allow(notifier).to receive(:notify)
+    allow(notifier).to receive(:notify_failure)
   }
 
   describe '.initialize' do
@@ -71,10 +71,10 @@ describe Guard::RSpec::Runner do
   describe '#run' do
     let(:paths) { %w[spec_path1 spec_path2] }
     before {
-      File.stub(:readlines).with(formatter_tmp_file) { %W{Summary\n} }
-      inspector.stub(:paths) { paths }
-      inspector.stub(:clear_paths) { true }
-      inspector.stub(:failed)
+      allow(File).to receive(:readlines).with(formatter_tmp_file) { %W{Summary\n} }
+      allow(inspector).to receive(:paths) { paths }
+      allow(inspector).to receive(:clear_paths) { true }
+      allow(inspector).to receive(:failed)
     }
 
     it 'prints running message' do
@@ -83,7 +83,7 @@ describe Guard::RSpec::Runner do
     end
 
     it 'returns if no paths are given' do
-      inspector.stub(:paths) { [] }
+      allow(inspector).to receive(:paths) { [] }
       expect(Guard::UI).to_not receive(:info)
       runner.run([])
     end
@@ -106,7 +106,7 @@ describe Guard::RSpec::Runner do
       let(:options) { { launchy: 'launchy_path' } }
 
       before {
-        Pathname.stub(:new).with('launchy_path') { double(exist?: true) }
+        allow(Pathname).to receive(:new).with('launchy_path') { double(exist?: true) }
       }
 
       it 'opens Launchy' do
@@ -122,7 +122,7 @@ describe Guard::RSpec::Runner do
 
     context 'with failed paths' do
       before {
-        File.stub(:readlines).with(formatter_tmp_file) { %W{Summary\n ./failed_spec.rb:123\n ./other/failed_spec.rb:77\n} }
+        allow(File).to receive(:readlines).with(formatter_tmp_file) { %W{Summary\n ./failed_spec.rb:123\n ./other/failed_spec.rb:77\n} }
       }
 
       it 'notifies inspector about failed paths' do
@@ -137,7 +137,7 @@ describe Guard::RSpec::Runner do
     end
 
     it 'notifies failure' do
-      Kernel.stub(:system) { nil }
+      allow(Kernel).to receive(:system) { nil }
       expect(notifier).to receive(:notify_failure)
       runner.run(paths)
     end

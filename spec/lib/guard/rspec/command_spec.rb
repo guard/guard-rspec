@@ -30,7 +30,7 @@ describe Guard::RSpec::Command do
 
     context "with RSpec defined formatter" do
       let(:formatters) { [['doc','output']] }
-      before { RSpec::Core::ConfigurationOptions.stub(:new) { double(parse_options: { formatters: formatters }) } }
+      before { allow(RSpec::Core::ConfigurationOptions).to receive(:new) { double(parse_options: { formatters: formatters }) } }
 
       it "uses them" do
         expect(command).to match %r{-f doc -o output}

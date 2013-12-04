@@ -6,9 +6,9 @@ describe Guard::RSpec do
   let(:plugin) { Guard::RSpec.new(options) }
   let(:runner) { double(Guard::RSpec::Runner) }
   before {
-    Guard::UI.stub(:info)
-    Guard::RSpec::Deprecator.stub(:warns_about_deprecated_options)
-    Guard::RSpec::Runner.stub(:new) { runner }
+    allow(Guard::UI).to receive(:info)
+    allow(Guard::RSpec::Deprecator).to receive(:warns_about_deprecated_options)
+    allow(Guard::RSpec::Runner).to receive(:new) { runner }
   }
 
   describe '.initialize' do
@@ -51,7 +51,7 @@ describe Guard::RSpec do
     end
 
     it "throws task_has_failed if runner return false" do
-      runner.stub(:run_all) { false }
+      allow(runner).to receive(:run_all) { false }
       expect(plugin).to receive(:throw).with(:task_has_failed)
       plugin.run_all
     end
@@ -77,7 +77,7 @@ describe Guard::RSpec do
     end
 
     it "throws task_has_failed if runner return false" do
-      runner.stub(:run) { false }
+      allow(runner).to receive(:run) { false }
       expect(plugin).to receive(:throw).with(:task_has_failed)
       plugin.run_on_modifications(paths)
     end

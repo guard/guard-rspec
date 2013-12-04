@@ -15,7 +15,7 @@ describe Guard::RSpec::Formatter do
       ) }
 
       it 'writes summary line and failed location in tmp dir' do
-        formatter.stub(:examples) { [failed_example] }
+        allow(formatter).to receive(:examples) { [failed_example] }
         formatter.dump_summary(123, 3, 1, 0)
         result = File.open('./tmp/rspec_guard_result').read
         expect(result).to match /^3 examples, 1 failures in 123\.0 seconds\nfailed_location\n$/
