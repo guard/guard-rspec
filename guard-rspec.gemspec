@@ -17,10 +17,10 @@ Gem::Specification.new do |s|
   s.test_files   = s.files.grep(%r{^spec/})
   s.require_path = 'lib'
 
-  s.add_dependency 'guard', '>= 2.1.1'
+  s.add_dependency 'guard', '~> 2.1', '>= 2.1'
   s.add_dependency 'rspec', '>= 2.14', '~> 3.0.0.beta', '< 4.0'
-  s.add_development_dependency 'bundler', '>= 1.3.5'
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'launchy'
+
+  s.add_development_dependency 'bundler', '~> 1.3', '>= 1.3.5'
+  s.add_development_dependency 'rake', '~> 10.1'
+  s.add_development_dependency 'launchy', '~> 2.4'
 end
