@@ -17,14 +17,14 @@ module Guard
       def run_all
         paths = options[:spec_paths]
         options = @options.merge(@options[:run_all]).freeze
-        return if paths.empty?
+        return true if paths.empty?
         ::Guard::UI.info(options[:message], reset: true)
         _run(true, paths, options)
       end
 
       def run(paths)
         paths = inspector.paths(paths)
-        return if paths.empty?
+        return true if paths.empty?
         ::Guard::UI.info("Running: #{paths.join(' ')}", reset: true)
         _run(false, paths, options)
       end
