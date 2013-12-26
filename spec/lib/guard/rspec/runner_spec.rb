@@ -40,6 +40,17 @@ describe Guard::RSpec::Runner do
     end
   end
 
+  shared_examples 'abort' do
+    it 'aborts' do
+      expect(Guard::UI).to_not receive(:info)
+      subject
+    end
+
+    it 'returns true' do
+      expect(subject).to be true
+    end
+  end
+
   describe '#run_all' do
     let(:options) { {
       spec_paths: %w[spec1 spec2],
@@ -54,6 +65,17 @@ describe Guard::RSpec::Runner do
     it 'prints message' do
       expect(Guard::UI).to receive(:info).with('Custom message', reset: true)
       runner.run_all
+    end
+
+    context 'when no paths are given' do
+      subject { runner.run_all }
+
+      let(:options) { {
+        spec_paths: [],
+        run_all: { message: 'Custom message' }
+      } }
+
+      include_examples 'abort'
     end
 
     context 'with custom cmd' do
@@ -82,10 +104,14 @@ describe Guard::RSpec::Runner do
       runner.run(paths)
     end
 
-    it 'returns if no paths are given' do
-      allow(inspector).to receive(:paths) { [] }
-      expect(Guard::UI).to_not receive(:info)
-      runner.run([])
+    context 'when no paths are given' do
+      subject { runner.run([]) }
+
+      before do
+        allow(inspector).to receive(:paths) { [] }
+      end
+
+      include_examples 'abort'
     end
 
     it 'builds commands with spec paths' do
