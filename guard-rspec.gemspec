@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.name        = 'guard-rspec'
   s.version     = Guard::RSpecVersion::VERSION
   s.author      = 'Thibaud Guillaume-Gentil'
-  s.email       = 'thibaud@thibaud.me'
+  s.email       = 'thibaud@thibaud.gg'
   s.summary     = 'Guard gem for RSpec'
   s.description = 'Guard::RSpec automatically run your specs (much like autotest).'
   s.homepage    = 'https://rubygems.org/gems/guard-rspec'
