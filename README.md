@@ -66,6 +66,16 @@ guard :rspec, cmd: 'spring rspec -f doc' do
 end
 ```
 
+### Running with bundler
+
+Running `bundle exec guard` will not run the specs with bundler. You need to change `cmd` the option to include `bundle exec`:
+
+``` ruby
+guard :rspec, cmd: 'bundle exec guard' do
+  # ...
+end
+```
+
 ### List of available options:
 
 ``` ruby
