@@ -68,10 +68,10 @@ end
 
 ### Running with bundler
 
-Running `bundle exec guard` will not run the specs with bundler. You need to change `cmd` the option to include `bundle exec`:
+Running `bundle exec guard` will not run the specs with bundler. You need to change the `cmd` option to `bundle exec rspec`:
 
 ``` ruby
-guard :rspec, cmd: 'bundle exec guard' do
+guard :rspec, cmd: 'bundle exec rspec' do
   # ...
 end
 ```
