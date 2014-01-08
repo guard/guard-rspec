@@ -45,7 +45,7 @@ module Guard
 
       def _failed_paths
         failed = examples.select { |e| e.execution_result[:status] == 'failed' }
-        failed.map { |e| self.class.extract_spec_location(e.metadata) }
+        failed.map { |e| self.class.extract_spec_location(e.metadata) }.sort.uniq
       end
 
       def _message(example_count, failure_count, pending_count, duration)

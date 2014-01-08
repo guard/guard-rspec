@@ -38,6 +38,12 @@ describe Guard::RSpec::Formatter do
         expect(result).to match /^3 examples, 1 failures in 123\.0 seconds\n#{spec_filename}\n$/
       end
 
+      it 'writes only uniq filenames out' do
+        allow(formatter).to receive(:examples) { [failed_example, failed_example] }
+        formatter.dump_summary(123, 3, 1, 0)
+        expect(result).to match /^3 examples, 1 failures in 123\.0 seconds\n#{spec_filename}\n$/
+      end
+
     end
 
     it "should find the spec file for shared examples" do
