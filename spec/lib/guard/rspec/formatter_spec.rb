@@ -51,7 +51,23 @@ describe Guard::RSpec::Formatter do
                   :example_group => {:location => './spec/requests/breadcrumbs_spec.rb:218'}
                  }
 
-      expect(described_class.extract_spec_location(metadata)).to eq './spec/requests/breadcrumbs_spec.rb:218'
+      expect(described_class.extract_spec_location(metadata)).to start_with './spec/requests/breadcrumbs_spec.rb'
+    end
+
+    it "should return only the spec file without line number for shared examples" do
+      metadata = {:location => './spec/support/breadcrumbs.rb:75',
+                  :example_group => {:location => './spec/requests/breadcrumbs_spec.rb:218'}
+      }
+
+      expect(described_class.extract_spec_location(metadata)).to eq './spec/requests/breadcrumbs_spec.rb'
+    end
+
+    it "should return location of the root spec when a shared examples has no location" do
+      metadata = {:location => './spec/support/breadcrumbs.rb:75',
+                  :example_group => {}
+      }
+
+      expect(described_class.extract_spec_location(metadata)).to eq metadata[:location]
     end
 
     context 'with only success' do

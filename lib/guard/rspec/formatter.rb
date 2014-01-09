@@ -6,19 +6,27 @@ module Guard
     class Formatter < ::RSpec::Core::Formatters::BaseFormatter
       TEMPORARY_FILE_PATH = './tmp/rspec_guard_result'
 
+      # rspec issue https://github.com/rspec/rspec-core/issues/793
       def self.extract_spec_location(metadata)
         root_metadata = metadata
-        until spec_path?(metadata[:location])
+        location = metadata[:location]
+
+        until spec_path?(location)
           metadata = metadata[:example_group]
+
           if !metadata
-            warn "no spec file found for #{root_metadata[:location]}"
+            Guard::UI.warning "no spec file found for #{root_metadata[:location]}"
             return root_metadata[:location]
           end
+
+          location = (metadata[:location] || "").split(':').first # rspec issue https://github.com/rspec/rspec-core/issues/1243
         end
-        metadata[:location]
+
+        location
       end
 
       def self.spec_path?(path)
+        path ||= ""
         flags = File::FNM_PATHNAME | File::FNM_DOTMATCH
         if File.const_defined?(:FNM_EXTGLOB) # ruby >= 2
           flags |= File::FNM_EXTGLOB
