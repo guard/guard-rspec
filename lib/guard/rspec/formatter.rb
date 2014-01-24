@@ -4,7 +4,7 @@ require 'rspec/core/formatters/base_formatter'
 module Guard
   class RSpec
     class Formatter < ::RSpec::Core::Formatters::BaseFormatter
-      TEMPORARY_FILE_PATH = './tmp/rspec_guard_result'
+      TEMPORARY_FILE_PATH = File.expand_path('./tmp/rspec_guard_result')
 
       # rspec issue https://github.com/rspec/rspec-core/issues/793
       def self.extract_spec_location(metadata)
@@ -47,7 +47,7 @@ module Guard
       private
 
       def write(&block)
-        FileUtils.mkdir_p('tmp')
+        FileUtils.mkdir_p(File.dirname(TEMPORARY_FILE_PATH))
         File.open(TEMPORARY_FILE_PATH, 'w', &block)
       end
 

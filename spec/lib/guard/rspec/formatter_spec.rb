@@ -1,32 +1,48 @@
 require 'spec_helper.rb'
-
 require 'guard/rspec/formatter'
 
 describe Guard::RSpec::Formatter do
-  let(:writer){
-    StringIO.new
-  }
-  let(:formatter) {
-    Guard::RSpec::Formatter.new(StringIO.new).tap{|formatter|
-      formatter.stub(:write) do |&block|
-        block.call writer
-      end
-    }
-  }
+  describe '::TEMPORARY_FILE_PATH' do
+    it 'is absolute path' do
+      require 'pathname'
+      temporary_file_path = described_class.const_get(:TEMPORARY_FILE_PATH)
+      expect(Pathname.new(temporary_file_path).absolute?).to be_true
+    end
+  end
 
   describe '#dump_summary' do
-
-    let(:result){
+    let(:writer) {
+      StringIO.new
+    }
+    let(:formatter) {
+      Guard::RSpec::Formatter.new(StringIO.new).tap do |formatter|
+        formatter.stub(:write) do |&block|
+          block.call writer
+        end
+      end
+    }
+    let(:result) {
       writer.rewind
       writer.read
     }
 
-
-    context 'with failures' do
-      let(:spec_filename){
-        'failed_location_spec.rb'
+    context 'without stubbed IO' do
+      let(:formatter) {
+        Guard::RSpec::Formatter.new(StringIO.new)
       }
 
+      it 'creates temporary file and and writes to it' do
+        temporary_file_path = described_class.const_get(:TEMPORARY_FILE_PATH)
+        expect(FileUtils).to receive(:mkdir_p).with(File.dirname(temporary_file_path)) {}
+        expect(File).to receive(:open).with(temporary_file_path, 'w') { |filename, mode, &block| block.call writer }
+        formatter.dump_summary(123, 1, 2, 3)
+      end
+    end
+
+    context 'with failures' do
+      let(:spec_filename) {
+        'failed_location_spec.rb'
+      }
       let(:failed_example) { double(
         execution_result: { status: 'failed' },
         metadata: { location: spec_filename }
@@ -46,27 +62,32 @@ describe Guard::RSpec::Formatter do
 
     end
 
-    it "should find the spec file for shared examples" do
-      metadata = {:location => './spec/support/breadcrumbs.rb:75',
-                  :example_group => {:location => './spec/requests/breadcrumbs_spec.rb:218'}
-                 }
+    it 'should find the spec file for shared examples' do
+      metadata = {
+        location: './spec/support/breadcrumbs.rb:75',
+        example_group: { location: './spec/requests/breadcrumbs_spec.rb:218' }
+      }
 
       expect(described_class.extract_spec_location(metadata)).to start_with './spec/requests/breadcrumbs_spec.rb'
     end
 
-    it "should return only the spec file without line number for shared examples" do
-      metadata = {:location => './spec/support/breadcrumbs.rb:75',
-                  :example_group => {:location => './spec/requests/breadcrumbs_spec.rb:218'}
+    # Skip location because of rspec issue https://github.com/rspec/rspec-core/issues/1243
+    it 'should return only the spec file without line number for shared examples' do
+      metadata = {
+        location: './spec/support/breadcrumbs.rb:75',
+        example_group: { location: './spec/requests/breadcrumbs_spec.rb:218' }
       }
 
       expect(described_class.extract_spec_location(metadata)).to eq './spec/requests/breadcrumbs_spec.rb'
     end
 
-    it "should return location of the root spec when a shared examples has no location" do
-      metadata = {:location => './spec/support/breadcrumbs.rb:75',
-                  :example_group => {}
+    it 'should return location of the root spec when a shared examples has no location' do
+      metadata = {
+        location: './spec/support/breadcrumbs.rb:75',
+        example_group: {}
       }
 
+      expect(Guard::UI).to receive(:warning).with("no spec file found for #{metadata[:location]}") {}
       expect(described_class.extract_spec_location(metadata)).to eq metadata[:location]
     end
 
@@ -84,5 +105,4 @@ describe Guard::RSpec::Formatter do
       end
     end
   end
-
 end
