@@ -10,11 +10,11 @@ module Guard
           cmd:             'rspec',
           launchy:         nil,
           notification:    true
-      }.freeze
+      }
 
       class << self
         def with_defaults(options = {})
-          _deep_merge(DEFAULTS, options).freeze
+          _deep_merge(DEFAULTS, options)
         end
 
         private

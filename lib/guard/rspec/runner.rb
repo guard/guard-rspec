@@ -16,7 +16,7 @@ module Guard
 
       def run_all
         paths = options[:spec_paths]
-        options = @options.merge(@options[:run_all]).freeze
+        options = @options.merge(@options[:run_all])
         return true if paths.empty?
         ::Guard::UI.info(options[:message], reset: true)
         _run(true, paths, options)
