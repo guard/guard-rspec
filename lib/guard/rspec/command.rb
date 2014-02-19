@@ -30,7 +30,11 @@ module Guard
       end
 
       def _rspec_formatters
-        formatters = ::RSpec::Core::ConfigurationOptions.new([]).parse_options()[:formatters] || nil
+        # RSpec::Core::ConfigurationOptions#parse_options method was renamed to #options
+        # in rspec-core v3.0.0.beta2 so call the first one if available. Fixes #249
+        config = ::RSpec::Core::ConfigurationOptions.new([])
+        config.parse_options if config.respond_to?(:parse_options)
+        formatters = config.options[:formatters] || nil
         # RSpec's parser returns an array in the format [[formatter, output], ...], so match their format
         # Construct a matching command line option, including output target
         formatters && formatters.map { |formatter| "-f #{formatter.join ' -o '}" }.join(' ')
