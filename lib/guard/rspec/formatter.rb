@@ -6,6 +6,14 @@ module Guard
     class Formatter < ::RSpec::Core::Formatters::BaseFormatter
       TEMPORARY_FILE_PATH = File.expand_path('./tmp/rspec_guard_result')
 
+      def self.rspec_3?
+        ::RSpec::Core::Version::STRING.split('.').first == "3"
+      end
+
+      if rspec_3?
+        ::RSpec::Core::Formatters.register self, :dump_summary
+      end
+
       # rspec issue https://github.com/rspec/rspec-core/issues/793
       def self.extract_spec_location(metadata)
         root_metadata = metadata
@@ -35,7 +43,17 @@ module Guard
       end
 
       # Write summary to temporary file for runner
-      def dump_summary(duration, total, failures, pending)
+      def dump_summary(*args)
+        if self.class.rspec_3?
+          notification = args[0]
+          duration = notification.duration
+          total = notification.example_count
+          failures = notification.failure_count
+          pending = notification.pending_count
+        else
+          duration, total, failures, pending = args
+        end
+
         write do |f|
           f.puts _message(total, failures, pending, duration)
           f.puts _failed_paths.join("\n") if failures > 0
