@@ -60,6 +60,20 @@ describe Guard::RSpec::Formatter do
         expect(result).to match /^3 examples, 1 failures in 123\.0 seconds\n#{spec_filename}\n$/
       end
 
+      context "for rspec 3" do
+        let(:notification) {
+          Struct.new(:duration, :example_count, :failure_count, :pending_count).new(123, 3, 1, 0)
+        }
+        before do
+          formatter.class.stub(:rspec_3?).and_return(true)
+        end
+
+        it 'writes summary line and failed location' do
+          allow(formatter).to receive(:examples) { [failed_example] }
+          formatter.dump_summary(notification)
+          expect(result).to match /^3 examples, 1 failures in 123\.0 seconds\n#{spec_filename}\n$/
+        end
+      end
     end
 
     it 'should find the spec file for shared examples' do
