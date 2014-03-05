@@ -12,4 +12,4 @@ matrix:
     - rvm: rbx
 notifications:
   recipients:
-    - thibaud@thibaud.me
+    - thibaud@thibaud.gg
