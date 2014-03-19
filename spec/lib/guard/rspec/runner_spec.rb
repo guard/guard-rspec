@@ -56,6 +56,7 @@ describe Guard::RSpec::Runner do
       spec_paths: %w[spec1 spec2],
       run_all: { message: 'Custom message' }
     } }
+    before { allow(inspector).to receive(:failed) }
 
     it 'builds commands with spec paths' do
       expect(Guard::RSpec::Command).to receive(:new).with(%w[spec1 spec2], kind_of(Hash))

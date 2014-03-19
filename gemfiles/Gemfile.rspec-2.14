@@ -1,0 +1,13 @@
+source "https://rubygems.org"
+
+gemspec path: '../'
+
+gem 'rspec', '~> 2.14'
+
+group :test do
+  gem 'coveralls', require: false
+end
+
+group :tool do
+  gem 'ruby_gntp', require: false
+end

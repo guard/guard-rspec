@@ -4,7 +4,7 @@ pkg/*
 .DS_Store
 .rvmrc
 .rbx/*
-Gemfile.lock
+Gemfile*.lock
 coverage/
 .ruby-version
 .ruby-gemset
