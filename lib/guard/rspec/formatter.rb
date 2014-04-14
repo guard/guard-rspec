@@ -4,7 +4,7 @@ require 'rspec/core/formatters/base_formatter'
 module Guard
   class RSpec
     class Formatter < ::RSpec::Core::Formatters::BaseFormatter
-      TEMPORARY_FILE_PATH = File.expand_path('./tmp/rspec_guard_result')
+      TEMPORARY_FILE_PATH ||= File.expand_path('./tmp/rspec_guard_result')
 
       def self.rspec_3?
         ::RSpec::Core::Version::STRING.split('.').first == "3"
