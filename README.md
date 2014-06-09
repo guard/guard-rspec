@@ -83,9 +83,9 @@ cmd: 'zeus rspec'      # Specify a custom rspec command to run, default: 'rspec'
 spec_paths: ['spec']   # Specify a custom array of paths that contain spec files
 failed_mode: :focus    # What to do with failed specs
                        # Available values:
-                       #  :focus (default) - focus on the first 10 failed specs, rerun till they pass
+                       #  :focus - focus on the first 10 failed specs, rerun till they pass
                        #  :keep - keep failed specs until they pass (add them to new ones)
-                       #  :none - just report
+                       #  :none (default) - just report
 all_after_pass: true   # Run all specs after changed specs pass, default: false
 all_on_start: true     # Run all the specs at startup, default: false
 launchy: nil           # Pass a path to an rspec results file, e.g. ./tmp/spec_results.html
