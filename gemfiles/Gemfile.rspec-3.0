@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gemspec path: '../'
 
-gem 'rspec', '~> 3.0.0.beta'
+gem 'rspec', '~> 3.0.0'
 
 group :test do
   gem 'coveralls', require: false

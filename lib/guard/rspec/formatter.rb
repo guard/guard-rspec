@@ -11,7 +11,15 @@ module Guard
       end
 
       if rspec_3?
-        ::RSpec::Core::Formatters.register self, :dump_summary
+        ::RSpec::Core::Formatters.register self, :dump_summary, :example_failed
+
+        def example_failed(failure)
+           examples.push failure.example
+        end
+
+        def examples
+          @examples ||= []
+        end
       end
 
       # rspec issue https://github.com/rspec/rspec-core/issues/793
@@ -74,7 +82,7 @@ module Guard
       end
 
       def _failed_paths
-        failed = examples.select { |e| e.execution_result[:status] == 'failed' }
+        failed = examples.select { |e| e.execution_result[:status].to_s == 'failed' }
         failed.map { |e| self.class.extract_spec_location(e.metadata) }.sort.uniq
       end
 
