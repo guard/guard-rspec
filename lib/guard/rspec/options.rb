@@ -7,7 +7,7 @@ module Guard
           run_all:         { message: 'Running all specs' },
           failed_mode:     :none,  # :keep and :focus are other posibilities
           spec_paths:      %w[spec],
-          cmd:             'rspec',
+          cmd:             nil,
           launchy:         nil,
           notification:    true
       }
