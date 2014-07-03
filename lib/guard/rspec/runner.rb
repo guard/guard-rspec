@@ -36,6 +36,7 @@ module Guard
       private
 
       def _run(all, paths, options)
+        return unless _cmd_option_present(options)
         command = Command.new(paths, options)
         _without_bundler_env { Kernel.system(command) }.tap do |success|
           if _command_success?(success)
@@ -60,6 +61,13 @@ module Guard
         else
           yield
         end
+      end
+
+      def _cmd_option_present(options)
+        return true if options[:cmd]
+        Guard::UI.error('No cmd option specified, unable to run specs!')
+        notifier.notify_failure
+        false
       end
 
       def _command_success?(success)
