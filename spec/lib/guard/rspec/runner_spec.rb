@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'launchy'
 
 describe Guard::RSpec::Runner do
-  let(:options) { {} }
+  let(:options) { {cmd: 'rspec'} }
   let(:runner) { Guard::RSpec::Runner.new(options) }
   let(:inspector) { double(Guard::RSpec::Inspectors::SimpleInspector) }
   let(:notifier) { double(Guard::RSpec::Notifier) }
@@ -54,6 +54,7 @@ describe Guard::RSpec::Runner do
   describe '#run_all' do
     let(:options) { {
       spec_paths: %w[spec1 spec2],
+      cmd: 'rspec',
       run_all: { message: 'Custom message' }
     } }
     before { allow(inspector).to receive(:failed) }
@@ -89,6 +90,28 @@ describe Guard::RSpec::Runner do
         runner.run_all
       end
     end
+
+    context 'with no cmd' do
+      before {
+        options[:cmd] = nil
+        allow(Guard::RSpec::Command).to receive(:new)
+        allow(Guard::UI).to receive(:error).with(an_instance_of(String))
+        allow(notifier).to receive(:notify_failure)
+        runner.run_all
+      }
+
+      it 'does not build' do
+        expect(Guard::RSpec::Command).to_not have_received(:new)
+      end
+
+      it 'issues a warning to the user' do
+        expect(Guard::UI).to have_received(:error).with(an_instance_of(String))
+      end
+
+      it 'notifies the notifer of failure' do
+        expect(notifier).to have_received(:notify_failure)
+      end
+    end
   end
 
   describe '#run' do
@@ -121,7 +144,7 @@ describe Guard::RSpec::Runner do
     end
 
     context 'with all_after_pass option' do
-      let(:options) { { all_after_pass: true } }
+      let(:options) { { cmd: 'rspec', all_after_pass: true } }
 
       it 're-runs all if run is success' do
         expect(runner).to receive(:run_all)
@@ -130,7 +153,7 @@ describe Guard::RSpec::Runner do
     end
 
     context 'with launchy option' do
-      let(:options) { { launchy: 'launchy_path' } }
+      let(:options) { { cmd: 'rspec', launchy: 'launchy_path' } }
 
       before {
         allow(Pathname).to receive(:new).with('launchy_path') { double(exist?: true) }
