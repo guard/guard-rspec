@@ -65,7 +65,7 @@ module Guard
 
       def _cmd_option_present(options)
         return true if options[:cmd]
-        Guard::UI.error('No cmd option specified, unable to run specs!')
+        ::Guard::UI.error('No cmd option specified, unable to run specs!')
         notifier.notify_failure
         false
       end
