@@ -32,7 +32,7 @@ Guard::RSpec can be adapted to all kinds of projects, some examples:
 ### Standard RubyGem project
 
 ``` ruby
-guard :rspec do
+guard :rspec, cmd: 'rspec' do
   watch(%r{^spec/.+_spec\.rb$})
   watch(%r{^lib/(.+)\.rb$})     { |m| "spec/lib/#{m[1]}_spec.rb" }
   watch('spec/spec_helper.rb')  { "spec" }
@@ -42,7 +42,7 @@ end
 ### Typical Rails app
 
 ``` ruby
-guard :rspec do
+guard :rspec, cmd: 'bundle exec rspec' do
   watch('spec/spec_helper.rb')                        { "spec" }
   watch('config/routes.rb')                           { "spec/routing" }
   watch('app/controllers/application_controller.rb')  { "spec/controllers" }
@@ -58,7 +58,7 @@ Please read [Guard doc](https://github.com/guard/guard#readme) for more informat
 
 ## Options
 
-Guard::RSpec 4.0 now uses a simpler approach with the new `cmd` option that let you precisely define which rspec command will be launched on each run. This option is required due to the number of different ways possible to invoke rspec, the template now includes a default that should work for most applications but may not be optimal for all. As example if you want to support Spring with a custom formatter (progress by default) use:
+Guard::RSpec 4.0 now uses a simpler approach with the new `cmd` option that let you precisely define which rspec command will be launched on each run. **This option is required** due to the number of different ways possible to invoke rspec, the template now includes a default that should work for most applications but may not be optimal for all. As example if you want to support Spring with a custom formatter (progress by default) use:
 
 ``` ruby
 guard :rspec, cmd: 'spring rspec -f doc' do
