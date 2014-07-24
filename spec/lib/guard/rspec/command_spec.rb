@@ -50,6 +50,14 @@ describe Guard::RSpec::Command do
         expect(command).to match %r{-f doc}
       end
     end
+
+    context "with cmd_additional_args" do
+      let(:options) { { cmd: "rspec", cmd_additional_args: "-f progress" } }
+
+      it "uses them" do
+        expect(command).to match %r{-f progress}
+      end
+    end
   end
 
 end

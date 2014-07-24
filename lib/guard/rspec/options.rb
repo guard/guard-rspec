@@ -8,6 +8,7 @@ module Guard
           failed_mode:     :none,  # :keep and :focus are other posibilities
           spec_paths:      %w[spec],
           cmd:             nil,
+          cmd_additional_args: nil,
           launchy:         nil,
           notification:    true
       }

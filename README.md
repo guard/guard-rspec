@@ -80,6 +80,8 @@ end
 
 ``` ruby
 cmd: 'zeus rspec'      # Specify a custom rspec command to run, default: 'rspec'
+cmd_additional_args: '-f progress' # Any arguments that should be added after the default
+                                   # arguments are applied but before the spec list
 spec_paths: ['spec']   # Specify a custom array of paths that contain spec files
 failed_mode: :focus    # What to do with failed specs
                        # Available values:
