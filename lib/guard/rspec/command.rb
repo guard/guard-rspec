@@ -21,6 +21,7 @@ module Guard
         parts << _visual_formatter
         parts << _guard_formatter
         parts << "--failure-exit-code #{FAILURE_EXIT_CODE}"
+        parts << options[:cmd_additional_args] || ""
         parts << paths.join(' ')
       end
 
