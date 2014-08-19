@@ -7,8 +7,6 @@ module Guard
         @options = options
       end
 
-      TITLE = 'RSpec results'
-
       def notify(summary)
         return unless options[:notification]
         failure_count, pending_count = _parse_summary(summary)
@@ -19,7 +17,7 @@ module Guard
 
       def notify_failure
         return unless options[:notification]
-        ::Guard::Notifier.notify('Failed', title: TITLE, image: :failed, priority: 2)
+        ::Guard::Notifier.notify('Failed', title: @options[:title], image: :failed, priority: 2)
       end
 
       private

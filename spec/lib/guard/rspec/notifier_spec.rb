@@ -13,6 +13,15 @@ describe Guard::RSpec::Notifier do
       expect_notification('Failed', :failed, 2)
       notifier.notify_failure
     end
+
+    context 'with a custom title' do
+      let(:options) { { notification: true, title: 'Failure title' } }
+
+      it 'notifies with the title' do
+        expect_notification('Failure title', 'Failed', :failed, 2)
+        notifier.notify_failure
+      end
+    end
   end
 
   describe '#notify' do
