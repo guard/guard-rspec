@@ -93,6 +93,7 @@ all_on_start: true     # Run all the specs at startup, default: false
 launchy: nil           # Pass a path to an rspec results file, e.g. ./tmp/spec_results.html
 notification: false    # Display notification after the specs are done running, default: true
 run_all: { cmd: 'custom rspec command', message: 'custom message' } # Custom options to use when running all specs
+title: 'My project'    # Display a custom title for the notification, default: 'RSpec results'
 ```
 
 ### Using Launchy to view rspec results
