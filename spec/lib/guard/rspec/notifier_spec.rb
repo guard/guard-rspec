@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Guard::RSpec::Notifier do
-  let(:options) { { notification: true } }
+  let(:options) { { notification: true, title: 'RSpec results' } }
   let(:notifier) { Guard::RSpec::Notifier.new(options) }
 
-  def expect_notification(message, image, priority)
-    expect(Guard::Notifier).to receive(:notify).with(message, { title: 'RSpec results', image: image, priority: priority })
+  def expect_notification(title = 'RSpec results', message, image, priority)
+    expect(Guard::Notifier).to receive(:notify).with(message, { title: title, image: image, priority: priority })
   end
 
   describe '#notify_failure' do
@@ -45,6 +45,15 @@ describe Guard::RSpec::Notifier do
           expect_notification(summary, :failed, 2)
           notifier.notify(summary)
         end
+      end
+    end
+
+    context 'with a custom title' do
+      let(:options) { { notification: true, title: 'Custom title' } }
+
+      it 'notifies with the title' do
+        expect_notification('Custom title', 'This is summary', :success, -2)
+        notifier.notify('This is summary')
       end
     end
   end
