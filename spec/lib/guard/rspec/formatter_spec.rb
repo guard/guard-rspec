@@ -16,7 +16,7 @@ describe Guard::RSpec::Formatter do
     }
     let(:formatter) {
       Guard::RSpec::Formatter.new(StringIO.new).tap do |formatter|
-        formatter.stub(:_write) do |&block|
+        allow(formatter).to receive(:_write) do |&block|
           block.call writer
         end
       end
@@ -65,7 +65,7 @@ describe Guard::RSpec::Formatter do
           Struct.new(:duration, :example_count, :failure_count, :pending_count).new(123, 3, 1, 0)
         }
         before do
-          formatter.class.stub(:rspec_3?).and_return(true)
+          allow(formatter.class).to receive(:rspec_3?).and_return(true)
         end
 
         it 'writes summary line and failed location' do
