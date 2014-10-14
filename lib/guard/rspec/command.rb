@@ -1,5 +1,5 @@
-require 'rspec/core'
-require 'pathname'
+require "rspec/core"
+require "pathname"
 
 module Guard
   class RSpec
@@ -11,7 +11,7 @@ module Guard
       def initialize(paths, options = {})
         @paths = paths
         @options = options
-        super(_parts.join(' '))
+        super(_parts.join(" "))
       end
 
       private
@@ -22,12 +22,17 @@ module Guard
         parts << _guard_formatter
         parts << "--failure-exit-code #{FAILURE_EXIT_CODE}"
         parts << options[:cmd_additional_args] || ""
-        parts << paths.join(' ')
+        if chdir = options[:chdir]
+          paths.each do |path|
+            path.sub!("#{chdir}#{File::SEPARATOR}", "")
+          end
+        end
+        parts << paths.join(" ")
       end
 
       def _visual_formatter
         return if _cmd_include_formatter?
-        _rspec_formatters || '-f progress'
+        _rspec_formatters || "-f progress"
       end
 
       def _rspec_formatters
@@ -36,9 +41,9 @@ module Guard
         config = ::RSpec::Core::ConfigurationOptions.new([])
         config.parse_options if config.respond_to?(:parse_options)
         formatters = config.options[:formatters] || nil
-        # RSpec's parser returns an array in the format [[formatter, output], ...], so match their format
+        # RSpec"s parser returns an array in the format [[formatter, output], ...], so match their format
         # Construct a matching command line option, including output target
-        formatters && formatters.map { |formatter| "-f #{formatter.join ' -o '}" }.join(' ')
+        formatters && formatters.map { |formatter| "-f #{formatter.join " -o "}" }.join(" ")
       end
 
       def _cmd_include_formatter?

@@ -76,13 +76,16 @@ module Guard
       end
 
       def _command_output
-        formatter_tmp_file = Formatter::TEMPORARY_FILE_PATH
+        formatter_tmp_file = Formatter.tmp_file(options[:chdir])
         lines = File.readlines(formatter_tmp_file)
-        [lines.first.strip, lines[1..11].map(&:strip).compact]
+        summary = lines.first.strip
+        failed_paths = lines[1..11].map(&:strip).compact
+
+        [summary, failed_paths]
       rescue
         [nil, nil]
       ensure
-        File.exist?(formatter_tmp_file) && File.delete(formatter_tmp_file)
+        File.delete(formatter_tmp_file) if File.exists?(formatter_tmp_file)
       end
 
       def _open_launchy

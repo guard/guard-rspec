@@ -58,6 +58,26 @@ describe Guard::RSpec::Command do
         expect(command).to match %r{-f progress}
       end
     end
+
+    context ":chdir option present" do
+      let(:chdir) { "moduleA" }
+      let(:paths) do
+        %w[path1 path2].map { |p| "#{chdir}#{File::Separator}#{p}" }
+      end
+
+      let(:options) do
+        {
+          cmd: "cd #{chdir} && rspec",
+          chdir: chdir
+        }
+      end
+
+      it "removes chdir part from the path
+        as it should be present in the cmd" do
+
+        expect(command).to match %r{path1 path2}
+      end
+    end
   end
 
 end

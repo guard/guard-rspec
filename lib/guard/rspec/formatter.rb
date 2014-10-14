@@ -1,13 +1,13 @@
-require 'guard/rspec'
-require 'rspec/core/formatters/base_formatter'
+require "guard/rspec"
+require "rspec/core/formatters/base_formatter"
 
 module Guard
   class RSpec
     class Formatter < ::RSpec::Core::Formatters::BaseFormatter
-      TEMPORARY_FILE_PATH ||= File.expand_path('./tmp/rspec_guard_result')
+      TEMPORARY_FILE_PATH ||= "./tmp/rspec_guard_result"
 
       def self.rspec_3?
-        ::RSpec::Core::Version::STRING.split('.').first == "3"
+        ::RSpec::Core::Version::STRING.split(".").first == "3"
       end
 
       if rspec_3?
@@ -20,6 +20,22 @@ module Guard
         def examples
           @examples ||= []
         end
+      end
+
+      def self.paths_with_chdir(paths, chdir)
+        paths.map do |path|
+          path_with_chdir(path, chdir)
+        end
+      end
+
+      def self.path_with_chdir(path, chdir)
+        return path unless chdir
+
+        File.join(chdir, path)
+      end
+
+      def self.tmp_file(chdir)
+        path_with_chdir(TEMPORARY_FILE_PATH, chdir)
       end
 
       # rspec issue https://github.com/rspec/rspec-core/issues/793
@@ -35,7 +51,7 @@ module Guard
             return root_metadata[:location]
           end
 
-          location = (metadata[:location] || "").split(':').first # rspec issue https://github.com/rspec/rspec-core/issues/1243
+          location = (metadata[:location] || "").split(":").first # rspec issue https://github.com/rspec/rspec-core/issues/1243
         end
 
         location
@@ -47,7 +63,7 @@ module Guard
         if File.const_defined?(:FNM_EXTGLOB) # ruby >= 2
           flags |= File::FNM_EXTGLOB
         end
-        File.fnmatch(::RSpec.configuration.pattern, path.sub(/:\d+\z/, ''), flags)
+        File.fnmatch(::RSpec.configuration.pattern, path.sub(/:\d+\z/, ""), flags)
       end
 
       def dump_summary(*args)
@@ -63,7 +79,7 @@ module Guard
           write_summary(*args)
         end
       rescue
-        # nothing really we can do, at least don't kill the test runner
+        # nothing really we can do, at least don"t kill the test runner
       end
 
       # Write summary to temporary file for runner
@@ -77,12 +93,13 @@ module Guard
       private
 
       def _write(&block)
-        FileUtils.mkdir_p(File.dirname(TEMPORARY_FILE_PATH))
-        File.open(TEMPORARY_FILE_PATH, 'w', &block)
+        file = File.expand_path(TEMPORARY_FILE_PATH)
+        FileUtils.mkdir_p(File.dirname(file))
+        File.open(file, "w", &block)
       end
 
       def _failed_paths
-        failed = examples.select { |e| e.execution_result[:status].to_s == 'failed' }
+        failed = examples.select { |e| e.execution_result[:status].to_s == "failed" }
         failed.map { |e| self.class.extract_spec_location(e.metadata) }.sort.uniq
       end
 
