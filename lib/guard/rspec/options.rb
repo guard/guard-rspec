@@ -10,7 +10,8 @@ module Guard
           cmd:             nil,
           cmd_additional_args: nil,
           launchy:         nil,
-          notification:    true
+          notification:    true,
+          title:           'RSpec results'
       }
 
       class << self
