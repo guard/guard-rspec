@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'launchy'
 
-describe Guard::RSpec::Command do
+RSpec.describe Guard::RSpec::Command do
   let(:options) { { } }
   let(:paths) { %w[path1 path2] }
   let(:command) { Guard::RSpec::Command.new(paths, options) }
