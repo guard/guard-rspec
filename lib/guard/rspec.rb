@@ -1,11 +1,21 @@
 require 'guard'
 require 'guard/plugin'
 
+require 'guard/rspec/options'
+require 'guard/rspec/deprecator'
+require 'guard/rspec/runner'
+
+# NOTE: To avoid 'superclass mismatch for class RSpec' errors,
+# every file has to have
+#
+#   class RSpec < Plugin
+#
+# and not just
+#
+#   class RSpec
+
 module Guard
   class RSpec < Plugin
-    require 'guard/rspec/options'
-    require 'guard/rspec/deprecator'
-    require 'guard/rspec/runner'
 
     attr_accessor :options, :runner
 
@@ -41,4 +51,3 @@ module Guard
     end
   end
 end
-

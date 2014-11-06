@@ -4,7 +4,7 @@ require 'guard/rspec/formatter'
 require 'guard/rspec/notifier'
 
 module Guard
-  class RSpec
+  class RSpec < Plugin
     class Runner
       attr_accessor :options, :inspector, :notifier
 

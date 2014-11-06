@@ -3,7 +3,7 @@ require 'guard/rspec/inspectors/keeping_inspector.rb'
 require 'guard/rspec/inspectors/focused_inspector.rb'
 
 module Guard
-  class RSpec
+  class RSpec < Plugin
     module Inspectors
       class Factory
         class << self

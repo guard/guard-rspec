@@ -2,7 +2,7 @@ require "guard/rspec"
 require "rspec/core/formatters/base_formatter"
 
 module Guard
-  class RSpec
+  class RSpec < Plugin
     class Formatter < ::RSpec::Core::Formatters::BaseFormatter
       TEMPORARY_FILE_PATH ||= "./tmp/rspec_guard_result"
 

@@ -1,5 +1,5 @@
 module Guard
-  class RSpec
+  class RSpec < Plugin
     module Options
       DEFAULTS = {
           all_on_start:    false,

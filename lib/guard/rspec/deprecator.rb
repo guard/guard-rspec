@@ -1,5 +1,5 @@
 module Guard
-  class RSpec
+  class RSpec < Plugin
     class Deprecator
       attr_accessor :options
 
