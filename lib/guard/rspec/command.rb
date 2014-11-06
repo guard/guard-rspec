@@ -1,7 +1,7 @@
 require "rspec/core"
 require "pathname"
 
-require 'guard/rspec'
+require "guard/rspec"
 
 module Guard
   class RSpec < Plugin
@@ -24,12 +24,13 @@ module Guard
         parts << _guard_formatter
         parts << "--failure-exit-code #{FAILURE_EXIT_CODE}"
         parts << options[:cmd_additional_args] || ""
-        if chdir = options[:chdir]
-          paths.each do |path|
-            path.sub!("#{chdir}#{File::SEPARATOR}", "")
-          end
-        end
-        parts << paths.join(" ")
+
+        parts << _paths(options).join(" ")
+      end
+
+      def _paths(options)
+        return paths unless chdir = options[:chdir]
+        paths.map { |path| path.sub(File.join(chdir, "/"), "") }
       end
 
       def _visual_formatter
@@ -38,14 +39,22 @@ module Guard
       end
 
       def _rspec_formatters
-        # RSpec::Core::ConfigurationOptions#parse_options method was renamed to #options
-        # in rspec-core v3.0.0.beta2 so call the first one if available. Fixes #249
+        # RSpec::Core::ConfigurationOptions#parse_options method was renamed to
+        # #options in rspec-core v3.0.0.beta2 so call the first one if
+        # available. Fixes #249
         config = ::RSpec::Core::ConfigurationOptions.new([])
         config.parse_options if config.respond_to?(:parse_options)
         formatters = config.options[:formatters] || nil
-        # RSpec"s parser returns an array in the format [[formatter, output], ...], so match their format
-        # Construct a matching command line option, including output target
-        formatters && formatters.map { |formatter| "-f #{formatter.join " -o "}" }.join(" ")
+
+        # RSpec's parser returns an array in the format
+        #
+        # [[formatter, output], ...],
+        #
+        # so match their format Construct a matching command line option,
+        # including output target
+
+        return formatters unless formatters
+        formatters.map { |entries| "-f #{entries.join " -o "}" }.join(" ")
       end
 
       def _cmd_include_formatter?

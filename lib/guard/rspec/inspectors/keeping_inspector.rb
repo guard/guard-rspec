@@ -1,4 +1,4 @@
-require 'guard/rspec/inspectors/base_inspector.rb'
+require "guard/rspec/inspectors/base_inspector.rb"
 
 module Guard
   class RSpec < Plugin
@@ -51,7 +51,7 @@ end
 #  bit it doesn't work because of bug with RSpec
 #  https://github.com/rspec/rspec-core/issues/952
 #
-#module Guard
+# module Guard
 #  class RSpec < Plugin
 #    module Inspectors
 #      # Inspector that remembers all failed paths and
@@ -82,7 +82,8 @@ end
 #        # Return paths + failed locations.
 #        # Do not include location in result if its path is already included.
 #        def _with_failed_locations(paths)
-#          locations = failed_locations.select { |l| !paths.include?(_location_path(l)) }
+#          locations = failed_locations.select { |l|
+#          !paths.include?(_location_path(l)) }
 #          paths | locations
 #        end
 #
@@ -93,4 +94,4 @@ end
 #      end
 #    end
 #  end
-#end
+# end

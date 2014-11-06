@@ -1,4 +1,4 @@
-require 'guard/rspec/inspectors/base_inspector.rb'
+require "guard/rspec/inspectors/base_inspector.rb"
 
 module Guard
   class RSpec < Plugin
@@ -8,7 +8,7 @@ module Guard
           _clean(paths)
         end
 
-        def failed(locations)
+        def failed(_locations)
           # Don't care
         end
 

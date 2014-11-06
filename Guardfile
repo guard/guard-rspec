@@ -1,8 +1,8 @@
-group :specs, do
-  guard :rspec, cmd: 'bundle exec rspec', halt_on_fail: true do
+group :specs, halt_on_fail: true do
+  guard :rspec, cmd: "bundle exec rspec" do
     watch(%r{^spec/.+_spec\.rb})
     watch(%r{^lib/(.+)\.rb})     { |m| "spec/lib/#{m[1]}_spec.rb" }
-    watch('spec/spec_helper.rb') { "spec" }
+    watch("spec/spec_helper.rb") { "spec" }
   end
 
   guard :rubocop do

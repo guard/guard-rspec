@@ -4,7 +4,7 @@ require "rspec/core/formatters/base_formatter"
 module Guard
   class RSpec < Plugin
     class Formatter < ::RSpec::Core::Formatters::BaseFormatter
-      TEMPORARY_FILE_PATH ||= "./tmp/rspec_guard_result"
+      TEMPORARY_FILE_PATH ||= "tmp/rspec_guard_result"
 
       def self.rspec_3?
         ::RSpec::Core::Version::STRING.split(".").first == "3"
@@ -14,7 +14,7 @@ module Guard
         ::RSpec::Core::Formatters.register self, :dump_summary, :example_failed
 
         def example_failed(failure)
-           examples.push failure.example
+          examples.push failure.example
         end
 
         def examples
@@ -46,12 +46,13 @@ module Guard
         until spec_path?(location)
           metadata = metadata[:example_group]
 
-          if !metadata
-            Guard::UI.warning "no spec file found for #{root_metadata[:location]}"
+          unless metadata
+            _ui.warning "no spec file found for #{root_metadata[:location]}"
             return root_metadata[:location]
           end
 
-          location = (metadata[:location] || "").split(":").first # rspec issue https://github.com/rspec/rspec-core/issues/1243
+          # rspec issue https://github.com/rspec/rspec-core/issues/1243
+          location = (metadata[:location] || "").split(":").first
         end
 
         location
@@ -63,7 +64,8 @@ module Guard
         if File.const_defined?(:FNM_EXTGLOB) # ruby >= 2
           flags |= File::FNM_EXTGLOB
         end
-        File.fnmatch(::RSpec.configuration.pattern, path.sub(/:\d+\z/, ""), flags)
+        pattern = ::RSpec.configuration.pattern
+        File.fnmatch(pattern, path.sub(/:\d+\z/, ""), flags)
       end
 
       def dump_summary(*args)
@@ -99,8 +101,12 @@ module Guard
       end
 
       def _failed_paths
-        failed = examples.select { |e| e.execution_result[:status].to_s == "failed" }
-        failed.map { |e| self.class.extract_spec_location(e.metadata) }.sort.uniq
+        failed = examples.select do |e|
+          e.execution_result[:status].to_s == "failed"
+        end
+
+        klass = self.class
+        failed.map { |e| klass.extract_spec_location(e.metadata) }.sort.uniq
       end
 
       def _message(example_count, failure_count, pending_count, duration)
@@ -110,6 +116,10 @@ module Guard
         end
         message << " in #{duration.round(4)} seconds"
         message
+      end
+
+      def self._ui
+        Guard::UI
       end
     end
   end

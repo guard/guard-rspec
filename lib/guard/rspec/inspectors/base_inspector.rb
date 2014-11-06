@@ -1,3 +1,5 @@
+require "guard/rspec"
+
 module Guard
   class RSpec < Plugin
     module Inspectors
@@ -10,22 +12,22 @@ module Guard
           @chdir = @options[:chdir]
         end
 
-        def paths(paths)
-          raise _abstract
+        def paths(_paths)
+          fail _abstract
         end
 
-        def failed(locations)
-          raise _abstract
+        def failed(_locations)
+          fail _abstract
         end
 
         def reload
-          raise _abstract
+          fail _abstract
         end
 
         private
 
         def _abstract
-          'Must be implemented in subclass'
+          "Must be implemented in subclass"
         end
 
         # Leave only spec/feature files from spec_paths, remove others
@@ -61,7 +63,7 @@ module Guard
         end
 
         def _collect_files(pattern)
-          _spec_paths_with_chdir.collect do |path|
+          _spec_paths_with_chdir.map do |path|
             Dir[File.join(path, "**{,/*/**}", pattern)]
           end
         end
