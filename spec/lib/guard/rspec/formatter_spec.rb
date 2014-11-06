@@ -1,33 +1,25 @@
-require "spec_helper.rb"
+require "pathname"
+
 require "guard/rspec/formatter"
 
-describe Guard::RSpec::Formatter do
+RSpec.describe Guard::RSpec::Formatter do
 
   describe "::TEMPORARY_FILE_PATH" do
-    require "pathname"
-    let(:temporary_file_path) { described_class::TEMPORARY_FILE_PATH }
-
-    subject { Pathname.new(temporary_file_path).absolute? }
-
-    it "is relative path" do
-      expect(subject).to eq(false)
-    end
+    subject { Pathname.new(described_class::TEMPORARY_FILE_PATH) }
+    it { is_expected.to be_relative }
   end
 
   describe ".tmp_file" do
-    let(:chdir) { nil }
-
     subject { described_class.tmp_file(chdir) }
 
-    it { expect(subject).to eq(described_class::TEMPORARY_FILE_PATH) }
+    context "with no chdir option" do
+      let(:chdir) { nil }
+      it { is_expected.to eq("./tmp/rspec_guard_result") }
+    end
 
-    context "chdir option present" do
+    context "chdir option" do
       let(:chdir) { "moduleA" }
-
-      it do
-        expect(subject).to eq(
-          "#{chdir}/#{described_class::TEMPORARY_FILE_PATH}")
-      end
+      it { is_expected.to eq("moduleA/tmp/rspec_guard_result") }
     end
   end
 

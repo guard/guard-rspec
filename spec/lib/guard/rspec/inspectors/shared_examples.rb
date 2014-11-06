@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-shared_examples 'inspector' do |klass|
+RSpec.shared_examples 'inspector' do |klass|
   let(:spec_paths) { %w[spec myspec] }
   let(:options) { { custom: 'value', spec_paths: spec_paths } }
   let(:inspector) { klass.new(options) }

@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'guard/rspec/deprecator'
 
-describe Guard::RSpec::Deprecator do
+RSpec.describe Guard::RSpec::Deprecator do
   let(:options) { {} }
   let(:deprecator) { Guard::RSpec::Deprecator.new(options) }
 

@@ -1,6 +1,6 @@
-require 'spec_helper'
+require 'guard/rspec'
 
-describe Guard::RSpec do
+RSpec.describe Guard::RSpec do
   let(:default_options) { Guard::RSpec::Options::DEFAULTS }
   let(:options) { {} }
   let(:plugin) { Guard::RSpec.new(options) }

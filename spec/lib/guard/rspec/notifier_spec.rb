@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Guard::RSpec::Notifier do
+RSpec.describe Guard::RSpec::Notifier do
   let(:options) { { notification: true, title: 'RSpec results' } }
   let(:notifier) { Guard::RSpec::Notifier.new(options) }
 

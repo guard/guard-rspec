@@ -1,7 +1,8 @@
-require 'spec_helper'
 require 'launchy'
 
-describe Guard::RSpec::Runner do
+require 'guard/rspec/runner'
+
+RSpec.describe Guard::RSpec::Runner do
   let(:options) { {cmd: 'rspec'} }
   let(:runner) { Guard::RSpec::Runner.new(options) }
   let(:inspector) { double(Guard::RSpec::Inspectors::SimpleInspector) }
@@ -114,14 +115,16 @@ describe Guard::RSpec::Runner do
     end
   end
 
-  describe '#run' do
-    let(:paths) { %w[spec_path1 spec_path2] }
-    before {
-      allow(File).to receive(:readlines).with(formatter_tmp_file) { %W{Summary\n} }
+  describe "#run" do
+    let(:paths) { %w(spec_path1 spec_path2) }
+
+    before do
+      tmp_file = formatter_tmp_file
+      allow(File).to receive(:readlines).with(tmp_file) { %W(Summary\n) }
       allow(inspector).to receive(:paths) { paths }
       allow(inspector).to receive(:clear_paths) { true }
       allow(inspector).to receive(:failed)
-    }
+    end
 
     it 'prints running message' do
       expect(Guard::UI).to receive(:info).with('Running: spec_path1 spec_path2', reset: true)
@@ -170,13 +173,17 @@ describe Guard::RSpec::Runner do
       runner.run(paths)
     end
 
-    context 'with failed paths' do
-      before {
-        allow(File).to receive(:readlines).with(formatter_tmp_file) { %W{Summary\n ./failed_spec.rb:123\n ./other/failed_spec.rb:77\n} }
-      }
+    context "with failed paths" do
+      before do
+        allow(File).to receive(:readlines).
+          with(formatter_tmp_file) do
+          %W(Summary\n ./failed_spec.rb:123\n ./other/failed_spec.rb:77\n)
+        end
 
-      it 'notifies inspector about failed paths' do
-        expect(inspector).to receive(:failed).with(%w[./failed_spec.rb:123 ./other/failed_spec.rb:77])
+      end
+      it "notifies inspector about failed paths" do
+        expect(inspector).to receive(:failed).
+          with(%W(./failed_spec.rb:123 ./other/failed_spec.rb:77))
         runner.run(paths)
       end
     end

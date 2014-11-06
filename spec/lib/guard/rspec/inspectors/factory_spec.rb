@@ -1,6 +1,4 @@
-require 'spec_helper'
-
-describe Guard::RSpec::Inspectors::Factory do
+RSpec.describe Guard::RSpec::Inspectors::Factory do
   let(:factory) { Guard::RSpec::Inspectors::Factory }
   let(:options) { {} }
 

@@ -1,9 +1,8 @@
-require 'spec_helper'
 require 'lib/guard/rspec/inspectors/shared_examples'
 
 klass = Guard::RSpec::Inspectors::SimpleInspector
 
-describe klass do
+RSpec.describe klass do
   include_examples 'inspector', klass
 
   # Use real paths because BaseInspector#_clean will be used to clean them

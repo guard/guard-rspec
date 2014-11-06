@@ -1,7 +1,5 @@
-require "spec_helper"
-
-describe Guard::RSpec::Inspectors::BaseInspector do
-  let(:options) { { custom: "value", spec_paths: %w[myspec] } }
+RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
+  let(:options) { { custom: 'value', spec_paths: %w[myspec] } }
   let(:inspector) { Guard::RSpec::Inspectors::BaseInspector.new(options) }
   let(:paths) { %w[spec/foo_spec.rb spec/bar_spec.rb] }
   let(:abstract_error) { "Must be implemented in subclass" }

@@ -1,5 +1,6 @@
-require 'spec_helper'
 require 'launchy'
+
+require 'guard/rspec/command'
 
 RSpec.describe Guard::RSpec::Command do
   let(:options) { { } }
