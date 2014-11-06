@@ -8,6 +8,8 @@ end
 
 group :development do
   gem 'rspec', '~> 3.1'
+  gem 'rubocop', require: false, github: 'bbatsov/rubocop', ref: '587446b'
+  gem 'guard-rubocop', require: false
 end
 
 group :tool do
