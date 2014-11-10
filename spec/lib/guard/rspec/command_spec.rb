@@ -1,12 +1,13 @@
-require 'spec_helper'
-require 'launchy'
+require "launchy"
 
-describe Guard::RSpec::Command do
-  let(:options) { { } }
-  let(:paths) { %w[path1 path2] }
+require "guard/rspec/command"
+
+RSpec.describe Guard::RSpec::Command do
+  let(:options) { {} }
+  let(:paths) { %w(path1 path2) }
   let(:command) { Guard::RSpec::Command.new(paths, options) }
 
-  describe '.initialize' do
+  describe ".initialize" do
 
     it "sets paths at the end" do
       expect(command).to match /path1 path2$/
@@ -17,20 +18,26 @@ describe Guard::RSpec::Command do
     end
 
     it "sets formatter" do
-      expect(command).to match %r{-r .*/lib/guard/rspec/formatter.rb -f Guard::RSpec::Formatter}
+      regexp = %r{-r .*/lib/guard/rspec/formatter.rb -f Guard::RSpec::Formatter}
+      expect(command).to match(regexp)
     end
 
     context "with custom cmd" do
-      let(:options) { { cmd: 'rspec -t ~slow' } }
+      let(:options) { { cmd: "rspec -t ~slow" } }
 
       it "uses custom cmd" do
-        expect(command).to match  /^rspec -t ~slow/
+        expect(command).to match /^rspec -t ~slow/
       end
     end
 
     context "with RSpec defined formatter" do
-      let(:formatters) { [['doc','output']] }
-      before { allow(RSpec::Core::ConfigurationOptions).to receive(:new) { double(options: { formatters: formatters }) } }
+      let(:formatters) { [%w(doc output)] }
+
+      before do
+        allow(RSpec::Core::ConfigurationOptions).to receive(:new) do
+          double(options: { formatters: formatters })
+        end
+      end
 
       it "uses them" do
         expect(command).to match %r{-f doc -o output}
@@ -44,7 +51,7 @@ describe Guard::RSpec::Command do
     end
 
     context "with formatter in cmd" do
-      let(:options) { { cmd: 'rspec -f doc' } }
+      let(:options) { { cmd: "rspec -f doc" } }
 
       it "sets no other formatters" do
         expect(command).to match %r{-f doc}
@@ -59,7 +66,7 @@ describe Guard::RSpec::Command do
       end
     end
 
-    context ":chdir option present" do
+    context ":chdir option present", focus: true do
       let(:chdir) { "moduleA" }
       let(:paths) do
         %w[path1 path2].map { |p| "#{chdir}#{File::Separator}#{p}" }

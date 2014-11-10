@@ -1,19 +1,23 @@
-require 'spec_helper'
-require 'lib/guard/rspec/inspectors/shared_examples'
+require "lib/guard/rspec/inspectors/shared_examples"
 
 klass = Guard::RSpec::Inspectors::FocusedInspector
 
-describe klass do
-  include_examples 'inspector', klass
+RSpec.describe klass do
+  include_examples "inspector", klass
 
   # Use real paths because BaseInspector#_clean will be used to clean them
-  let(:other_paths) { [
-    'spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb',
-    'spec/lib/guard/rspec/runner_spec.rb'
-  ] }
-  let(:other_failed_locations) { %w[./spec/lib/guard/rspec/deprecator_spec.rb:446] }
+  let(:other_paths) do
+    [
+      "spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb",
+      "spec/lib/guard/rspec/runner_spec.rb"
+    ]
+  end
 
-  it 'remembers failed paths and returns them until they all pass' do
+  let(:other_failed_locations) do
+    %w(./spec/lib/guard/rspec/deprecator_spec.rb:446)
+  end
+
+  it "remembers failed paths and returns them until they all pass" do
     expect(inspector.paths(paths)).to match_array(paths)
     inspector.failed(failed_locations)
 
@@ -39,7 +43,9 @@ describe klass do
 
     # Return other_failed_locations until they pass
     3.times do
-      expect(inspector.paths(other_paths)).to match_array(other_failed_locations)
+      expect(inspector.paths(other_paths)).
+        to match_array(other_failed_locations)
+
       inspector.failed(other_failed_locations)
 
       expect(inspector.paths(paths)).to match_array(other_failed_locations)
@@ -62,8 +68,8 @@ describe klass do
     expect(inspector.paths([])).to eq([])
   end
 
-  describe '#reload' do
-    it 'force to forget about focused locations' do
+  describe "#reload" do
+    it "force to forget about focused locations" do
       expect(inspector.paths(paths)).to match_array(paths)
       inspector.failed(failed_locations)
 

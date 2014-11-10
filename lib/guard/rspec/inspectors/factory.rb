@@ -1,17 +1,17 @@
-require 'guard/rspec/inspectors/simple_inspector.rb'
-require 'guard/rspec/inspectors/keeping_inspector.rb'
-require 'guard/rspec/inspectors/focused_inspector.rb'
+require "guard/rspec/inspectors/simple_inspector.rb"
+require "guard/rspec/inspectors/keeping_inspector.rb"
+require "guard/rspec/inspectors/focused_inspector.rb"
 
 module Guard
-  class RSpec
+  class RSpec < Plugin
     module Inspectors
       class Factory
         class << self
           def create(options = {})
             case options[:failed_mode]
-              when :focus ; FocusedInspector.new(options)
-              when :keep  ; KeepingInspector.new(options)
-              else        ; SimpleInspector.new(options)
+            when :focus  then FocusedInspector.new(options)
+            when :keep   then KeepingInspector.new(options)
+            else; SimpleInspector.new(options)
             end
           end
 
@@ -21,4 +21,3 @@ module Guard
     end
   end
 end
-

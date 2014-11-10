@@ -1,5 +1,5 @@
 module Guard
-  class RSpec
+  class RSpec < Plugin
     class Notifier
       attr_accessor :options
 
@@ -12,12 +12,18 @@ module Guard
         failure_count, pending_count = _parse_summary(summary)
         image = _image(failure_count, pending_count)
         priority = _priority(image)
-        ::Guard::Notifier.notify(summary, title: @options[:title], image: image, priority: priority)
+        ::Guard::Notifier.notify(summary,
+                                 title: @options[:title],
+                                 image: image,
+                                 priority: priority)
       end
 
       def notify_failure
         return unless options[:notification]
-        ::Guard::Notifier.notify('Failed', title: @options[:title], image: :failed, priority: 2)
+        ::Guard::Notifier.notify("Failed",
+                                 title: @options[:title],
+                                 image: :failed,
+                                 priority: 2)
       end
 
       private

@@ -1,10 +1,10 @@
-require 'guard/rspec/inspectors/factory'
-require 'guard/rspec/command'
-require 'guard/rspec/formatter'
-require 'guard/rspec/notifier'
+require "guard/rspec/inspectors/factory"
+require "guard/rspec/command"
+require "guard/rspec/formatter"
+require "guard/rspec/notifier"
 
 module Guard
-  class RSpec
+  class RSpec < Plugin
     class Runner
       attr_accessor :options, :inspector, :notifier
 
@@ -25,7 +25,7 @@ module Guard
       def run(paths)
         paths = inspector.paths(paths)
         return true if paths.empty?
-        ::Guard::UI.info("Running: #{paths.join(' ')}", reset: true)
+        ::Guard::UI.info("Running: #{paths.join(" ")}", reset: true)
         _run(false, paths, options)
       end
 
@@ -38,20 +38,9 @@ module Guard
       def _run(all, paths, options)
         return unless _cmd_option_present(options)
         command = Command.new(paths, options)
+
         _without_bundler_env { Kernel.system(command) }.tap do |success|
-          if _command_success?(success)
-            summary, failed_paths = _command_output
-            if summary && failed_paths
-              inspector.failed(failed_paths)
-              notifier.notify(summary)
-              _open_launchy
-              _run_all_after_pass if !all && success
-            else
-              notifier.notify_failure
-            end
-          else
-            notifier.notify_failure
-          end
+          _process_run_result(success, all)
         end
       end
 
@@ -65,14 +54,14 @@ module Guard
 
       def _cmd_option_present(options)
         return true if options[:cmd]
-        ::Guard::UI.error('No cmd option specified, unable to run specs!')
+        ::Guard::UI.error("No cmd option specified, unable to run specs!")
         notifier.notify_failure
         false
       end
 
       def _command_success?(success)
         return false if success.nil?
-        [Command::FAILURE_EXIT_CODE, 0].include?($?.exitstatus)
+        [Command::FAILURE_EXIT_CODE, 0].include?($CHILD_STATUS.exitstatus)
       end
 
       def _command_output
@@ -90,7 +79,7 @@ module Guard
 
       def _open_launchy
         return unless options[:launchy]
-        require 'launchy'
+        require "launchy"
         pn = Pathname.new(options[:launchy])
         ::Launchy.open(options[:launchy]) if pn.exist?
       end
@@ -98,6 +87,24 @@ module Guard
       def _run_all_after_pass
         return unless options[:all_after_pass]
         run_all
+      end
+
+      def _process_run_result(result, all)
+        unless _command_success?(result)
+          notifier.notify_failure
+          return
+        end
+
+        summary, failed_paths = _command_output
+        unless summary && failed_paths
+          notifier.notify_failure
+        end
+
+        inspector.failed(failed_paths)
+        notifier.notify(summary)
+        _open_launchy
+
+        _run_all_after_pass if !all && result
       end
     end
   end
