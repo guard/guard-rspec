@@ -66,7 +66,7 @@ RSpec.describe Guard::RSpec::Command do
       end
     end
 
-    context ":chdir option present", focus: true do
+    context ":chdir option present" do
       let(:chdir) { "moduleA" }
       let(:paths) do
         %w[path1 path2].map { |p| "#{chdir}#{File::Separator}#{p}" }
