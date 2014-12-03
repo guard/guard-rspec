@@ -5,6 +5,17 @@ RSpec.describe Guard::RSpec do
   let(:options) { {} }
   let(:plugin) { Guard::RSpec.new(options) }
   let(:runner) { double(Guard::RSpec::Runner) }
+
+  # Avoid relying on Guard::Plugin implementation - it's not our responsibility
+  # to test it (it's Guard's responsibility to make sure it works)
+  # TODO: ideally, see https://github.com/guard/guard/issues/691
+  module Guard
+    class Plugin
+      def initialize(_options)
+      end
+    end
+  end
+
   before do
     allow(Guard::UI).to receive(:info)
     allow(Guard::RSpec::Deprecator).to receive(:warns_about_deprecated_options)
