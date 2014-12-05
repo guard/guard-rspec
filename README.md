@@ -94,6 +94,7 @@ launchy: nil           # Pass a path to an rspec results file, e.g. ./tmp/spec_r
 notification: false    # Display notification after the specs are done running, default: true
 run_all: { cmd: 'custom rspec command', message: 'custom message' } # Custom options to use when running all specs
 title: 'My project'    # Display a custom title for the notification, default: 'RSpec results'
+chdir: 'directory'     # run rspec from within a given subdirectory (useful if project has separate specs for submodules)
 ```
 
 ### Using Launchy to view rspec results
