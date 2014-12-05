@@ -1,3 +1,7 @@
+require "guard/compat/test/helper"
+
+require "guard/rspec/inspectors/base_inspector"
+
 RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
   let(:options) { { custom: "value", spec_paths: %w(myspec) } }
   let(:inspector) { Guard::RSpec::Inspectors::BaseInspector.new(options) }

@@ -1,4 +1,4 @@
-require "guard/rspec"
+require "guard/rspec/formatter"
 
 module Guard
   class RSpec < Plugin

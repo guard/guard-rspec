@@ -1,3 +1,5 @@
+require "guard/rspec/inspectors/factory"
+
 RSpec.describe Guard::RSpec::Inspectors::Factory do
   let(:factory) { Guard::RSpec::Inspectors::Factory }
   let(:options) { {} }

@@ -1,5 +1,7 @@
 require "lib/guard/rspec/inspectors/shared_examples"
 
+require "guard/rspec/inspectors/keeping_inspector"
+
 klass = Guard::RSpec::Inspectors::KeepingInspector
 
 RSpec.describe klass do
