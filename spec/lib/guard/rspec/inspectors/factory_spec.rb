@@ -1,3 +1,5 @@
+require "guard/compat/test/helper"
+
 require "guard/rspec/inspectors/factory"
 
 RSpec.describe Guard::RSpec::Inspectors::Factory do

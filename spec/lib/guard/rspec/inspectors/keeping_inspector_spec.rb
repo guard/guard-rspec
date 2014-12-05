@@ -1,3 +1,5 @@
+require "guard/compat/test/helper"
+
 require "lib/guard/rspec/inspectors/shared_examples"
 
 require "guard/rspec/inspectors/keeping_inspector"

@@ -1,3 +1,5 @@
+require "guard/compat/test/helper"
+
 require "launchy"
 
 require "guard/rspec/runner"

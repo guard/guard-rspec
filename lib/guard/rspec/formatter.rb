@@ -1,5 +1,6 @@
-require "guard/compat/test/helper"
+require "pathname"
 
+require "rspec"
 require "rspec/core/formatters/base_formatter"
 
 module Guard
