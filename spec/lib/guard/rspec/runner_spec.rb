@@ -9,7 +9,6 @@ RSpec.describe Guard::RSpec::Runner do
   let(:runner) { Guard::RSpec::Runner.new(options) }
   let(:inspector) { double(Guard::RSpec::Inspectors::SimpleInspector) }
   let(:notifier) { double(Guard::RSpec::Notifier) }
-  let(:formatter_tmp_file) { Guard::RSpec::Formatter::TEMPORARY_FILE_PATH }
 
   before do
     allow(Guard::UI).to receive(:info)
@@ -134,7 +133,7 @@ RSpec.describe Guard::RSpec::Runner do
   describe "#run" do
     let(:paths) { %w(spec_path1 spec_path2) }
     before do
-      tmp_file = formatter_tmp_file
+      tmp_file = "tmp/rspec_guard_result"
       allow(File).to receive(:readlines).with(tmp_file) { ["Summary\n"] }
       allow(inspector).to receive(:paths) { paths }
       allow(inspector).to receive(:clear_paths) { true }
@@ -194,7 +193,7 @@ RSpec.describe Guard::RSpec::Runner do
     context "with failed paths" do
       before do
         allow(File).to receive(:readlines).
-          with(formatter_tmp_file) do
+          with("tmp/rspec_guard_result") do
           [
             "Summary\n",
             "./failed_spec.rb:123\n",
@@ -219,6 +218,21 @@ RSpec.describe Guard::RSpec::Runner do
       allow(Kernel).to receive(:system) { nil }
       expect(notifier).to receive(:notify_failure)
       runner.run(paths)
+    end
+  end
+
+  # TODO: remove / cleanup
+  describe "_tmp_file" do
+    subject { described_class.new.send(:_tmp_file, chdir) }
+
+    context "with no chdir option" do
+      let(:chdir) { nil }
+      it { is_expected.to eq("tmp/rspec_guard_result") }
+    end
+
+    context "chdir option" do
+      let(:chdir) { "moduleA" }
+      it { is_expected.to eq("moduleA/tmp/rspec_guard_result") }
     end
   end
 end

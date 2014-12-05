@@ -1,11 +1,13 @@
 require "guard/rspec/inspectors/factory"
 require "guard/rspec/command"
-require "guard/rspec/formatter"
 require "guard/rspec/notifier"
 
 module Guard
   class RSpec < Plugin
     class Runner
+      # NOTE: must match with const in RspecFormatter!
+      TEMPORARY_FILE_PATH ||= "tmp/rspec_guard_result"
+
       attr_accessor :options, :inspector, :notifier
 
       def initialize(options = {})
@@ -65,7 +67,7 @@ module Guard
       end
 
       def _command_output
-        formatter_tmp_file = Formatter.tmp_file(options[:chdir])
+        formatter_tmp_file = _tmp_file(options[:chdir])
         lines = File.readlines(formatter_tmp_file)
         summary = lines.first.strip
         failed_paths = lines[1..11].map(&:strip).compact
@@ -105,6 +107,10 @@ module Guard
         _open_launchy
 
         _run_all_after_pass if !all && result
+      end
+
+      def _tmp_file(chdir)
+        chdir ? File.join(chdir, TEMPORARY_FILE_PATH) : TEMPORARY_FILE_PATH
       end
     end
   end
