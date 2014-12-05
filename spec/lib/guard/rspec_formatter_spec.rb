@@ -1,59 +1,24 @@
-require "guard/compat/test/helper"
+require "guard/rspec_formatter"
 
-require "guard/rspec/formatter"
-
-RSpec.describe Guard::RSpec::Formatter do
-  before do
-    allow(Guard::UI).to receive(:warning)
-  end
-
+RSpec.describe Guard::RSpecFormatter do
   describe "::TEMPORARY_FILE_PATH" do
     subject { Pathname.new(described_class::TEMPORARY_FILE_PATH) }
     it { is_expected.to be_relative }
-  end
-
-  describe ".tmp_file" do
-    subject { described_class.tmp_file(chdir) }
-
-    context "with no chdir option" do
-      let(:chdir) { nil }
-      it { is_expected.to eq("tmp/rspec_guard_result") }
-    end
-
-    context "chdir option" do
-      let(:chdir) { "moduleA" }
-      it { is_expected.to eq("moduleA/tmp/rspec_guard_result") }
-    end
-  end
-
-  describe ".paths_with_chdir" do
-    let(:paths) { %w[path1 path2] }
-    let(:chdir) { nil }
-
-    subject { described_class.paths_with_chdir(paths, chdir) }
-
-    it { expect(subject).to eq(paths) }
-
-    context "chdir option present" do
-      let(:chdir) { "moduleA" }
-
-      it do
-        expect(subject).to eq(paths.map { |p| "#{chdir}/#{p}" })
-      end
-    end
   end
 
   describe "#write_summary" do
     let(:writer) do
       StringIO.new
     end
+
     let(:formatter) do
-      Guard::RSpec::Formatter.new(StringIO.new).tap do |formatter|
+      described_class.new(StringIO.new).tap do |formatter|
         allow(formatter).to receive(:_write) do |&block|
           block.call writer
         end
       end
     end
+
     let(:result) do
       writer.rewind
       writer.read
@@ -61,7 +26,7 @@ RSpec.describe Guard::RSpec::Formatter do
 
     context "without stubbed IO" do
       let(:formatter) do
-        Guard::RSpec::Formatter.new(StringIO.new)
+        described_class.new(StringIO.new)
       end
 
       it "creates temporary file and and writes to it" do
@@ -152,7 +117,7 @@ RSpec.describe Guard::RSpec::Formatter do
           example_group: {}
         }
 
-        expect(Guard::UI).to receive(:warning).
+        expect(STDERR).to receive(:puts).
           with("no spec file found for #{metadata[:location]}") {}
 
         expect(described_class.extract_spec_location(metadata)).

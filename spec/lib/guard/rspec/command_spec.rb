@@ -19,7 +19,7 @@ RSpec.describe Guard::RSpec::Command do
     end
 
     it "sets formatter" do
-      regexp = %r{-r .*/lib/guard/rspec/formatter.rb -f Guard::RSpec::Formatter}
+      regexp = %r{-r .*/lib/guard/rspec_formatter.rb -f Guard::RSpecFormatter}
       expect(command).to match(regexp)
     end
 
