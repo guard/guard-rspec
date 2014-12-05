@@ -13,22 +13,18 @@ module Guard
         end
 
         def paths(_paths)
-          fail _abstract
+          fail NotImplementedError
         end
 
         def failed(_locations)
-          fail _abstract
+          fail NotImplementedError
         end
 
         def reload
-          fail _abstract
+          fail NotImplementedError
         end
 
         private
-
-        def _abstract
-          "Must be implemented in subclass"
-        end
 
         # Leave only spec/feature files from spec_paths, remove others
         def _clean(paths)
@@ -42,18 +38,17 @@ module Guard
         def _select_only_spec_dirs(paths)
           chdir_paths = _spec_paths_with_chdir
           paths.select do |path|
-            File.directory?(path) ||
-              chdir_paths.include?(path)
+            File.directory?(path) || chdir_paths.include?(path)
           end
         end
 
         def _select_only_spec_files(paths)
-          files = _collect_files.flatten
+          spec_files = _collect_files("*[_.]spec.rb")
+          feature_files = _collect_files("*.feature")
+          files = (spec_files + feature_files).flatten
 
           paths.select do |path|
-            files.any? do |file|
-              file == Formatter.path_with_chdir(path, @chdir)
-            end
+            (files & [Formatter.path_with_chdir(path, @chdir)]).any?
           end
         end
 
@@ -61,10 +56,11 @@ module Guard
           Formatter.paths_with_chdir(spec_paths, @chdir)
         end
 
-        def _collect_files
-          _spec_paths_with_chdir.map do |path|
+        def _collect_files(pattern)
+          base_paths = _spec_paths_with_chdir
+          base_paths.map do |path|
             # TODO: not tested properly
-            Dir[File.join(path, ::RSpec.configuration.pattern)]
+            Dir[File.join(path, "**{,/*/**}", pattern)]
           end
         end
       end

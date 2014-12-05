@@ -30,9 +30,7 @@ module Guard
       end
 
       def self.path_with_chdir(path, chdir)
-        return path unless chdir
-
-        File.join(chdir, path)
+        chdir ? File.join(chdir, path) : path
       end
 
       def self.tmp_file(chdir)

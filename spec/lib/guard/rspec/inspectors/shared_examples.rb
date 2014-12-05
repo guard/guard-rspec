@@ -27,22 +27,81 @@ RSpec.shared_examples "inspector" do |klass|
   end
 
   describe "#paths" do
+    before do
+      allow(Dir).to receive(:[]).with("myspec/**{,/*/**}/*[_.]spec.rb").
+        and_return([])
+
+      allow(Dir).to receive(:[]).with("myspec/**{,/*/**}/*.feature").
+        and_return([])
+
+      allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*.feature").
+        and_return([])
+    end
+
     it "returns paths when called first time" do
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/inspectors/base_inspector_spec.rb").
+        and_return(false)
+
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/runner_spec.rb").
+        and_return(false)
+
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/deprecator_spec.rb").
+        and_return(false)
+
+      allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*[_.]spec.rb").
+        and_return(paths)
+
       expect(inspector.paths(paths)).to match_array(paths)
     end
 
     it "does not return non-spec paths" do
       paths = %w(not_a_spec_path.rb spec/not_exist_spec.rb)
+
+      allow(File).to receive(:directory?).with("not_a_spec_path.rb").
+        and_return(false)
+
+      allow(File).to receive(:directory?).with("spec/not_exist_spec.rb").
+        and_return(false)
+
+      allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*[_.]spec.rb").
+        and_return([])
+
       expect(inspector.paths(paths)).to eq([])
     end
 
     it "uniq and compact paths" do
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/inspectors/base_inspector_spec.rb").
+        and_return(false)
+
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/runner_spec.rb").
+        and_return(false)
+
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/deprecator_spec.rb").
+        and_return(false)
+
+      allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*[_.]spec.rb").
+        and_return(paths)
+
       expect(inspector.paths(paths + paths + [nil, nil, nil])).
         to match_array(paths)
     end
 
     # NOTE: I'm not sure that it is totally correct behaviour
     it "return spec_paths and directories too" do
+      allow(File).to receive(:directory?).with("myspec").and_return(true)
+      allow(File).to receive(:directory?).with("lib/guard").and_return(true)
+      allow(File).to receive(:directory?).
+        with("not_exist_dir").and_return(false)
+
+      allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*[_.]spec.rb").
+        and_return([])
+
       paths = %w(myspec lib/guard not_exist_dir)
       expect(inspector.paths(paths)).to match_array(paths - ["not_exist_dir"])
     end
