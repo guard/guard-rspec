@@ -8,6 +8,7 @@ RSpec.describe Guard::RSpec::Runner do
   let(:inspector) { double(Guard::RSpec::Inspectors::SimpleInspector) }
   let(:notifier) { double(Guard::RSpec::Notifier) }
   let(:formatter_tmp_file) { Guard::RSpec::Formatter::TEMPORARY_FILE_PATH }
+
   before do
     allow(Guard::UI).to receive(:info)
     allow(Kernel).to receive(:system) { true }
@@ -16,6 +17,8 @@ RSpec.describe Guard::RSpec::Runner do
     allow(Guard::RSpec::Command).to receive(:new) { "rspec" }
     allow(notifier).to receive(:notify)
     allow(notifier).to receive(:notify_failure)
+
+    $CHILD_STATUS = double("exitstatus", exitstatus: 0)
   end
 
   describe ".initialize" do
