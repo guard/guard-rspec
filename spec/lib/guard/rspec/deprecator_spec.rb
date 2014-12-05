@@ -1,3 +1,4 @@
+require "guard/compat/test/helper"
 require "guard/rspec/deprecator"
 
 RSpec.describe Guard::RSpec::Deprecator do

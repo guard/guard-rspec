@@ -1,4 +1,4 @@
-require "guard/rspec"
+require "guard/rspec/formatter"
 
 module Guard
   class RSpec < Plugin
@@ -40,16 +40,15 @@ module Guard
         end
 
         def _select_only_spec_dirs(paths)
+          chdir_paths = _spec_paths_with_chdir
           paths.select do |path|
             File.directory?(path) ||
-              _spec_paths_with_chdir.include?(path)
+              chdir_paths.include?(path)
           end
         end
 
         def _select_only_spec_files(paths)
-          spec_files = _collect_files("*[_.]spec.rb")
-          feature_files = _collect_files("*.feature")
-          files = (spec_files + feature_files).flatten
+          files = _collect_files.flatten
 
           paths.select do |path|
             files.any? do |file|
@@ -62,9 +61,10 @@ module Guard
           Formatter.paths_with_chdir(spec_paths, @chdir)
         end
 
-        def _collect_files(pattern)
+        def _collect_files
           _spec_paths_with_chdir.map do |path|
-            Dir[File.join(path, "**{,/*/**}", pattern)]
+            # TODO: not tested properly
+            Dir[File.join(path, ::RSpec.configuration.pattern)]
           end
         end
       end

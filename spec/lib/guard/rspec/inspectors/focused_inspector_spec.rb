@@ -1,5 +1,7 @@
 require "lib/guard/rspec/inspectors/shared_examples"
 
+require "guard/rspec/inspectors/focused_inspector"
+
 klass = Guard::RSpec::Inspectors::FocusedInspector
 
 RSpec.describe klass do

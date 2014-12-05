@@ -1,4 +1,5 @@
-require "guard/rspec"
+require "guard/compat/test/helper"
+
 require "rspec/core/formatters/base_formatter"
 
 module Guard
@@ -65,7 +66,9 @@ module Guard
           flags |= File::FNM_EXTGLOB
         end
         pattern = ::RSpec.configuration.pattern
-        File.fnmatch(pattern, path.sub(/:\d+\z/, ""), flags)
+        path = path.sub(/:\d+\z/, "")
+        path = Pathname.new(path).cleanpath.to_s
+        File.fnmatch(pattern, path, flags)
       end
 
       def dump_summary(*args)

@@ -1,5 +1,6 @@
 require "launchy"
 
+require "guard/compat/test/helper"
 require "guard/rspec/command"
 
 RSpec.describe Guard::RSpec::Command do
