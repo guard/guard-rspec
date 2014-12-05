@@ -88,4 +88,22 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 
   config.raise_errors_for_deprecations!
+
+  config.before do
+    allow(Dir).to receive(:[]) do |*args|
+      abort "stub me: Dir[#{args.first}]!"
+    end
+
+    %w(directory? delete readlines).each do |meth|
+      allow(File).to receive(meth.to_sym) do |*args|
+        abort "stub me: File.#{meth}(#{args.map(&:inspect) * ","})!"
+      end
+    end
+
+    %w(mkdir).each do |meth|
+      allow(FileUtils).to receive(meth.to_sym) do |*args|
+        abort "stub me: FileUtils.#{meth}(#{args.map(&:inspect) * ","})!"
+      end
+    end
+  end
 end

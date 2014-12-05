@@ -1,4 +1,4 @@
-require "pathname"
+require "guard/compat/test/helper"
 
 require "guard/rspec/formatter"
 

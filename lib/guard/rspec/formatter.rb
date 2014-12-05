@@ -1,5 +1,6 @@
-require "guard/compat/test/helper"
+require "pathname"
 
+require "rspec"
 require "rspec/core/formatters/base_formatter"
 
 module Guard
@@ -30,9 +31,7 @@ module Guard
       end
 
       def self.path_with_chdir(path, chdir)
-        return path unless chdir
-
-        File.join(chdir, path)
+        chdir ? File.join(chdir, path) : path
       end
 
       def self.tmp_file(chdir)

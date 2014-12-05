@@ -1,3 +1,5 @@
+require "guard/compat/test/helper"
+
 require "launchy"
 
 require "guard/rspec/runner"
@@ -64,7 +66,11 @@ RSpec.describe Guard::RSpec::Runner do
         run_all: { message: "Custom message" }
       }
     end
-    before { allow(inspector).to receive(:failed) }
+
+    before do
+      allow(inspector).to receive(:failed)
+      allow(File).to receive(:readlines).and_return([])
+    end
 
     it "builds commands with spec paths" do
       expect(Guard::RSpec::Command).to receive(:new).

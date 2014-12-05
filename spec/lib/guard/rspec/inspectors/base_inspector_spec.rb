@@ -6,7 +6,6 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
   let(:options) { { custom: "value", spec_paths: %w(myspec) } }
   let(:inspector) { Guard::RSpec::Inspectors::BaseInspector.new(options) }
   let(:paths) { %w(spec/foo_spec.rb spec/bar_spec.rb) }
-  let(:abstract_error) { "Must be implemented in subclass" }
 
   describe ".initialize" do
     it "sets options and spec_paths" do
@@ -18,7 +17,7 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
 
   describe "#paths" do
     it "should not be implemented here" do
-      expect { inspector.paths(paths) }.to raise_error(abstract_error)
+      expect { inspector.paths(paths) }.to raise_error(NotImplementedError)
     end
 
     context "specific inspector" do
@@ -39,12 +38,14 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
 
       subject { inspector.paths(paths) }
 
-      context "_select_only_spec_dirs" do
+      context "with dirs" do
         let(:paths) { ["spec"] }
 
         it "returns matching paths" do
           allow(File).to receive(:directory?).
             with("spec").and_return(false)
+
+          allow(Dir).to receive(:[]).and_return(["foo"])
 
           expect(subject).to eq(paths)
         end
@@ -54,6 +55,15 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
           let(:paths) { ["#{chdir}/spec"] }
 
           it "returns matching paths" do
+
+            allow(Dir).to receive(:[]).
+              with("moduleA/spec/**{,/*/**}/*[_.]spec.rb").
+              and_return(paths)
+
+            allow(Dir).to receive(:[]).
+              with("moduleA/spec/**{,/*/**}/*.feature").
+              and_return([])
+
             allow(File).to receive(:directory?).
               with("moduleA/spec").and_return(false)
 
@@ -62,7 +72,7 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
         end
       end
 
-      context "_select_only_spec_files" do
+      context "with spec files" do
         let(:paths) do
           ["app/models/a_foo.rb", "spec/models/a_foo_spec.rb"]
         end
@@ -71,11 +81,19 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
             "spec/models/b_foo_spec.rb"]]
         end
 
-        before do
-          allow(Dir).to receive(:[]).and_return(spec_files)
-        end
-
         it "returns matching paths" do
+          allow(File).to receive(:directory?).with("app/models/a_foo.rb").
+            and_return(false)
+
+          allow(File).to receive(:directory?).with("spec/models/a_foo_spec.rb").
+            and_return(false)
+
+          allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*[_.]spec.rb").
+            and_return(spec_files)
+
+          allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*.feature").
+            and_return([])
+
           expect(subject).to eq(["spec/models/a_foo_spec.rb"])
         end
 
@@ -84,12 +102,28 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
           let(:paths) do
             ["moduleA/models/a_foo.rb", "spec/models/a_foo_spec.rb"]
           end
+
           let(:spec_files) do
             [["moduleA/spec/models/a_foo_spec.rb",
               "moduleA/spec/models/b_foo_spec.rb"]]
           end
 
           it "returns matching paths" do
+            allow(File).to receive(:directory?).with("moduleA/models/a_foo.rb").
+              and_return(false)
+
+            allow(File).to receive(:directory?).
+              with("spec/models/a_foo_spec.rb").
+              and_return(false)
+
+            allow(Dir).to receive(:[]).
+              with("moduleA/spec/**{,/*/**}/*[_.]spec.rb").
+              and_return(spec_files)
+
+            allow(Dir).to receive(:[]).
+              with("moduleA/spec/**{,/*/**}/*.feature").
+              and_return([])
+
             expect(subject).to eq(["spec/models/a_foo_spec.rb"])
           end
         end
@@ -99,13 +133,13 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
 
   describe "#failed" do
     it "should not be implemented here" do
-      expect { inspector.failed(paths) }.to raise_error(abstract_error)
+      expect { inspector.failed(paths) }.to raise_error(NotImplementedError)
     end
   end
 
   describe "#reload" do
     it "should not be implemented here" do
-      expect { inspector.reload }.to raise_error(abstract_error)
+      expect { inspector.reload }.to raise_error(NotImplementedError)
     end
   end
 end

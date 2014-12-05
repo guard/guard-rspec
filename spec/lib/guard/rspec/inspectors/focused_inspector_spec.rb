@@ -1,3 +1,5 @@
+require "guard/compat/test/helper"
+
 require "lib/guard/rspec/inspectors/shared_examples"
 
 require "guard/rspec/inspectors/focused_inspector"
@@ -20,6 +22,34 @@ RSpec.describe klass do
   end
 
   it "remembers failed paths and returns them until they all pass" do
+    allow(File).to receive(:directory?).
+      with("spec/lib/guard/rspec/inspectors/base_inspector_spec.rb").
+      and_return(false)
+
+    allow(File).to receive(:directory?).
+      with("spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb").
+      and_return(false)
+
+    allow(File).to receive(:directory?).
+      with("spec/lib/guard/rspec/runner_spec.rb").
+      and_return(false)
+
+    allow(File).to receive(:directory?).
+      with("spec/lib/guard/rspec/deprecator_spec.rb").
+      and_return(false)
+
+    allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*[_.]spec.rb").
+      and_return(paths + other_paths)
+
+    allow(Dir).to receive(:[]).with("myspec/**{,/*/**}/*[_.]spec.rb").
+      and_return([])
+
+    allow(Dir).to receive(:[]).with("myspec/**{,/*/**}/*.feature").
+      and_return([])
+
+    allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*.feature").
+      and_return([])
+
     expect(inspector.paths(paths)).to match_array(paths)
     inspector.failed(failed_locations)
 
@@ -72,6 +102,34 @@ RSpec.describe klass do
 
   describe "#reload" do
     it "force to forget about focused locations" do
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/inspectors/base_inspector_spec.rb").
+        and_return(false)
+
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/runner_spec.rb").
+        and_return(false)
+
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/deprecator_spec.rb").
+        and_return(false)
+
+      allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*[_.]spec.rb").
+        and_return(paths + other_paths)
+
+      allow(Dir).to receive(:[]).with("myspec/**{,/*/**}/*[_.]spec.rb").
+        and_return([])
+
+      allow(Dir).to receive(:[]).with("myspec/**{,/*/**}/*.feature").
+        and_return([])
+
+      allow(Dir).to receive(:[]).with("spec/**{,/*/**}/*.feature").
+        and_return([])
+
+      allow(File).to receive(:directory?).
+        with("spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb").
+        and_return(false)
+
       expect(inspector.paths(paths)).to match_array(paths)
       inspector.failed(failed_locations)
 
