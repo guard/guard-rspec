@@ -1,6 +1,3 @@
-require "guard"
-require "guard/plugin"
-
 require "guard/rspec/options"
 require "guard/rspec/deprecator"
 require "guard/rspec/runner"

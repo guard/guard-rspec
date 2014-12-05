@@ -3,6 +3,10 @@ require "pathname"
 require "guard/rspec/formatter"
 
 RSpec.describe Guard::RSpec::Formatter do
+  before do
+    allow(Guard::UI).to receive(:warning)
+  end
+
   describe "::TEMPORARY_FILE_PATH" do
     subject { Pathname.new(described_class::TEMPORARY_FILE_PATH) }
     it { is_expected.to be_relative }

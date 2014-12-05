@@ -1,3 +1,5 @@
+require "guard/compat/test/helper"
+
 require "guard/rspec/notifier"
 
 RSpec.describe Guard::RSpec::Notifier do

@@ -6,6 +6,7 @@ gem 'rspec', '~> 2.99'
 
 group :test do
   gem 'coveralls', require: false
+  gem "guard-compat", ">= 0.0.2", require: false
 end
 
 group :tool do
