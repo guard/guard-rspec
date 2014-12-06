@@ -1,3 +1,5 @@
+require "guard/plugin"
+
 module Guard
   class RSpec < Plugin
     module Options
