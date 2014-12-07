@@ -7,8 +7,7 @@ RSpec.describe Guard::RSpec::Notifier do
   let(:notifier) { Guard::RSpec::Notifier.new(options) }
 
   def expect_notification(title = "RSpec results", message, image, priority)
-    expect(Guard::Notifier).
-      to receive(:notify).
+    expect(Guard::Compat::UI).to receive(:notify).
       with(message,  title: title, image: image, priority: priority)
   end
 
@@ -76,14 +75,14 @@ RSpec.describe Guard::RSpec::Notifier do
 
     describe "#notify_failure" do
       it "keeps quiet" do
-        expect(Guard::Notifier).not_to receive(:notify)
+        expect(Guard::Compat::UI).not_to receive(:notify)
         notifier.notify_failure
       end
     end
 
     describe "#notify" do
       it "keeps quiet" do
-        expect(Guard::Notifier).not_to receive(:notify)
+        expect(Guard::Compat::UI).not_to receive(:notify)
         notifier.notify("Summary")
       end
     end
