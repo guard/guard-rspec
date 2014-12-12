@@ -5,7 +5,7 @@ group :specs, halt_on_fail: true do
     watch("spec/spec_helper.rb") { "spec" }
   end
 
-  guard :rubocop do
+  guard :rubocop, all_on_start: false do
     watch(%r{.+\.rb$})
     watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }
   end
