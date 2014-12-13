@@ -24,7 +24,7 @@ module Guard
 
       def _spec_opts_env
         return if ENV["SPEC_OPTS"].nil?
-        UI.warning(
+        Compat::UI.warning(
           "The SPEC_OPTS environment variable is present." +
           " This can conflict with guard-rspec."
         )
@@ -77,7 +77,7 @@ module Guard
       end
 
       def _deprecated(message)
-        UI.warning %(Guard::RSpec DEPRECATION WARNING: #{message})
+        Compat::UI.warning %(Guard::RSpec DEPRECATION WARNING: #{message})
       end
     end
   end

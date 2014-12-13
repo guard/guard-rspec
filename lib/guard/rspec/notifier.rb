@@ -12,7 +12,7 @@ module Guard
         failure_count, pending_count = _parse_summary(summary)
         image = _image(failure_count, pending_count)
         priority = _priority(image)
-        ::Guard::Notifier.notify(summary,
+        Guard::Compat::UI.notify(summary,
                                  title: @options[:title],
                                  image: image,
                                  priority: priority)
@@ -20,7 +20,7 @@ module Guard
 
       def notify_failure
         return unless options[:notification]
-        ::Guard::Notifier.notify("Failed",
+        Guard::Compat::UI.notify("Failed",
                                  title: @options[:title],
                                  image: :failed,
                                  priority: 2)

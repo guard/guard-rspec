@@ -11,7 +11,7 @@ RSpec.describe Guard::RSpec::Runner do
   let(:notifier) { double(Guard::RSpec::Notifier) }
 
   before do
-    allow(Guard::UI).to receive(:info)
+    allow(Guard::Compat::UI).to receive(:info)
     allow(Kernel).to receive(:system) { true }
     allow(Guard::RSpec::Inspectors::Factory).to receive(:create) { inspector }
     allow(Guard::RSpec::Notifier).to receive(:new) { notifier }
@@ -48,7 +48,7 @@ RSpec.describe Guard::RSpec::Runner do
 
   shared_examples "abort" do
     it "aborts" do
-      expect(Guard::UI).to_not receive(:info)
+      expect(Guard::Compat::UI).to_not receive(:info)
       subject
     end
 
@@ -78,7 +78,9 @@ RSpec.describe Guard::RSpec::Runner do
     end
 
     it "prints message" do
-      expect(Guard::UI).to receive(:info).with("Custom message", reset: true)
+      expect(Guard::Compat::UI).to receive(:info).
+        with("Custom message", reset: true)
+
       runner.run_all
     end
 
@@ -111,7 +113,7 @@ RSpec.describe Guard::RSpec::Runner do
       before do
         options[:cmd] = nil
         allow(Guard::RSpec::Command).to receive(:new)
-        allow(Guard::UI).to receive(:error).with(an_instance_of(String))
+        allow(Guard::Compat::UI).to receive(:error).with(an_instance_of(String))
         allow(notifier).to receive(:notify_failure)
         runner.run_all
       end
@@ -121,7 +123,8 @@ RSpec.describe Guard::RSpec::Runner do
       end
 
       it "issues a warning to the user" do
-        expect(Guard::UI).to have_received(:error).with(an_instance_of(String))
+        expect(Guard::Compat::UI).to have_received(:error).
+          with(an_instance_of(String))
       end
 
       it "notifies the notifer of failure" do
@@ -141,7 +144,7 @@ RSpec.describe Guard::RSpec::Runner do
     end
 
     it "prints running message" do
-      expect(Guard::UI).to receive(:info).
+      expect(Guard::Compat::UI).to receive(:info).
         with("Running: spec_path1 spec_path2", reset: true)
       runner.run(paths)
     end

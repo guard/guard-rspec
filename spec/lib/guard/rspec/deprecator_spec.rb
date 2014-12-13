@@ -10,14 +10,14 @@ RSpec.describe Guard::RSpec::Deprecator do
     describe "handling of environment variable SPEC_OPTS" do
       it "shows warning if SPEC_OPTS is set" do
         ENV["SPEC_OPTS"] = "-f p"
-        expect(Guard::UI).to receive(:warning).with(
+        expect(Guard::Compat::UI).to receive(:warning).with(
           "The SPEC_OPTS environment variable is present." +
           " This can conflict with guard-rspec.")
         deprecator.warns_about_deprecated_options
         ENV["SPEC_OPTS"] = nil # otherwise other specs pick it up and fail
       end
       it "does not show warning if SPEC_OPTS is unset" do
-        expect(Guard::UI).to_not receive(:warning).with(
+        expect(Guard::Compat::UI).to_not receive(:warning).with(
           "The SPEC_OPTS environment variable is present." +
           " This can conflict with guard-rspec.")
         deprecator.warns_about_deprecated_options
@@ -28,7 +28,7 @@ RSpec.describe Guard::RSpec::Deprecator do
       let(:options) { { version: 1 } }
 
       it "shows deprecation warning" do
-        expect(Guard::UI).to receive(:warning).with(
+        expect(Guard::Compat::UI).to receive(:warning).with(
           "Guard::RSpec DEPRECATION WARNING:" +
           " The :version option is deprecated." +
           " Only RSpec ~> 2.14 is now supported.")
@@ -40,7 +40,7 @@ RSpec.describe Guard::RSpec::Deprecator do
       let(:options) { { exclude: "**" } }
 
       it "shows deprecation warning" do
-        expect(Guard::UI).to receive(:warning).with(
+        expect(Guard::Compat::UI).to receive(:warning).with(
           "Guard::RSpec DEPRECATION WARNING:" +
           " The :exclude option is deprecated." +
           " Please Guard ignore method instead." +
@@ -55,7 +55,7 @@ RSpec.describe Guard::RSpec::Deprecator do
         let(:options) { { option.to_sym => 1 } }
 
         it "shows deprecation warning" do
-          expect(Guard::UI).to receive(:warning).with(
+          expect(Guard::Compat::UI).to receive(:warning).with(
             "Guard::RSpec DEPRECATION WARNING: The :#{option} option is" +
             " deprecated. Please customize the new :cmd option to" +
             " fit your need.")
@@ -68,7 +68,7 @@ RSpec.describe Guard::RSpec::Deprecator do
       let(:options) { { keep_failed: true } }
 
       it "shows deprecation warning" do
-        expect(Guard::UI).to receive(:warning).with(
+        expect(Guard::Compat::UI).to receive(:warning).with(
           "Guard::RSpec DEPRECATION WARNING:" +
           " The :keep_failed option is deprecated." +
           " Please set new :failed_mode option value to" +
@@ -82,7 +82,7 @@ RSpec.describe Guard::RSpec::Deprecator do
       let(:options) { { focus_on_failed: true } }
 
       it "shows deprecation warning" do
-        expect(Guard::UI).to receive(:warning).with(
+        expect(Guard::Compat::UI).to receive(:warning).with(
           "Guard::RSpec DEPRECATION WARNING:" +
           " The :focus_on_failed option is deprecated." +
           " Focus mode is the default and can be changed using new" +

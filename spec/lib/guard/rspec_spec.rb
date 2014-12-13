@@ -8,7 +8,7 @@ RSpec.describe Guard::RSpec do
   let(:runner) { double(Guard::RSpec::Runner) }
 
   before do
-    allow(Guard::UI).to receive(:info)
+    allow(Guard::Compat::UI).to receive(:info)
     allow(Guard::RSpec::Deprecator).to receive(:warns_about_deprecated_options)
     allow(Guard::RSpec::Runner).to receive(:new) { runner }
   end

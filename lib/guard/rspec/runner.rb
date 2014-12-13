@@ -20,14 +20,14 @@ module Guard
         paths = options[:spec_paths]
         options = @options.merge(@options[:run_all])
         return true if paths.empty?
-        ::Guard::UI.info(options[:message], reset: true)
+        Compat::UI.info(options[:message], reset: true)
         _run(true, paths, options)
       end
 
       def run(paths)
         paths = inspector.paths(paths)
         return true if paths.empty?
-        ::Guard::UI.info("Running: #{paths.join(" ")}", reset: true)
+        Compat::UI.info("Running: #{paths.join(" ")}", reset: true)
         _run(false, paths, options)
       end
 
@@ -56,7 +56,7 @@ module Guard
 
       def _cmd_option_present(options)
         return true if options[:cmd]
-        ::Guard::UI.error("No cmd option specified, unable to run specs!")
+        Compat::UI.error("No cmd option specified, unable to run specs!")
         notifier.notify_failure
         false
       end
