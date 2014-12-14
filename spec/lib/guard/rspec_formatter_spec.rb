@@ -54,6 +54,10 @@ RSpec.describe Guard::RSpecFormatter do
         )
       end
 
+      before do
+        allow(formatter.class).to receive(:rspec_3?).and_return(false)
+      end
+
       def expected_output(spec_filename)
         /^3 examples, 1 failures in 123\.0 seconds\n#{spec_filename}\n$/
       end
@@ -79,6 +83,13 @@ RSpec.describe Guard::RSpecFormatter do
         end
         before do
           allow(formatter.class).to receive(:rspec_3?).and_return(true)
+        end
+
+        let(:failed_example) do
+          double(
+            execution_result: double(status: "failed"),
+            metadata: { location: spec_filename }
+          )
         end
 
         it "writes summary line and failed location" do
