@@ -92,7 +92,11 @@ module Guard
 
     def _failed_paths
       failed = examples.select do |e|
-        e.execution_result[:status].to_s == "failed"
+        if self.class.rspec_3?
+          e.execution_result.status.to_s == "failed"
+        else
+          e.execution_result[:status].to_s == "failed"
+        end
       end
 
       klass = self.class
