@@ -210,6 +210,20 @@ RSpec.describe Guard::RSpec::Runner do
 
         runner.run(paths)
       end
+      context "with emacs option" do
+        let(:options) { { cmd: "rspec", emacs: "emacs_path" } }
+
+        before do
+          allow(Pathname).to receive(:new).
+            with("emacs_path") { double(exist?: true) }
+        end
+
+        it "opens emacs" do
+          expect(IO).to receive(:popen).
+            with(array_including("emacsclient", "--eval"))
+          runner.run(paths)
+        end
+      end
     end
 
     it "notifies success" do

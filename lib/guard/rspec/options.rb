@@ -10,6 +10,7 @@ module Guard
         cmd:             nil,
         cmd_additional_args: nil,
         launchy:         nil,
+        emacs:           nil,
         notification:    true,
         title:           "RSpec results"
       }

@@ -86,6 +86,25 @@ module Guard
         ::Launchy.open(options[:launchy]) if pn.exist?
       end
 
+      def _open_emacs(failed_paths)
+        return unless options[:emacs]
+        pn = Pathname.new(options[:emacs])
+        elisp = <<-"EOS".gsub(/\s+/, " ").strip
+        (display-buffer
+         (save-excursion
+          (with-current-buffer (find-file-noselect \"#{pn}\" t)
+           (revert-buffer t t)
+           (ansi-color-apply-on-region (point-min)(point-max))
+           (set-buffer-modified-p nil)
+           (compilation-mode t)
+           (current-buffer))))
+        EOS
+        IO.popen(["emacsclient", "--eval", elisp]) do |p|
+          p.readlines
+          p.close
+        end if pn.exist? && !failed_paths.empty?
+      end
+
       def _run_all_after_pass
         return unless options[:all_after_pass]
         run_all
@@ -105,6 +124,7 @@ module Guard
         inspector.failed(failed_paths)
         notifier.notify(summary)
         _open_launchy
+        _open_emacs(failed_paths)
 
         _run_all_after_pass if !all && result
       end
