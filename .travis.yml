@@ -11,6 +11,7 @@ gemfile:
   - gemfiles/Gemfile.rspec-2.14
   - gemfiles/Gemfile.rspec-2.99
   - gemfiles/Gemfile.rspec-3.0
+  - gemfiles/Gemfile.rspec-3.1
 matrix:
   allow_failures:
     - rvm: jruby-19mode
