@@ -100,6 +100,7 @@ module Guard
         summary, failed_paths = _command_output
         unless summary && failed_paths
           notifier.notify_failure
+          return
         end
 
         inspector.failed(failed_paths)
