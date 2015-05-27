@@ -7,6 +7,7 @@ task default: :spec
 namespace :test do
   desc "Locally run tests like Travis and HoundCI would"
   task :all_versions do
+    system(*%w(bundle install --quiet)) || abort
     system(*%w(bundle update --quiet)) || abort
     system(*%w(bundle exec rubocop -c .hound.yml)) || abort
 
@@ -18,9 +19,10 @@ namespace :test do
       STDOUT.puts "----------------------------------------------------- "
       STDOUT.puts " >> Running tests using Gemfile: #{gemfile} <<"
       STDOUT.puts "----------------------------------------------------- "
-      ENV["BUNDLE_GEMFILE"] = gemfile
-      system(*%w(bundle update --quiet)) || abort
-      system(*%w(bundle exec rspec)) || abort
+      env = { "BUNDLE_GEMFILE" => gemfile }
+      system(env, *%w(bundle install --quiet)) || abort
+      system(env, *%w(bundle update --quiet)) || abort
+      system(env, *%w(bundle exec rspec)) || abort
     end
   end
 end
