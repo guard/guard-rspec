@@ -60,20 +60,18 @@ module Guard
     end
 
     def dump_summary(*args)
-      if self.class.rspec_3?
-        notification = args[0]
-        write_summary(
-          notification.duration,
-          notification.example_count,
-          notification.failure_count,
-          notification.pending_count
-        )
-      else
-        write_summary(*args)
-      end
-    rescue
-      # nothing really we can do, at least don"t kill the test runner
+      return write_summary(*args) unless self.class.rspec_3?
+
+      notification = args[0]
+      write_summary(
+        notification.duration,
+        notification.example_count,
+        notification.failure_count,
+        notification.pending_count
+      )
     end
+
+    private
 
     # Write summary to temporary file for runner
     def write_summary(duration, total, failures, pending)
@@ -82,8 +80,6 @@ module Guard
         f.puts _failed_paths.join("\n") if failures > 0
       end
     end
-
-    private
 
     def _write(&block)
       file = File.expand_path(TEMPORARY_FILE_PATH)
