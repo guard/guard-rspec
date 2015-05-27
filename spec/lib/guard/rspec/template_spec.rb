@@ -51,6 +51,12 @@ RSpec.describe "Guard::RSpec" do
       )
 
       expect(subject.changed("config/routes.rb")).to eq(%w(spec/routing))
+
+      expect(subject.changed("app/layouts/foo/bar.slim")).to eq(
+        %w(
+          spec/features/foo_spec.rb
+        )
+      )
     end
   end
 end

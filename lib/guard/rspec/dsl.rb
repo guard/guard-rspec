@@ -33,19 +33,25 @@ module Guard
       def rails(options = {})
         # Rails example
         @rails ||= OpenStruct.new.tap do |rails|
-          exts = options.dup.delete(:view_extensions) || %w(erb haml slim)
+          exts = _view_extensions(options) * "|"
 
           rails.app_files = %r{^app/(.+)\.rb$}
 
-          rails.views = %r{^app/(views/.+/[^/]*\.(?:#{exts * "|"}))$}
-          rails.view_dirs = %r{^app/views/(.+)/[^/]*\.(?:#{exts * "|"})$}
-          rails.layouts = %r{^app/layouts/(.+)/.*\.("#{exts * "|"}")$}
+          rails.views = %r{^app/(views/.+/[^/]*\.(?:#{exts}))$}
+          rails.view_dirs = %r{^app/views/(.+)/[^/]*\.(?:#{exts})$}
+          rails.layouts = %r{^app/layouts/(.+)/[^/]*\.(?:#{exts})$}
 
           rails.controllers = %r{^app/controllers/(.+)_controller\.rb$}
           rails.routes = "config/routes.rb"
           rails.app_controller = "app/controllers/application_controller.rb"
           rails.spec_helper = "#{rspec.spec_dir}/rails_helper.rb"
         end
+      end
+
+      private
+
+      def _view_extensions(options)
+        options.dup.delete(:view_extensions) || %w(erb haml slim)
       end
     end
   end
