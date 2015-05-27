@@ -11,10 +11,14 @@ RSpec.describe Guard::RSpecFormatter do
       StringIO.new
     end
 
+    let(:stub_formatter) { true }
+
     let(:formatter) do
-      described_class.new(StringIO.new).tap do |formatter|
-        allow(formatter).to receive(:_write) do |&block|
-          block.call writer
+      described_class.new(StringIO.new).tap do |formatter_stub|
+        if stub_formatter
+          allow(formatter_stub).to receive(:_write) do |&block|
+            block.call writer
+          end
         end
       end
     end
@@ -25,9 +29,7 @@ RSpec.describe Guard::RSpecFormatter do
     end
 
     context "without stubbed IO" do
-      let(:formatter) do
-        described_class.new(StringIO.new)
-      end
+      let(:stub_formatter) { false }
 
       it "creates temporary file and and writes to it" do
         file = File.expand_path(described_class::TEMPORARY_FILE_PATH)
