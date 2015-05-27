@@ -54,7 +54,7 @@ module Guard
         # including output target
 
         return formatters unless formatters
-        formatters.map { |entries| "-f #{entries.join " -o "}" }.join(" ")
+        formatters.map { |entries| "-f #{entries.join ' -o '}" }.join(" ")
       end
 
       def _cmd_include_formatter?
@@ -63,7 +63,7 @@ module Guard
 
       def _guard_formatter
         dir = Pathname.new(__FILE__).dirname.dirname
-        "-r #{dir + "rspec_formatter.rb"} -f Guard::RSpecFormatter"
+        "-r #{dir + 'rspec_formatter.rb'} -f Guard::RSpecFormatter"
       end
     end
   end

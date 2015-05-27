@@ -88,5 +88,4 @@ RSpec.describe Guard::RSpec do
       plugin.run_on_modifications(paths)
     end
   end
-
 end

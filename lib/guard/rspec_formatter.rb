@@ -92,15 +92,8 @@ module Guard
     end
 
     def _failed_paths
-      failed = examples.select do |e|
-        if self.class.rspec_3?
-          e.execution_result.status.to_s == "failed"
-        else
-          e.execution_result[:status].to_s == "failed"
-        end
-      end
-
       klass = self.class
+      failed = examples.select { |example| _status_failed?(example) }
       failed.map { |e| klass.extract_spec_location(e.metadata) }.sort.uniq
     end
 
@@ -111,6 +104,14 @@ module Guard
       end
       message << " in #{duration.round(4)} seconds"
       message
+    end
+
+    def _status_failed?(example)
+      if self.class.rspec_3?
+        example.execution_result.status.to_s == "failed"
+      else
+        example.execution_result[:status].to_s == "failed"
+      end
     end
   end
 end

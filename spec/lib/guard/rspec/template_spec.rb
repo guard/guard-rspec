@@ -33,22 +33,22 @@ RSpec.describe "Guard::RSpec" do
 
       expect(subject.changed("app/controllers/application_controller.rb")).
         to eq(
-        %w(
-          spec/controllers/application_controller_spec.rb
-          spec/routing/application_routing_spec.rb
-          spec/acceptance/application_spec.rb
-          spec/controllers
+          %w(
+            spec/controllers/application_controller_spec.rb
+            spec/routing/application_routing_spec.rb
+            spec/acceptance/application_spec.rb
+            spec/controllers
+          )
         )
-      )
 
       expect(subject.changed("app/controllers/foo_controller.rb")).
         to match_array(
-        %w(
-          spec/controllers/foo_controller_spec.rb
-          spec/routing/foo_routing_spec.rb
-          spec/acceptance/foo_spec.rb
+          %w(
+            spec/controllers/foo_controller_spec.rb
+            spec/routing/foo_routing_spec.rb
+            spec/acceptance/foo_spec.rb
+          )
         )
-      )
 
       expect(subject.changed("config/routes.rb")).to eq(%w(spec/routing))
 

@@ -6,7 +6,6 @@ RSpec.describe Guard::RSpec::Deprecator do
   let(:deprecator) { Guard::RSpec::Deprecator.new(options) }
 
   describe "#warns_about_deprecated_options" do
-
     describe "handling of environment variable SPEC_OPTS" do
       it "shows warning if SPEC_OPTS is set" do
         ENV["SPEC_OPTS"] = "-f p"
