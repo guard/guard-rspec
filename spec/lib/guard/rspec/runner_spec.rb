@@ -7,9 +7,9 @@ require "guard/rspec/runner"
 RSpec.describe Guard::RSpec::Runner do
   let(:options) { { cmd: "rspec" } }
   let(:runner) { Guard::RSpec::Runner.new(options) }
-  let(:inspector) { double(Guard::RSpec::Inspectors::SimpleInspector) }
-  let(:notifier) { double(Guard::RSpec::Notifier) }
-  let(:results) { double(Guard::RSpec::Results) }
+  let(:inspector) { instance_double(Guard::RSpec::Inspectors::SimpleInspector) }
+  let(:notifier) { instance_double(Guard::RSpec::Notifier) }
+  let(:results) { instance_double(Guard::RSpec::Results) }
 
   before do
     allow(Guard::Compat::UI).to receive(:info)
@@ -142,7 +142,6 @@ RSpec.describe Guard::RSpec::Runner do
     let(:paths) { %w(spec_path1 spec_path2) }
     before do
       allow(inspector).to receive(:paths) { paths }
-      allow(inspector).to receive(:clear_paths) { true }
       allow(inspector).to receive(:failed)
     end
 

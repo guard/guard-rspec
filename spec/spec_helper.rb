@@ -8,6 +8,14 @@ end
 rspec_version = ::RSpec::Version::STRING.to_f
 old_rspec = (rspec_version < 3)
 
+if old_rspec
+  class RSpec::Core::ExampleGroup
+    def instance_double(*args)
+      double(*args)
+    end
+  end
+end
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

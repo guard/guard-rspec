@@ -35,7 +35,8 @@ RSpec.describe Guard::RSpec::Command do
 
       before do
         allow(RSpec::Core::ConfigurationOptions).to receive(:new) do
-          double(options: { formatters: formatters })
+          instance_double(RSpec::Core::ConfigurationOptions,
+                          options: { formatters: formatters })
         end
       end
 
