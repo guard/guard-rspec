@@ -1,6 +1,7 @@
 require "guard/rspec/inspectors/factory"
 require "guard/rspec/command"
 require "guard/rspec/notifier"
+require "guard/rspec/results"
 
 module Guard
   class RSpec < Plugin
@@ -41,8 +42,12 @@ module Guard
         return unless _cmd_option_present(options)
         command = Command.new(paths, options)
 
-        _without_bundler_env { Kernel.system(command) }.tap do |success|
-          _process_run_result(success, all)
+        _without_bundler_env { Kernel.system(command) }.tap do |result|
+          if _command_success?(result)
+            _process_run_result(result, all)
+          else
+            notifier.notify_failure
+          end
         end
       end
 
@@ -68,13 +73,7 @@ module Guard
 
       def _command_output
         formatter_tmp_file = _tmp_file(options[:chdir])
-        lines = File.readlines(formatter_tmp_file)
-        summary = lines.first.strip
-        failed_paths = lines[1..11].map(&:strip).compact
-
-        [summary, failed_paths]
-      rescue
-        [nil, nil]
+        Results.new(formatter_tmp_file)
       ensure
         File.delete(formatter_tmp_file) if File.exist?(formatter_tmp_file)
       end
@@ -92,19 +91,9 @@ module Guard
       end
 
       def _process_run_result(result, all)
-        unless _command_success?(result)
-          notifier.notify_failure
-          return
-        end
-
-        summary, failed_paths = _command_output
-        unless summary && failed_paths
-          notifier.notify_failure
-          return
-        end
-
-        inspector.failed(failed_paths)
-        notifier.notify(summary)
+        results = _command_output
+        inspector.failed(results.failed_paths)
+        notifier.notify(results.summary)
         _open_launchy
 
         _run_all_after_pass if !all && result
