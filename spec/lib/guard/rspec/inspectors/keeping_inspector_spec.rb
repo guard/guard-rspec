@@ -68,13 +68,13 @@ RSpec.describe klass do
     # Now it returns other failed locations
     expect(
       inspector.paths(
-        %w(spec/lib/guard/rspec/inspectors/base_inspector_spec.rb))
-      ).
-      to match_array([
-        "spec/lib/guard/rspec/runner_spec.rb",
-        "spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb",
-        "spec/lib/guard/rspec/inspectors/base_inspector_spec.rb"
-      ])
+        %w(spec/lib/guard/rspec/inspectors/base_inspector_spec.rb)
+      )
+    ).to match_array([
+      "spec/lib/guard/rspec/runner_spec.rb",
+      "spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb",
+      "spec/lib/guard/rspec/inspectors/base_inspector_spec.rb"
+    ])
     inspector.failed(other_failed_locations)
 
     expect(inspector.paths(%w(spec/lib/guard/rspec/runner_spec.rb))).

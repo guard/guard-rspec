@@ -55,7 +55,6 @@ RSpec.describe Guard::RSpec::Inspectors::BaseInspector do
           let(:paths) { ["#{chdir}/spec"] }
 
           it "returns matching paths" do
-
             allow(Dir).to receive(:[]).
               with("moduleA/spec/**{,/*/**}/*[_.]spec.rb").
               and_return(paths)

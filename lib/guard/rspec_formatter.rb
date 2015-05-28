@@ -60,20 +60,18 @@ module Guard
     end
 
     def dump_summary(*args)
-      if self.class.rspec_3?
-        notification = args[0]
-        write_summary(
-          notification.duration,
-          notification.example_count,
-          notification.failure_count,
-          notification.pending_count
-        )
-      else
-        write_summary(*args)
-      end
-    rescue
-      # nothing really we can do, at least don"t kill the test runner
+      return write_summary(*args) unless self.class.rspec_3?
+
+      notification = args[0]
+      write_summary(
+        notification.duration,
+        notification.example_count,
+        notification.failure_count,
+        notification.pending_count
+      )
     end
+
+    private
 
     # Write summary to temporary file for runner
     def write_summary(duration, total, failures, pending)
@@ -83,8 +81,6 @@ module Guard
       end
     end
 
-    private
-
     def _write(&block)
       file = File.expand_path(TEMPORARY_FILE_PATH)
       FileUtils.mkdir_p(File.dirname(file))
@@ -92,15 +88,8 @@ module Guard
     end
 
     def _failed_paths
-      failed = examples.select do |e|
-        if self.class.rspec_3?
-          e.execution_result.status.to_s == "failed"
-        else
-          e.execution_result[:status].to_s == "failed"
-        end
-      end
-
       klass = self.class
+      failed = examples.select { |example| _status_failed?(example) }
       failed.map { |e| klass.extract_spec_location(e.metadata) }.sort.uniq
     end
 
@@ -111,6 +100,14 @@ module Guard
       end
       message << " in #{duration.round(4)} seconds"
       message
+    end
+
+    def _status_failed?(example)
+      if self.class.rspec_3?
+        example.execution_result.status.to_s == "failed"
+      else
+        example.execution_result[:status].to_s == "failed"
+      end
     end
   end
 end

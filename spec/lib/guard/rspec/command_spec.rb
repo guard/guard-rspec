@@ -9,7 +9,6 @@ RSpec.describe Guard::RSpec::Command do
   let(:command) { Guard::RSpec::Command.new(paths, options) }
 
   describe ".initialize" do
-
     it "sets paths at the end" do
       expect(command).to match /path1 path2$/
     end
@@ -80,12 +79,9 @@ RSpec.describe Guard::RSpec::Command do
         }
       end
 
-      it "removes chdir part from the path
-        as it should be present in the cmd" do
-
+      it "strips path of chdir" do
         expect(command).to match %r{path1 path2}
       end
     end
   end
-
 end

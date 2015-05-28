@@ -35,7 +35,6 @@ RSpec.configure do |config|
     unless old_rspec
       mocks.verify_partial_doubles = true
     end
-
   end
 
   # These two settings work together to allow you to limit a spec run
@@ -96,13 +95,13 @@ RSpec.configure do |config|
 
     %w(directory? delete readlines).each do |meth|
       allow(File).to receive(meth.to_sym) do |*args|
-        abort "stub me: File.#{meth}(#{args.map(&:inspect) * ","})!"
+        abort "stub me: File.#{meth}(#{args.map(&:inspect) * ','})!"
       end
     end
 
     %w(mkdir).each do |meth|
       allow(FileUtils).to receive(meth.to_sym) do |*args|
-        abort "stub me: FileUtils.#{meth}(#{args.map(&:inspect) * ","})!"
+        abort "stub me: FileUtils.#{meth}(#{args.map(&:inspect) * ','})!"
       end
     end
   end

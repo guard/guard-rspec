@@ -27,7 +27,7 @@ module Guard
       def run(paths)
         paths = inspector.paths(paths)
         return true if paths.empty?
-        Compat::UI.info("Running: #{paths.join(" ")}", reset: true)
+        Compat::UI.info("Running: #{paths.join(' ')}", reset: true)
         _run(false, paths, options)
       end
 
