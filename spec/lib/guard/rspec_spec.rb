@@ -5,7 +5,7 @@ RSpec.describe Guard::RSpec do
   let(:default_options) { Guard::RSpec::Options::DEFAULTS }
   let(:options) { {} }
   let(:plugin) { Guard::RSpec.new(options) }
-  let(:runner) { double(Guard::RSpec::Runner) }
+  let(:runner) { instance_double(Guard::RSpec::Runner) }
 
   before do
     allow(Guard::Compat::UI).to receive(:info)

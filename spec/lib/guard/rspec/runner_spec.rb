@@ -7,8 +7,9 @@ require "guard/rspec/runner"
 RSpec.describe Guard::RSpec::Runner do
   let(:options) { { cmd: "rspec" } }
   let(:runner) { Guard::RSpec::Runner.new(options) }
-  let(:inspector) { double(Guard::RSpec::Inspectors::SimpleInspector) }
-  let(:notifier) { double(Guard::RSpec::Notifier) }
+  let(:inspector) { instance_double(Guard::RSpec::Inspectors::SimpleInspector) }
+  let(:notifier) { instance_double(Guard::RSpec::Notifier) }
+  let(:results) { instance_double(Guard::RSpec::Results) }
 
   before do
     allow(Guard::Compat::UI).to receive(:info)
@@ -18,6 +19,11 @@ RSpec.describe Guard::RSpec::Runner do
     allow(Guard::RSpec::Command).to receive(:new) { "rspec" }
     allow(notifier).to receive(:notify)
     allow(notifier).to receive(:notify_failure)
+
+    allow(Guard::RSpec::Results).to receive(:new).
+      with("tmp/rspec_guard_result").and_return(results)
+    allow(results).to receive(:summary).and_return("Summary")
+    allow(results).to receive(:failed_paths).and_return([])
 
     $CHILD_STATUS = double("exitstatus", exitstatus: 0)
   end
@@ -68,7 +74,6 @@ RSpec.describe Guard::RSpec::Runner do
 
     before do
       allow(inspector).to receive(:failed)
-      allow(File).to receive(:readlines).and_return([])
     end
 
     it "builds commands with spec paths" do
@@ -136,10 +141,7 @@ RSpec.describe Guard::RSpec::Runner do
   describe "#run" do
     let(:paths) { %w(spec_path1 spec_path2) }
     before do
-      tmp_file = "tmp/rspec_guard_result"
-      allow(File).to receive(:readlines).with(tmp_file) { ["Summary\n"] }
       allow(inspector).to receive(:paths) { paths }
-      allow(inspector).to receive(:clear_paths) { true }
       allow(inspector).to receive(:failed)
     end
 
@@ -195,15 +197,12 @@ RSpec.describe Guard::RSpec::Runner do
 
     context "with failed paths" do
       before do
-        allow(File).to receive(:readlines).
-          with("tmp/rspec_guard_result") do
-          [
-            "Summary\n",
-            "./failed_spec.rb:123\n",
-            "./other/failed_spec.rb:77\n"
-          ]
-        end
+        allow(results).to receive(:failed_paths).and_return([
+          "./failed_spec.rb:123",
+          "./other/failed_spec.rb:77"
+        ])
       end
+
       it "notifies inspector about failed paths" do
         expect(inspector).to receive(:failed).
           with(["./failed_spec.rb:123", "./other/failed_spec.rb:77"])
