@@ -13,10 +13,22 @@ module Guard
         @dsl.send(:watch, expr) { |m| rspec.spec.(m[1]) }
       end
 
+      def self.detect_spec_file_for(rspec, file)
+        # TODO: when spec not found ... run specs in topmost found path?
+        # Or show warning?
+
+        path = "#{rspec.spec_dir}/#{file}_spec.rb"
+        return path unless file.start_with?("lib/")
+        return path if Dir.exist?("#{rspec.spec_dir}/lib")
+
+        without_lib = file.sub(/^lib\//, "")
+        "#{rspec.spec_dir}/#{without_lib}_spec.rb"
+      end
+
       def rspec
         @rspec ||= OpenStruct.new(to_s: "spec").tap do |rspec|
           rspec.spec_dir = "spec"
-          rspec.spec = ->(m) { "#{rspec.spec_dir}/#{m}_spec.rb" }
+          rspec.spec = ->(m) { Dsl.detect_spec_file_for(rspec, m) }
           rspec.spec_helper = "#{rspec.spec_dir}/spec_helper.rb"
           rspec.spec_files = %r{^#{rspec.spec_dir}/.+_spec\.rb$}
           rspec.spec_support = %r{^#{rspec.spec_dir}/support/(.+)\.rb$}
