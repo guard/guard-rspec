@@ -97,6 +97,12 @@ RSpec.configure do |config|
   config.raise_errors_for_deprecations!
 
   config.before do
+    %w(exist?).each do |meth|
+      allow(Dir).to receive(meth.to_sym) do |*args|
+        abort "stub me: Dir.#{meth}(#{args.map(&:inspect) * ','})!"
+      end
+    end
+
     allow(Dir).to receive(:[]) do |*args|
       abort "stub me: Dir[#{args.first}]!"
     end
@@ -107,7 +113,7 @@ RSpec.configure do |config|
       end
     end
 
-    %w(mkdir).each do |meth|
+    %w(mkdir mkdir_p).each do |meth|
       allow(FileUtils).to receive(meth.to_sym) do |*args|
         abort "stub me: FileUtils.#{meth}(#{args.map(&:inspect) * ','})!"
       end

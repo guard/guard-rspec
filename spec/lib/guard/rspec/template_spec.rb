@@ -14,8 +14,24 @@ RSpec.describe "Guard::RSpec" do
       expect(subject.changed("spec/spec_helper.rb")).to eq(%w(spec))
     end
 
-    it "matches Ruby files by default" do
-      expect(subject.changed("lib/foo.rb")).to eq(%w(spec/lib/foo_spec.rb))
+    describe "mapping files to specs" do
+      before do
+        allow(Dir).to receive(:exist?).with("spec/lib").and_return(has_spec_lib)
+      end
+
+      context "when spec/lib exists" do
+        let(:has_spec_lib) { true }
+        it "matches Ruby files with files in spec/lib" do
+          expect(subject.changed("lib/foo.rb")).to eq(%w(spec/lib/foo_spec.rb))
+        end
+      end
+
+      context "when spec/lib does not exist" do
+        let(:has_spec_lib) { false }
+        it "matches Ruby files with files in spec/lib" do
+          expect(subject.changed("lib/foo.rb")).to eq(%w(spec/foo_spec.rb))
+        end
+      end
     end
 
     it "matches Rails files by default" do
