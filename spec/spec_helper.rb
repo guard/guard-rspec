@@ -107,7 +107,7 @@ RSpec.configure do |config|
       end
     end
 
-    %w(mkdir).each do |meth|
+    %w(mkdir mkdir_p).each do |meth|
       allow(FileUtils).to receive(meth.to_sym) do |*args|
         abort "stub me: FileUtils.#{meth}(#{args.map(&:inspect) * ','})!"
       end
