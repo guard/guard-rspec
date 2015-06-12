@@ -1,4 +1,7 @@
 require 'drb/drb'
+require 'pathname'
+
+require 'rspec/core' rescue LoadError
 
 module Guard
   class RSpec
@@ -60,7 +63,7 @@ module Guard
         @rspec_class ||= case rspec_version
                          when 1
                            "Spec"
-                         when 2
+                         when 2, 3
                            "RSpec"
                          end
       end
@@ -84,14 +87,39 @@ module Guard
         arg_parts << options[:cli]
         if @options[:notification]
           arg_parts << parsed_or_default_formatter unless options[:cli] =~ formatter_regex
-          arg_parts << "-r #{File.dirname(__FILE__)}/formatters/notification_#{rspec_class.downcase}.rb"
-          arg_parts << "-f Guard::RSpec::Formatter::Notification#{rspec_class}#{rspec_version == 1 ? ":" : " --out "}/dev/null"
+
+          formatter_file = "(undefined)"
+          formatter_class_name = "(undefined)"
+
+          case rspec_version
+          when 1, 2
+            formatter_class_name = "Guard::RSpec::Formatter::Notification#{rspec_class}"
+            formatter_file = "rspec/formatters/notification_#{rspec_class.downcase}.rb"
+          when 3
+            formatter_class_name = "Guard::RSpecFormatter"
+            formatter_file = "rspec_formatter.rb"
+          else
+            fail "Guard::RSpec fatal error: UNKNOWN RSPEC VERSION: #{rspec_version.inspect}"
+          end
+
+          lib_guard = Pathname(__FILE__).dirname.dirname
+          arg_parts << "-r #{lib_guard + formatter_file}"
+          arg_parts << formatter_arg(formatter_class_name)
         end
         arg_parts << "--failure-exit-code #{FAILURE_EXIT_CODE}" if failure_exit_code_supported?
         arg_parts << "-r turnip/rspec" if @options[:turnip]
         arg_parts << paths.join(' ')
 
         arg_parts.compact.join(' ')
+      end
+
+      def formatter_arg(formatter_name)
+        case rspec_version
+        when 1
+          "-f #{formatter_name}:/dev/null"
+        when 2, 3
+          "-f #{formatter_name} --out /dev/null"
+        end
       end
 
       def rspec_command(paths, options)
@@ -114,7 +142,8 @@ module Guard
       end
 
       def rspec_command_exited_with_an_exception?
-        failure_exit_code_supported? && $?.exitstatus != FAILURE_EXIT_CODE
+        return !$?.zero? unless failure_exit_code_supported?
+        $?.exitstatus != FAILURE_EXIT_CODE
       end
 
       # We can optimize this path by hitting up the drb server directly, circumventing the overhead
@@ -206,6 +235,8 @@ module Guard
       end
 
       def determine_rspec_version
+        Integer(::RSpec::Core::Version::STRING.split(".").first)
+      rescue NameError
         if File.exist?("#{Dir.pwd}/spec/spec_helper.rb")
           File.new("#{Dir.pwd}/spec/spec_helper.rb").read.include?("Spec::Runner") ? 1 : 2
         elsif bundler_allowed?
