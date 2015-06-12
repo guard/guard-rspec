@@ -241,7 +241,7 @@ module Guard
           File.new("#{Dir.pwd}/spec/spec_helper.rb").read.include?("Spec::Runner") ? 1 : 2
         elsif bundler_allowed?
           ENV['BUNDLE_GEMFILE'] = "#{Dir.pwd}/Gemfile"
-          `bundle show rspec`.include?("/rspec-1.") ? 1 : 2
+          /[\/ ]rspec-1\./ =~ `bundle show rspec 2>&1` ? 1 : 2
         else
           2
         end

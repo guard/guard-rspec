@@ -3,6 +3,13 @@ require 'spec_helper'
 describe Guard::RSpec::Runner do
   subject { described_class.new }
 
+  def stub_out_rspec3_check_to_avoid_breaking_tests
+    ::RSpec::Core::Version::STRING.stub(:split) do
+      fail NameError
+    end
+  rescue NameError
+  end
+
   before do
     described_class.any_instance.stub(:failure_exit_code_supported? => true)
   end
@@ -376,12 +383,14 @@ describe Guard::RSpec::Runner do
     context 'in RSpec 1 folder with Bundler' do
       before do
         Dir.stub(:pwd).and_return(@fixture_path.join('rspec1'))
+        stub_out_rspec3_check_to_avoid_breaking_tests
         described_class.any_instance.stub(:failure_exit_code_supported? => false)
       end
 
       it 'runs with RSpec 1 and with bundler' do
+        formatter_file = @lib_path.join('guard/rspec/formatters/notification_spec.rb').to_s
         subject.should_receive(:system).with(
-          "bundle exec spec -f progress -r #{@lib_path.join('guard/rspec/formatters/notification_spec.rb')} " <<
+          "bundle exec spec -f progress -r #{formatter_file} " <<
           '-f Guard::RSpec::Formatter::NotificationSpec:/dev/null spec'
         ).and_return(true)
 
@@ -404,7 +413,10 @@ describe Guard::RSpec::Runner do
     end
 
     context 'in RSpec 1 folder with Bundler' do
-      before { Dir.stub(:pwd).and_return(@fixture_path.join('bundler_only_rspec1')) }
+      before do
+        stub_out_rspec3_check_to_avoid_breaking_tests
+        Dir.stub(:pwd).and_return(@fixture_path.join('bundler_only_rspec1'))
+      end
 
       it 'sets RSpec 1 from Bundler' do
         subject.rspec_version.should be 1
@@ -420,7 +432,10 @@ describe Guard::RSpec::Runner do
     end
 
     context 'in RSpec 1 folder without Bundler' do
-      before { Dir.stub(:pwd).and_return(@fixture_path.join('rspec1')) }
+      before do
+        Dir.stub(:pwd).and_return(@fixture_path.join('rspec1'))
+        stub_out_rspec3_check_to_avoid_breaking_tests
+      end
 
       it 'sets RSpec 1 from spec_helper.rb' do
         subject.rspec_version.should be 1
