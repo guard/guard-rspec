@@ -108,6 +108,25 @@ guard :rspec, cmd: 'rspec -f html -o ./tmp/spec_results.html', launchy: './tmp/s
 end
 ```
 
+### Using parallel_tests
+
+parallel_tests has a `-o` option for passing RSpec options, and here's a trick to make it work with Guard::RSpec:
+
+```ruby
+rspec_options = {
+  cmd: "bundle exec rspec",
+  run_all: {
+    cmd: "bundle exec parallel_rspec -o '",
+    cmd_additional_args: "'"
+  }
+}
+guard :rspec, rspec_options do
+# (...)
+```
+
+(Notice where the `'` characters are placed)
+
+
 ## Development
 
 * Documentation hosted at [RubyDoc](http://rubydoc.info/github/guard/guard-rspec/master/frames).
