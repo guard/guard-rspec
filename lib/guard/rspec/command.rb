@@ -19,13 +19,36 @@ module Guard
       private
 
       def _parts
-        parts = [options[:cmd]]
+        parts = _parts_begin
         parts << _visual_formatter
         parts << _guard_formatter
         parts << "--failure-exit-code #{FAILURE_EXIT_CODE}"
         parts << options[:cmd_additional_args] || ""
+        parts << _parts_end
+      end
 
-        parts << _paths(options).join(" ")
+      def _parts_begin
+        if parallel?
+          [
+            "bundle exec parallel_rspec",
+            options[:parallel_cli],
+            "-o '"
+          ].compact
+        else
+          [options[:cmd]]
+        end
+      end
+
+      def _parts_end
+        if parallel?
+          "' spec"
+        else
+          _paths(options).join(" ")
+        end
+      end
+
+      def parallel?
+        options[:parallel] || false
       end
 
       def _paths(options)
