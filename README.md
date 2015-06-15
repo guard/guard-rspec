@@ -108,6 +108,24 @@ guard :rspec, cmd: 'rspec -f html -o ./tmp/spec_results.html', launchy: './tmp/s
 end
 ```
 
+### Using with parallel_tests
+Parallel tests is huge advantage when running whole big test suite. You can do it like that:
+
+``` ruby
+guard :rspec, cmd: 'bundle exec rspec', all_after_pass: true, all_on_start: true, run_all: { parallel: true } do
+  # ...
+end
+```
+
+You can also use `parallel_rspec` options:
+
+``` ruby
+guard :rspec, cmd: 'bundle exec rspec', all_after_pass: true, all_on_start: true, run_all: { parallel: true, parallel_cli: '-m 2.5' } do
+  # ...
+end
+```
+
+
 ## Development
 
 * Documentation hosted at [RubyDoc](http://rubydoc.info/github/guard/guard-rspec/master/frames).
