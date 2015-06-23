@@ -3,6 +3,7 @@
 
 require "pathname"
 require "fileutils"
+require "logger"
 
 require "rspec"
 require "rspec/core/formatters/base_formatter"
@@ -20,6 +21,9 @@ module Guard
 
       def example_failed(failure)
         examples.push failure.example
+      rescue => ex
+        logger.debug("#{__method__}: ERROR: #{ex}: #{ex.backtrace * "\n" }")
+        fail
       end
 
       def examples
@@ -60,6 +64,7 @@ module Guard
     end
 
     def dump_summary(*args)
+      logger.debug("#{__method__} writing summary")
       return write_summary(*args) unless self.class.rspec_3?
 
       notification = args[0]
@@ -69,16 +74,34 @@ module Guard
         notification.failure_count,
         notification.pending_count
       )
+    rescue => ex
+      logger.debug("#{__method__}: ERROR: #{ex}: #{ex.backtrace * "\n" }")
+      fail
     end
 
     private
 
     # Write summary to temporary file for runner
     def write_summary(duration, total, failures, pending)
+      logger.debug("#{__method__}: #{total} examples ")
       _write do |f|
         f.puts _message(total, failures, pending, duration)
         f.puts _failed_paths.join("\n") if failures > 0
       end
+    rescue => ex
+      logger.debug("#{__method__}: ERROR: #{ex}: #{ex.backtrace * "\n" }")
+      fail
+    end
+
+    def logger
+      @logger ||=
+        begin
+          f = File.open("guard_rspec_debug.log", "a")
+          f.sync = true
+          ::Logger.new(f).tap do |logger|
+            logger.level = Logger::DEBUG
+          end
+        end
     end
 
     def _write(&block)
