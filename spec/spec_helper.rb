@@ -1,5 +1,12 @@
 require "rspec"
 
+# To help produce better bug reports in Rubinius
+if RUBY_ENGINE == "rbx"
+  $DEBUG = true # would be nice if this didn't fail ... :(
+  require 'rspec/matchers'
+  require 'rspec/matchers/built_in/be'
+end
+
 if ENV["CI"]
   require "coveralls"
   Coveralls.wear!
