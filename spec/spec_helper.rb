@@ -1,5 +1,12 @@
 require "rspec"
 
+# To help produce better bug reports in Rubinius
+if RUBY_ENGINE == "rbx"
+  $DEBUG = true # would be nice if this didn't fail ... :(
+  require "rspec/matchers"
+  require "rspec/matchers/built_in/be"
+end
+
 if ENV["CI"]
   require "coveralls"
   Coveralls.wear!
@@ -107,7 +114,16 @@ RSpec.configure do |config|
       abort "stub me: Dir[#{args.first}]!"
     end
 
-    %w(directory? delete readlines).each do |meth|
+    unless RUBY_ENGINE == "rbx"
+      # RBX uses cache in ~/.rbx
+      %w(directory?).each do |meth|
+        allow(File).to receive(meth.to_sym) do |*args|
+          abort "stub me: File.#{meth}(#{args.map(&:inspect) * ','})!"
+        end
+      end
+    end
+
+    %w(delete readlines).each do |meth|
       allow(File).to receive(meth.to_sym) do |*args|
         abort "stub me: File.#{meth}(#{args.map(&:inspect) * ','})!"
       end
@@ -116,6 +132,12 @@ RSpec.configure do |config|
     %w(mkdir mkdir_p).each do |meth|
       allow(FileUtils).to receive(meth.to_sym) do |*args|
         abort "stub me: FileUtils.#{meth}(#{args.map(&:inspect) * ','})!"
+      end
+    end
+
+    %w(spawn system).each do |meth|
+      allow(File).to receive(meth.to_sym) do |*args|
+        abort "stub me: Kernel.#{meth}(#{args.map(&:inspect) * ','})!"
       end
     end
   end
