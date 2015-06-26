@@ -10,22 +10,23 @@ RSpec.describe Guard::RSpec::Runner do
   let(:inspector) { instance_double(Guard::RSpec::Inspectors::SimpleInspector) }
   let(:notifier) { instance_double(Guard::RSpec::Notifier) }
   let(:results) { instance_double(Guard::RSpec::Results) }
+  let(:process) { instance_double(Guard::RSpec::RSpecProcess) }
 
   before do
     allow(Guard::Compat::UI).to receive(:info)
-    allow(Kernel).to receive(:system) { true }
+    allow(Guard::Compat::UI).to receive(:error)
     allow(Guard::RSpec::Inspectors::Factory).to receive(:create) { inspector }
     allow(Guard::RSpec::Notifier).to receive(:new) { notifier }
     allow(Guard::RSpec::Command).to receive(:new) { "rspec" }
     allow(notifier).to receive(:notify)
     allow(notifier).to receive(:notify_failure)
 
-    allow(Guard::RSpec::Results).to receive(:new).
-      with("tmp/rspec_guard_result").and_return(results)
     allow(results).to receive(:summary).and_return("Summary")
     allow(results).to receive(:failed_paths).and_return([])
 
-    $CHILD_STATUS = double("exitstatus", exitstatus: 0)
+    allow(Guard::RSpec::RSpecProcess).to receive(:new).and_return(process)
+    allow(process).to receive(:all_green?).and_return(true)
+    allow(process).to receive(:results).and_return(results)
   end
 
   describe ".initialize" do
@@ -217,7 +218,9 @@ RSpec.describe Guard::RSpec::Runner do
     end
 
     it "notifies failure" do
-      allow(Kernel).to receive(:system) { nil }
+      allow(process).to receive(:all_green?).
+        and_raise(Guard::RSpec::RSpecProcess::Failure, /Failed: /)
+
       expect(notifier).to receive(:notify_failure)
       runner.run(paths)
     end
