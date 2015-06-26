@@ -23,8 +23,11 @@ RSpec.describe Guard::RSpec::RSpecProcess do
   end
 
   before do
+    allow(Kernel).to receive(:spawn).
+      with({ "GUARD_RSPEC_RESULTS_FILE" => file }, cmd).and_return(pid)
+
     allow(Guard::RSpec::Results).to receive(:new).
-      with("foobar.txt").and_return(results)
+      with(file).and_return(results)
   end
 
   context "with an non-existing command" do
@@ -41,7 +44,6 @@ RSpec.describe Guard::RSpec::RSpecProcess do
 
   context "with an existing command" do
     before do
-      allow(Kernel).to receive(:spawn).with(cmd).and_return(pid)
       allow(Process).to receive(:wait2).with(pid).and_return(wait_result)
     end
 
@@ -65,8 +67,7 @@ RSpec.describe Guard::RSpec::RSpecProcess do
     end
 
     context "with no failures" do
-      it "spawns and waits" do
-        expect(Kernel).to receive(:spawn).with(cmd).and_return(pid)
+      it "waits for process to end" do
         expect(Process).to receive(:wait2).with(pid).and_return(wait_result)
         subject
       end

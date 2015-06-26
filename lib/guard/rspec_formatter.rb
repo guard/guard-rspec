@@ -9,8 +9,6 @@ require "rspec/core/formatters/base_formatter"
 
 module Guard
   class RSpecFormatter < ::RSpec::Core::Formatters::BaseFormatter
-    TEMPORARY_FILE_PATH ||= "tmp/rspec_guard_result"
-
     def self.rspec_3?
       ::RSpec::Core::Version::STRING.split(".").first == "3"
     end
@@ -82,7 +80,7 @@ module Guard
     end
 
     def _write(&block)
-      file = File.expand_path(TEMPORARY_FILE_PATH)
+      file = _results_file
       FileUtils.mkdir_p(File.dirname(file))
       File.open(file, "w", &block)
     end
@@ -108,6 +106,12 @@ module Guard
       else
         example.execution_result[:status].to_s == "failed"
       end
+    end
+
+    def _results_file
+      path = ENV["GUARD_RSPEC_RESULTS_FILE"]
+      fail "Fatal: No output file given for Guard::RSpec formatter!" unless path
+      File.expand_path(path)
     end
   end
 end

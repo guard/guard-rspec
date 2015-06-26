@@ -46,6 +46,13 @@ RSpec.describe Guard::RSpec::Command do
     end
 
     context "with no RSpec defined formatter" do
+      before do
+        allow(RSpec::Core::ConfigurationOptions).to receive(:new) do
+          instance_double(RSpec::Core::ConfigurationOptions,
+                          options: { formatters: nil })
+        end
+      end
+
       it "sets default progress formatter" do
         expect(command).to match %r{-f progress}
       end

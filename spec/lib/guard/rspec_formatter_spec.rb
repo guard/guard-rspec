@@ -1,11 +1,6 @@
 require "guard/rspec_formatter"
 
 RSpec.describe Guard::RSpecFormatter do
-  describe "::TEMPORARY_FILE_PATH" do
-    subject { Pathname.new(described_class::TEMPORARY_FILE_PATH) }
-    it { is_expected.to be_relative }
-  end
-
   describe "#dump_summary" do
     def rspec_summary_args(*args)
       return args unless ::RSpec::Core::Version::STRING.start_with?("3.")
@@ -53,8 +48,15 @@ RSpec.describe Guard::RSpecFormatter do
     context "without stubbed IO" do
       let(:stub_formatter) { false }
 
+      around do |example|
+        env_var = "GUARD_RSPEC_RESULTS_FILE"
+        old, ENV[env_var] = ENV[env_var], "foobar.txt"
+        example.run
+        ENV[env_var] = old
+      end
+
       it "creates temporary file and and writes to it" do
-        file = File.expand_path(described_class::TEMPORARY_FILE_PATH)
+        file = File.expand_path("foobar.txt")
 
         expect(FileUtils).to receive(:mkdir_p).
           with(File.dirname(file)) {}
