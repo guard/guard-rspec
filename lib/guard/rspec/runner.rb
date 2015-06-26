@@ -49,7 +49,8 @@ module Guard
 
       def _run(paths, options, &block)
         fail NoCmdOptionError unless options[:cmd]
-        _really_run(paths, options, &block)
+        command = Command.new(paths, options)
+        _really_run(command, options, &block)
         true
       rescue RSpecProcess::Failure, NoCmdOptionError => ex
         Compat::UI.error(ex.to_s)
@@ -57,11 +58,11 @@ module Guard
         false
       end
 
-      def _really_run(paths, options)
+      def _really_run(cmd, options)
         # TODO: add option to specify the file
-        file = _tmp_file(options[:chdir])
+        file = _results_file(options[:results_file], options[:chdir])
 
-        process = RSpecProcess.new(Command.new(paths, options), file)
+        process = RSpecProcess.new(cmd, file)
         results = process.results
 
         inspector.failed(results.failed_paths)
@@ -78,8 +79,10 @@ module Guard
         ::Launchy.open(options[:launchy]) if pn.exist?
       end
 
-      def _tmp_file(chdir)
-        chdir ? File.join(chdir, TEMPORARY_FILE_PATH) : TEMPORARY_FILE_PATH
+      def _results_file(results_file, chdir)
+        results_file ||= TEMPORARY_FILE_PATH
+        return results_file unless Pathname(results_file).relative?
+        chdir ? File.join(chdir, results_file) : results_file
       end
     end
   end

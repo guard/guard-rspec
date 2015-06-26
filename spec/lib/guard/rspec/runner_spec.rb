@@ -191,6 +191,66 @@ RSpec.describe Guard::RSpec::Runner do
       end
     end
 
+    context "with a custom results file" do
+      let(:options) do
+        { cmd: "rspec", results_file: results_file }.merge(chdir_options)
+      end
+
+      context "with no chdir option" do
+        let(:chdir_options) { {} }
+
+        context "when the path is relative" do
+          let(:results_file) { "foobar.txt" }
+          it "uses the given file" do
+            expect(Guard::RSpec::RSpecProcess).to receive(:new).
+              with(anything, results_file).and_return(process)
+            runner.run(paths)
+          end
+        end
+
+        context "when the path is absolute" do
+          let(:results_file) { "/foo/foobar.txt" }
+          it "uses the given path" do
+            expect(Guard::RSpec::RSpecProcess).to receive(:new).
+              with(anything, results_file).and_return(process)
+            runner.run(paths)
+          end
+        end
+      end
+
+      context "with chdir option" do
+        let(:chdir_options) { { chdir: "moduleA" } }
+
+        context "when the path is relative" do
+          let(:results_file) { "foobar.txt" }
+
+          it "uses a path relative to chdir" do
+            expect(Guard::RSpec::RSpecProcess).to receive(:new).
+              with(anything, "moduleA/foobar.txt").and_return(process)
+            runner.run(paths)
+          end
+        end
+
+        context "when the path is absolute" do
+          let(:results_file) { "/foo/foobar.txt" }
+          it "uses the full given path anyway" do
+            expect(Guard::RSpec::RSpecProcess).to receive(:new).
+              with(anything, results_file).and_return(process)
+            runner.run(paths)
+          end
+        end
+      end
+    end
+
+    context "with no custom results file" do
+      let(:options) { { cmd: "rspec" } }
+      it "uses the default" do
+        expect(Guard::RSpec::RSpecProcess).to receive(:new).
+          with(anything, "tmp/rspec_guard_result").and_return(process)
+        runner.run(paths)
+      end
+    end
+
     it "notifies inspector about failed paths" do
       expect(inspector).to receive(:failed).with([])
       runner.run(paths)
@@ -223,21 +283,6 @@ RSpec.describe Guard::RSpec::Runner do
 
       expect(notifier).to receive(:notify_failure)
       runner.run(paths)
-    end
-  end
-
-  # TODO: remove / cleanup
-  describe "_tmp_file" do
-    subject { described_class.new.send(:_tmp_file, chdir) }
-
-    context "with no chdir option" do
-      let(:chdir) { nil }
-      it { is_expected.to eq("tmp/rspec_guard_result") }
-    end
-
-    context "chdir option" do
-      let(:chdir) { "moduleA" }
-      it { is_expected.to eq("moduleA/tmp/rspec_guard_result") }
     end
   end
 end
