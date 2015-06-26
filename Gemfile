@@ -1,6 +1,11 @@
 source "https://rubygems.org"
 
-gemspec
+if ENV["USE_INSTALLED_GUARD_RSPEC"] == "1"
+  gem "guard-rspec"
+  gem "launchy"
+else
+  gemspec
+end
 
 group :test do
   gem "coveralls", require: false
