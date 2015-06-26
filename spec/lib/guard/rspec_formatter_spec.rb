@@ -145,7 +145,7 @@ RSpec.describe Guard::RSpecFormatter do
         }
 
         expect(STDERR).to receive(:puts).
-          with("no spec file found for #{metadata[:location]}") {}
+          with("no spec file location in #{metadata.inspect}")
 
         expect(described_class.extract_spec_location(metadata)).
           to eq metadata[:location]

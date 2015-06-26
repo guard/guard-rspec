@@ -36,7 +36,7 @@ module Guard
         metadata = metadata[:example_group]
 
         unless metadata
-          STDERR.puts "no spec file found for #{root_metadata[:location]}"
+          STDERR.puts "no spec file location in #{root_metadata.inspect}"
           return root_metadata[:location]
         end
 
@@ -56,7 +56,9 @@ module Guard
       pattern = ::RSpec.configuration.pattern
       path = path.sub(/:\d+\z/, "")
       path = Pathname.new(path).cleanpath.to_s
-      File.fnmatch(pattern, path, flags)
+      File.fnmatch(pattern, path, flags).tap do |result|
+        STDOUT.puts "fnmatch: #{result} (#{[pattern, path, flags].inspect})"
+      end
     end
 
     def dump_summary(*args)
