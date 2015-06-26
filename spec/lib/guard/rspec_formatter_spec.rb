@@ -145,10 +145,40 @@ RSpec.describe Guard::RSpecFormatter do
         }
 
         expect(STDERR).to receive(:puts).
-          with("no spec file found for #{metadata[:location]}") {}
+          with("no spec file location in #{metadata.inspect}")
 
         expect(described_class.extract_spec_location(metadata)).
           to eq metadata[:location]
+      end
+    end
+
+    context "when a shared examples are nested" do
+      it "should return location of the root spec" do
+        metadata = {
+          location: "./spec/support/breadcrumbs.rb:75",
+          example_group: {
+            example_group: {
+              location: "./spec/requests/breadcrumbs_spec.rb:218"
+            }
+          }
+        }
+
+        expect(described_class.extract_spec_location(metadata)).
+          to eq "./spec/requests/breadcrumbs_spec.rb"
+      end
+    end
+
+    context "when RSpec 3.0 metadata is present" do
+      it "should return location of the root spec" do
+        metadata = {
+          location: "./spec/support/breadcrumbs.rb:75",
+          parent_example_group: {
+            location: "./spec/requests/breadcrumbs_spec.rb:218"
+          }
+        }
+
+        expect(described_class.extract_spec_location(metadata)).
+          to eq "./spec/requests/breadcrumbs_spec.rb"
       end
     end
 

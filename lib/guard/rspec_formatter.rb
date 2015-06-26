@@ -33,10 +33,10 @@ module Guard
       location = metadata[:location]
 
       until spec_path?(location)
-        metadata = metadata[:example_group]
+        metadata = metadata[:parent_example_group] || metadata[:example_group]
 
         unless metadata
-          STDERR.puts "no spec file found for #{root_metadata[:location]}"
+          STDERR.puts "no spec file location in #{root_metadata.inspect}"
           return root_metadata[:location]
         end
 
