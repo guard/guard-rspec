@@ -86,6 +86,35 @@ RSpec.describe Guard::RSpecFormatter do
           end.to raise_error(TypeError, "foo")
         end
       end
+
+      context "when no env is passed" do
+        let(:file) { File.join(Dir.pwd, "tmp/rspec_guard_result") }
+
+        before do
+          ENV["GUARD_RSPEC_RESULTS_FILE"] = nil
+
+          allow(FileUtils).to receive(:mkdir_p).
+            with(File.dirname(file)) {}
+
+          allow(File).to receive(:open).
+            with(file, "w") do |_, _, &block|
+            block.call writer
+          end
+        end
+
+        it "warns" do
+          expect(STDERR).to receive(:puts).with(/no environment/)
+          formatter.dump_summary(*example_dump_summary_args)
+        end
+
+        it "uses default file" do
+          expect(File).to receive(:open).
+            with(file, "w") do |_, _, &block|
+            block.call writer
+          end
+          formatter.dump_summary(*example_dump_summary_args)
+        end
+      end
     end
 
     context "with failures" do

@@ -1,3 +1,5 @@
+require "guard/rspec_defaults"
+
 require "guard/rspec/inspectors/factory"
 require "guard/rspec/command"
 require "guard/rspec/notifier"
@@ -80,7 +82,7 @@ module Guard
       end
 
       def _results_file(results_file, chdir)
-        results_file ||= TEMPORARY_FILE_PATH
+        results_file ||= RSpecDefaults::TEMPORARY_FILE_PATH
         return results_file unless Pathname(results_file).relative?
         chdir ? File.join(chdir, results_file) : results_file
       end
