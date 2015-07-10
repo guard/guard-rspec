@@ -109,32 +109,11 @@ guard :rspec, cmd: 'rspec -f html -o ./tmp/spec_results.html', launchy: './tmp/s
 end
 ```
 
-### Integration with Zeus
+### Zeus Integration
 
-First, know that Guard::Zeus also generates a Guardfile template with RSpec commands - if you prefer Guard::RSpec, you may want to keep Guard::Zeus, but without the RSpec running commands (so you can manage the Guard::Zeus server instead of running it manually).
+You can use Guard::RSpec with Zeus or also with Guard::Zeus. Note that Guard::Zeus also generates a Guardfile template with RSpec commands. You probably don't want both Guard::RSpec and Guard::Zeus watching your spec files, but you can leave Guard::Zeus empty - so you can avoid restarting Zeus server manually (though there may be issues with the Pry interactive console in Guard).
 
-Second, since Guard::RSpec 4.6.x, the output file name is passed using environment variables - but Zeus doesn't pass these when rerunning tests, so you get this error: #334
-
-The workaround is to create a custom Zeus plan:
-
-1. `zeus init`
-2. edit `custom_plan.rb` to contain the following:
-
-```ruby
-require 'zeus/rails'
-
-class CustomPlan < Zeus::Rails
-  def test(*args)
-    ENV['GUARD_RSPEC_RESULTS_FILE'] = 'tmp/guard_rspec_results.txt' # Guard::RSpec::Runner::TEMPORARY_FILE_PATH
-    super
-  end
-end
-
-Zeus.plan = CustomPlan.new
-```
-
-And that's it. (I'd like things to work without this, but I don't know how.)
-
+Also, if you get warnings about empty environment, be sure to read: https://github.com/guard/guard-rspec/wiki/Warning:-no-environment
 
 ### Using parallel_tests
 
