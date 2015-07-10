@@ -7,8 +7,16 @@ require "fileutils"
 require "rspec"
 require "rspec/core/formatters/base_formatter"
 
+require "guard/rspec_defaults"
+
 module Guard
   class RSpecFormatter < ::RSpec::Core::Formatters::BaseFormatter
+    WIKI_ENV_WARN_URL =
+      "https://github.com/guard/guard-rspec/wiki/Warning:-no-environment"
+
+    NO_ENV_WARNING_MSG = "no environment passed - see #{WIKI_ENV_WARN_URL}"
+    NO_RESULTS_VALUE_MSG = ":results_file value unknown (using defaults)"
+
     def self.rspec_3?
       ::RSpec::Core::Version::STRING.split(".").first == "3"
     end
@@ -110,7 +118,12 @@ module Guard
 
     def _results_file
       path = ENV["GUARD_RSPEC_RESULTS_FILE"]
-      fail "Fatal: No output file given for Guard::RSpec formatter!" unless path
+      if path.nil?
+        STDERR.puts "Guard::RSpec: Warning: #{NO_ENV_WARNING_MSG}\n" \
+          "Guard::RSpec: Warning: #{NO_RESULTS_VALUE_MSG}"
+        path = RSpecDefaults::TEMPORARY_FILE_PATH
+      end
+
       File.expand_path(path)
     end
   end
