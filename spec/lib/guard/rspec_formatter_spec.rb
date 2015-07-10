@@ -9,6 +9,12 @@ RSpec.describe Guard::RSpecFormatter do
       [n.new(*args)]
     end
 
+    # Returns a Hash that throws an error if a key is accessed that isn't set.
+    def hash_double(attrs)
+      dbl = Hash.new{|hsh, key| raise "Missing key: #{key.inspect}." }
+      dbl.merge(attrs)
+    end
+
     let(:example_dump_summary_args) { rspec_summary_args(123, 3, 1, 0) }
     let(:summary_with_no_failures) { rspec_summary_args(123, 3, 0, 0) }
     let(:summary_with_only_pending) { rspec_summary_args(123, 3, 0, 1) }
@@ -119,10 +125,10 @@ RSpec.describe Guard::RSpecFormatter do
     end
 
     it "should find the spec file for shared examples" do
-      metadata = {
+      metadata = hash_double(
         location: "./spec/support/breadcrumbs.rb:75",
         example_group: { location: "./spec/requests/breadcrumbs_spec.rb:218" }
-      }
+      )
 
       result = described_class.extract_spec_location(metadata)
       expect(result).to start_with "./spec/requests/breadcrumbs_spec.rb"
@@ -131,20 +137,20 @@ RSpec.describe Guard::RSpecFormatter do
     # Skip location because of rspec issue
     # https://github.com/rspec/rspec-core/issues/1243
     it "returns only the spec file without line number for shared examples" do
-      metadata = {
+      metadata = hash_double(
         location: "./spec/support/breadcrumbs.rb:75",
         example_group: { location: "./spec/requests/breadcrumbs_spec.rb:218" }
-      }
+      )
       expect(described_class.extract_spec_location(metadata)).
         to eq "./spec/requests/breadcrumbs_spec.rb"
     end
 
     context "when a shared examples has no location" do
       it "should return location of the root spec" do
-        metadata = {
+        metadata = hash_double(
           location: "./spec/support/breadcrumbs.rb:75",
           example_group: {}
-        }
+        )
 
         expect(STDERR).to receive(:puts).
           with("no spec file location in #{metadata.inspect}")
@@ -156,14 +162,14 @@ RSpec.describe Guard::RSpecFormatter do
 
     context "when a shared examples are nested" do
       it "should return location of the root spec" do
-        metadata = {
+        metadata = hash_double(
           location: "./spec/support/breadcrumbs.rb:75",
           example_group: {
             example_group: {
               location: "./spec/requests/breadcrumbs_spec.rb:218"
             }
           }
-        }
+        )
 
         expect(described_class.extract_spec_location(metadata)).
           to eq "./spec/requests/breadcrumbs_spec.rb"
@@ -172,12 +178,12 @@ RSpec.describe Guard::RSpecFormatter do
 
     context "when RSpec 3.0 metadata is present" do
       it "should return location of the root spec" do
-        metadata = {
+        metadata = hash_double(
           location: "./spec/support/breadcrumbs.rb:75",
           parent_example_group: {
             location: "./spec/requests/breadcrumbs_spec.rb:218"
           }
-        }
+        )
 
         expect(described_class.extract_spec_location(metadata)).
           to eq "./spec/requests/breadcrumbs_spec.rb"
