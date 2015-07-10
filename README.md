@@ -111,9 +111,9 @@ end
 
 ### Zeus Integration
 
-You can use Guard::RSpec with Zeus or also with Guard::Zeus. Note that Guard::Zeus also generates a Guardfile template with RSpec commands. You probably don't want both Guard::RSpec and Guard::Zeus watching your spec files, but you can leave Guard::Zeus empty - so you can avoid restarting Zeus server manually (though there may be issues with the Pry interactive console in Guard).
+You can use plain `Zeus` or you can use `Guard::Zeus` for managing the `Zeus` server (but you'll want to remove the spec watchers from `Guard::Zeus`, or you'll have tests running multiple times).
 
-Also, if you get warnings about empty environment, be sure to read: https://github.com/guard/guard-rspec/wiki/Warning:-no-environment
+Also, if you get warnings about empty environment, be sure to [read about this workaround](https://github.com/guard/guard-rspec/wiki/Warning:-no-environment)
 
 ### Using parallel_tests
 
