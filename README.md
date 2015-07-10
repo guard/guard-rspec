@@ -125,7 +125,7 @@ require 'zeus/rails'
 
 class CustomPlan < Zeus::Rails
   def test(*args)
-    ENV['GUARD_RSPEC_RESULTS_FILE'] = Guard::RSpec::Runner::TEMPORARY_FILE_PATH
+    ENV['GUARD_RSPEC_RESULTS_FILE'] = 'tmp/guard_rspec_results.txt' # Guard::RSpec::Runner::TEMPORARY_FILE_PATH
     super
   end
 end
