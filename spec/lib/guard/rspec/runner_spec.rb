@@ -137,6 +137,20 @@ RSpec.describe Guard::RSpec::Runner do
         expect(notifier).to have_received(:notify_failure)
       end
     end
+
+    describe "return value" do
+      subject { runner.run_all }
+
+      it { is_expected.to be true }
+
+      context "when process is not all green" do
+        before do
+          allow(process).to receive(:all_green?).and_return(false)
+        end
+
+        it { is_expected.to be false }
+      end
+    end
   end
 
   describe "#run" do
@@ -283,6 +297,36 @@ RSpec.describe Guard::RSpec::Runner do
 
       expect(notifier).to receive(:notify_failure)
       runner.run(paths)
+    end
+
+    describe "return value" do
+      subject { runner.run(paths) }
+
+      it { is_expected.to be true }
+
+      context "with all_after_pass option" do
+        let(:options) do
+          { cmd: "rspec", all_after_pass: true, run_all: {}, spec_paths: paths }
+        end
+
+        it { is_expected.to be true }
+
+        describe "when all tests fail" do
+          before do
+            allow(process).to receive(:all_green?).and_return(true, false)
+          end
+
+          it { is_expected.to be false }
+        end
+      end
+
+      context "when process is not all green" do
+        before do
+          allow(process).to receive(:all_green?).and_return(false)
+        end
+
+        it { is_expected.to be false }
+      end
     end
   end
 end

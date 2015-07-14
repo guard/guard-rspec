@@ -39,7 +39,9 @@ module Guard
         return true if paths.empty?
         Compat::UI.info("Running: #{paths.join(' ')}", reset: true)
         _run(paths, options) do |all_green|
-          run_all if options[:all_after_pass] && all_green
+          next false unless all_green
+          next true unless options[:all_after_pass]
+          run_all
         end
       end
 
@@ -53,7 +55,6 @@ module Guard
         fail NoCmdOptionError unless options[:cmd]
         command = Command.new(paths, options)
         _really_run(command, options, &block)
-        true
       rescue RSpecProcess::Failure, NoCmdOptionError => ex
         Compat::UI.error(ex.to_s)
         notifier.notify_failure
@@ -71,7 +72,12 @@ module Guard
         notifier.notify(results.summary)
         _open_launchy
 
-        yield process.all_green? if block_given?
+        all_green = process.all_green?
+        if block_given?
+          yield all_green
+        else
+          all_green
+        end
       end
 
       def _open_launchy
