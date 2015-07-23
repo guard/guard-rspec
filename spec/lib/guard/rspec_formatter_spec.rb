@@ -100,6 +100,8 @@ RSpec.describe Guard::RSpecFormatter do
             with(file, "w") do |_, _, &block|
             block.call writer
           end
+
+          allow(STDERR).to receive(:puts).with(/no environment/)
         end
 
         it "warns" do
