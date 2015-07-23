@@ -17,6 +17,17 @@ module Guard
     NO_ENV_WARNING_MSG = "no environment passed - see #{WIKI_ENV_WARN_URL}"
     NO_RESULTS_VALUE_MSG = ":results_file value unknown (using defaults)"
 
+    UNSUPPORTED_PATTERN = "Your RSpec.configuration.pattern uses characters "\
+      "unsupported by your Ruby version (File::FNM_EXTGLOB is undefined)"
+
+    class Error < RuntimeError
+      class UnsupportedPattern < Error
+        def initialize(msg = UNSUPPORTED_PATTERN)
+          super
+        end
+      end
+    end
+
     def self.rspec_3?
       ::RSpec::Core::Version::STRING.split(".").first == "3"
     end
@@ -54,12 +65,16 @@ module Guard
     end
 
     def self.spec_path?(path)
-      path ||= ""
+      pattern = ::RSpec.configuration.pattern
+
       flags = File::FNM_PATHNAME | File::FNM_DOTMATCH
       if File.const_defined?(:FNM_EXTGLOB) # ruby >= 2
         flags |= File::FNM_EXTGLOB
+      elsif pattern =~ /[{}]/
+        fail Error::UnsupportedPattern
       end
-      pattern = ::RSpec.configuration.pattern
+
+      path ||= ""
       path = path.sub(/:\d+\z/, "")
       path = Pathname.new(path).cleanpath.to_s
       File.fnmatch(pattern, path, flags)

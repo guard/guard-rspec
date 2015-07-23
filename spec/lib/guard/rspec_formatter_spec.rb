@@ -100,6 +100,8 @@ RSpec.describe Guard::RSpecFormatter do
             with(file, "w") do |_, _, &block|
             block.call writer
           end
+
+          allow(STDERR).to receive(:puts).with(/no environment/)
         end
 
         it "warns" do
@@ -226,6 +228,30 @@ RSpec.describe Guard::RSpecFormatter do
         expect(result).to match(
           /^3 examples, 0 failures \(1 pending\) in 123\.0 seconds\n$/
         )
+      end
+    end
+
+    context "when RSpec 3.0 uses ext globs" do
+      before do
+        allow(::RSpec.configuration).to receive(:pattern).
+          and_return("**{,/*/**}/*_spec.rb")
+      end
+
+      context "when Ruby does not support ext glob matcher" do
+        before do
+          allow(File).to receive(:const_defined?).with(:FNM_EXTGLOB) { false }
+        end
+
+        let(:metadata) { { location: "./spec/foo_spec.rb:75" } }
+
+        it "fails" do
+          expect do
+            described_class.extract_spec_location(metadata)
+          end.to raise_error(
+            described_class::Error::UnsupportedPattern,
+            "Your RSpec.configuration.pattern uses characters unsupported "\
+            "by your Ruby version (File::FNM_EXTGLOB is undefined)")
+        end
       end
     end
   end
