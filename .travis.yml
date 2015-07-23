@@ -12,3 +12,4 @@ matrix:
   allow_failures:
     - rvm: rbx
     - rvm: jruby-head
+sudo: false
