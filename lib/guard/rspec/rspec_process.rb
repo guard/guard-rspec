@@ -36,7 +36,7 @@ module Guard
       def _really_run
         env = { "GUARD_RSPEC_RESULTS_FILE" => formatter_tmp_file }
         pid = Kernel.spawn(env, command) # use spawn to stub in JRuby
-        result = Process.wait2(pid)
+        result = ::Process.wait2(pid)
         result.last.exitstatus
       rescue Errno::ENOENT => ex
         fail Failure, "Failed: #{command.inspect} (#{ex})"
