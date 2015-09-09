@@ -71,8 +71,8 @@ module Guard
         return unless options.key?(:focus_on_failed)
         _deprecated(
           "The :focus_on_failed option is deprecated." +
-          " Focus mode is the default and can be changed using new" +
-          " :failed_mode option." +
+          " Please set new :failed_mode option value to" +
+          " :focus instead." +
           " https://github.com/guard/guard-rspec#list-of-available-options")
       end
 

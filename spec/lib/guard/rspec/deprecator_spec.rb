@@ -84,8 +84,8 @@ RSpec.describe Guard::RSpec::Deprecator do
         expect(Guard::Compat::UI).to receive(:warning).with(
           "Guard::RSpec DEPRECATION WARNING:" +
           " The :focus_on_failed option is deprecated." +
-          " Focus mode is the default and can be changed using new" +
-          " :failed_mode option." +
+          " Please set new :failed_mode option value to" +
+          " :focus instead." +
           " https://github.com/guard/guard-rspec#list-of-available-options")
         deprecator.warns_about_deprecated_options
       end
