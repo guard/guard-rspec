@@ -37,7 +37,7 @@ module Guard
 
       def ruby
         # Ruby apps
-        @ruby || OpenStruct.new.tap do |ruby|
+        @ruby ||= OpenStruct.new.tap do |ruby|
           ruby.lib_files = %r{^(lib/.+)\.rb$}
         end
       end
