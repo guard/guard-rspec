@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.description = "Guard::RSpec automatically run your specs" +
     " (much like autotest)."
 
-  s.homepage    = "https://rubygems.org/gems/guard-rspec"
+  s.homepage    = "https://github.com/guard/guard-rspec"
   s.license     = "MIT"
 
   s.files        = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
