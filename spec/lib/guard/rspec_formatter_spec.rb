@@ -50,7 +50,8 @@ RSpec.describe Guard::RSpecFormatter do
 
       around do |example|
         env_var = "GUARD_RSPEC_RESULTS_FILE"
-        old, ENV[env_var] = ENV[env_var], "foobar.txt"
+        old = ENV[env_var]
+        ENV[env_var] = "foobar.txt"
         example.run
         ENV[env_var] = old
       end

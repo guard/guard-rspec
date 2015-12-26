@@ -6,7 +6,7 @@ RSpec.describe Guard::RSpec::Notifier do
   let(:options) { { notification: true, title: "RSpec results" } }
   let(:notifier) { Guard::RSpec::Notifier.new(options) }
 
-  def expect_notification(title = "RSpec results", message, image, priority)
+  def expect_notification(message, image, priority, title = "RSpec results")
     expect(Guard::Compat::UI).to receive(:notify).
       with(message,  title: title, image: image, priority: priority)
   end
@@ -21,7 +21,7 @@ RSpec.describe Guard::RSpec::Notifier do
       let(:options) { { notification: true, title: "Failure title" } }
 
       it "notifies with the title" do
-        expect_notification("Failure title", "Failed", :failed, 2)
+        expect_notification("Failed", :failed, 2, "Failure title")
         notifier.notify_failure
       end
     end
@@ -64,7 +64,7 @@ RSpec.describe Guard::RSpec::Notifier do
       let(:options) { { notification: true, title: "Custom title" } }
 
       it "notifies with the title" do
-        expect_notification("Custom title", "This is summary", :success, -2)
+        expect_notification("This is summary", :success, -2, "Custom title")
         notifier.notify("This is summary")
       end
     end
