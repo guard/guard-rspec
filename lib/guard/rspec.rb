@@ -25,7 +25,7 @@ module Guard
     end
 
     def start
-      Guard::Compat::UI.info "Guard::RSpec is running"
+      Compat::UI.info "Guard::RSpec is running"
       run_all if options[:all_on_start]
     end
 

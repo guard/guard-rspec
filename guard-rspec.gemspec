@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email       = "thibaud@thibaud.gg"
   s.summary     = "Guard gem for RSpec"
   s.description = "Guard::RSpec automatically run your specs" +
-    " (much like autotest)."
+                  " (much like autotest)."
 
   s.homepage    = "https://github.com/guard/guard-rspec"
   s.license     = "MIT"
