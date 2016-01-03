@@ -1,4 +1,4 @@
-Copyright (c) 2010-2014 Thibaud Guillaume-Gentil
+Copyright (c) 2010-2016 Thibaud Guillaume-Gentil
 
 MIT License
 
