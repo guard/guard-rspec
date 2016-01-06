@@ -7,7 +7,7 @@ require "fileutils"
 require "rspec"
 require "rspec/core/formatters/base_formatter"
 
-require "guard/rspec_defaults"
+require_relative "rspec_defaults"
 
 module Guard
   class RSpecFormatter < ::RSpec::Core::Formatters::BaseFormatter
