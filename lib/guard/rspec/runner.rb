@@ -5,6 +5,7 @@ require "guard/rspec/command"
 require "guard/rspec/notifier"
 require "guard/rspec/results"
 require "guard/rspec/rspec_process"
+require "digest/md5"
 
 module Guard
   class RSpec < Plugin
@@ -24,6 +25,7 @@ module Guard
         @options = options
         @inspector = Inspectors::Factory.create(@options)
         @notifier = Notifier.new(@options)
+        @last_run_md5 = ''
       end
 
       def run_all
@@ -36,7 +38,7 @@ module Guard
 
       def run(paths)
         paths = inspector.paths(paths)
-        return true if paths.empty?
+        return true if paths.empty? || uniqueness_flag?(paths)
         Compat::UI.info("Running: #{paths.join(' ')}", reset: true)
         _run(paths, options) do |all_green|
           next false unless all_green
@@ -50,6 +52,25 @@ module Guard
       end
 
       private
+
+      def uniqueness_flag?(paths)
+        if @options[:uniq]
+          current_specs_md5 = get_last_specs_md5 paths
+          return true if current_specs_md5 == @last_run_md5
+          @last_run_md5 = current_specs_md5
+        end
+        false
+      end
+
+      def get_last_specs_md5(paths)
+        buffer = []
+        paths.each do |f|
+          next if File.directory? f
+          buffer << f
+          buffer << File.readlines(f)
+        end
+        Digest::MD5.digest buffer.join("\n")
+      end
 
       def _run(paths, options, &block)
         fail NoCmdOptionError unless options[:cmd]
