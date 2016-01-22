@@ -95,6 +95,7 @@ notification: false    # Display notification after the specs are done running, 
 run_all: { cmd: 'custom rspec command', message: 'custom message' } # Custom options to use when running all specs
 title: 'My project'    # Display a custom title for the notification, default: 'RSpec results'
 chdir: 'directory'     # run rspec from within a given subdirectory (useful if project has separate specs for submodules)
+uniq: true             # run specs only if they are different with previous saved version
 results_file: 'some/path' # use the given file for storing results (instead of default relative path)
 ```
 
