@@ -11,6 +11,7 @@ module Guard
         cmd_additional_args: nil,
         launchy:         nil,
         notification:    true,
+        uniq:            false,
         title:           "RSpec results"
       }
 
