@@ -65,7 +65,7 @@ module Guard
       def get_last_specs_md5(paths)
         buffer = []
         paths.each do |f|
-          next if File.directory? f
+          next if File.directory?(f) || !File.exist?(f)
           buffer << f
           buffer << File.readlines(f)
         end
