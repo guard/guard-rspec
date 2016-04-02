@@ -255,5 +255,22 @@ RSpec.describe Guard::RSpecFormatter do
         end
       end
     end
+
+    context "when RSpec 3.0 is configured to use multiple patterns" do
+      before do
+        allow(::RSpec.configuration).to receive(:pattern).
+          and_return("**{,/*/**}/*_spec.rb,**/*.feature")
+      end
+
+      it "matches a spec file with the first pattern" do
+        expect(described_class.spec_path?("./spec/foo_spec.rb")).
+          to be_truthy
+      end
+
+      it "matches a spec file with the second pattern" do
+        expect(described_class.spec_path?("./spec/acceptance/bar.feature")).
+          to be_truthy
+      end
+    end
   end
 end

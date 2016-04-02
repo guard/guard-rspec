@@ -77,7 +77,8 @@ module Guard
       path ||= ""
       path = path.sub(/:\d+\z/, "")
       path = Pathname.new(path).cleanpath.to_s
-      File.fnmatch(pattern, path, flags)
+      stripped = "{#{pattern.gsub(/\s*,\s*/, ',')}}"
+      File.fnmatch(stripped, path, flags)
     end
 
     def dump_summary(*args)
