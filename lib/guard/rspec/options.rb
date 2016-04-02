@@ -12,7 +12,7 @@ module Guard
         launchy:         nil,
         notification:    true,
         title:           "RSpec results"
-      }
+      }.freeze
 
       class << self
         def with_defaults(options = {})

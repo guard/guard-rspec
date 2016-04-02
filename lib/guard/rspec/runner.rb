@@ -16,7 +16,7 @@ module Guard
       end
 
       # NOTE: must match with const in RSpecFormatter!
-      TEMPORARY_FILE_PATH ||= "tmp/rspec_guard_result"
+      TEMPORARY_FILE_PATH ||= "tmp/rspec_guard_result".freeze
 
       attr_accessor :options, :inspector, :notifier
 

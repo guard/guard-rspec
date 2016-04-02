@@ -16,7 +16,7 @@ RSpec.describe Guard::RSpec::Results do
       [
         "5 examples, 2 failures (3 pending)\n",
         "foo1/bar1_spec.rb\n",
-        "foo1/bar2_spec.rb\n",
+        "foo1/bar2_spec.rb\n"
       ]
     end
 

@@ -12,13 +12,17 @@ require_relative "rspec_defaults"
 module Guard
   class RSpecFormatter < ::RSpec::Core::Formatters::BaseFormatter
     WIKI_ENV_WARN_URL =
-      "https://github.com/guard/guard-rspec/wiki/Warning:-no-environment"
+      "https://github.com/guard/guard-rspec/wiki/Warning:-no-environment".freeze
 
-    NO_ENV_WARNING_MSG = "no environment passed - see #{WIKI_ENV_WARN_URL}"
-    NO_RESULTS_VALUE_MSG = ":results_file value unknown (using defaults)"
+    NO_ENV_WARNING_MSG =
+      "no environment passed - see #{WIKI_ENV_WARN_URL}".freeze
 
-    UNSUPPORTED_PATTERN = "Your RSpec.configuration.pattern uses characters "\
-      "unsupported by your Ruby version (File::FNM_EXTGLOB is undefined)"
+    NO_RESULTS_VALUE_MSG =
+      ":results_file value unknown (using defaults)".freeze
+
+    UNSUPPORTED_PATTERN =
+      "Your RSpec.configuration.pattern uses characters "\
+      "unsupported by your Ruby version (File::FNM_EXTGLOB is undefined)".freeze
 
     class Error < RuntimeError
       class UnsupportedPattern < Error
@@ -44,41 +48,54 @@ module Guard
       end
     end
 
-    # rspec issue https://github.com/rspec/rspec-core/issues/793
-    def self.extract_spec_location(metadata)
-      root_metadata = metadata
-      location = metadata[:location]
+    class << self
+      # rspec issue https://github.com/rspec/rspec-core/issues/793
+      def extract_spec_location(metadata)
+        root_metadata = metadata
+        location = metadata[:location]
 
-      until spec_path?(location)
-        metadata = metadata[:parent_example_group] || metadata[:example_group]
+        until spec_path?(location)
+          metadata = metadata[:parent_example_group] || metadata[:example_group]
 
-        unless metadata
-          STDERR.puts "no spec file location in #{root_metadata.inspect}"
-          return root_metadata[:location]
+          unless metadata
+            STDERR.puts "no spec file location in #{root_metadata.inspect}"
+            return root_metadata[:location]
+          end
+
+          # rspec issue https://github.com/rspec/rspec-core/issues/1243
+          location = first_colon_separated_entry(metadata[:location])
         end
 
-        # rspec issue https://github.com/rspec/rspec-core/issues/1243
-        location = (metadata[:location] || "").split(":").first
+        location
       end
 
-      location
-    end
+      def spec_path?(path)
+        pattern = ::RSpec.configuration.pattern
 
-    def self.spec_path?(path)
-      pattern = ::RSpec.configuration.pattern
-
-      flags = File::FNM_PATHNAME | File::FNM_DOTMATCH
-      if File.const_defined?(:FNM_EXTGLOB) # ruby >= 2
-        flags |= File::FNM_EXTGLOB
-      elsif pattern =~ /[{}]/
-        fail Error::UnsupportedPattern
+        flags = supported_fnmatch_flags(pattern)
+        path ||= ""
+        path = path.sub(/:\d+\z/, "")
+        path = Pathname.new(path).cleanpath.to_s
+        stripped = "{#{pattern.gsub(/\s*,\s*/, ',')}}"
+        File.fnmatch(stripped, path, flags)
       end
 
-      path ||= ""
-      path = path.sub(/:\d+\z/, "")
-      path = Pathname.new(path).cleanpath.to_s
-      stripped = "{#{pattern.gsub(/\s*,\s*/, ',')}}"
-      File.fnmatch(stripped, path, flags)
+      private
+
+      def first_colon_separated_entry(entries)
+        (entries || "").split(":").first
+      end
+
+      def supported_fnmatch_flags(pattern)
+        flags = File::FNM_PATHNAME | File::FNM_DOTMATCH
+
+        # ruby >= 2
+        return flags |= File::FNM_EXTGLOB if File.const_defined?(:FNM_EXTGLOB)
+
+        fail Error::UnsupportedPattern if pattern =~ /[{}]/
+
+        flags
+      end
     end
 
     def dump_summary(*args)
@@ -135,8 +152,8 @@ module Guard
     def _results_file
       path = ENV["GUARD_RSPEC_RESULTS_FILE"]
       if path.nil?
-        STDERR.puts "Guard::RSpec: Warning: #{NO_ENV_WARNING_MSG}\n" \
-          "Guard::RSpec: Warning: #{NO_RESULTS_VALUE_MSG}"
+        STDERR.puts("Guard::RSpec: Warning: #{NO_ENV_WARNING_MSG}\n" \
+                    "Guard::RSpec: Warning: #{NO_RESULTS_VALUE_MSG}")
         path = RSpecDefaults::TEMPORARY_FILE_PATH
       end
 

@@ -272,10 +272,12 @@ RSpec.describe Guard::RSpec::Runner do
 
     context "with failed paths" do
       before do
-        allow(results).to receive(:failed_paths).and_return([
-          "./failed_spec.rb:123",
-          "./other/failed_spec.rb:77"
-        ])
+        allow(results).to receive(:failed_paths).and_return(
+          [
+            "./failed_spec.rb:123",
+            "./other/failed_spec.rb:77"
+          ]
+        )
       end
 
       it "notifies inspector about failed paths" do
