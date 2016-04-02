@@ -56,8 +56,6 @@ module Guard
         end
       end
 
-      private
-
       attr_reader :command
       attr_reader :exit_code
       attr_reader :formatter_tmp_file

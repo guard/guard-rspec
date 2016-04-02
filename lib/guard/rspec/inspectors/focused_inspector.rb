@@ -25,8 +25,8 @@ module Guard
         def failed(locations)
           if locations.empty?
             @focused_locations = []
-          else
-            @focused_locations = locations if focused_locations.empty?
+          elsif focused_locations.empty?
+            @focused_locations = locations
           end
         end
 

@@ -58,11 +58,13 @@ RSpec.describe klass do
 
     # Line numbers in failed_locations needs to be omitted because of
     # https://github.com/rspec/rspec-core/issues/952
-    expect(inspector.paths(other_paths)).to match_array([
-      "spec/lib/guard/rspec/deprecator_spec.rb",
-      "spec/lib/guard/rspec/runner_spec.rb",
-      "spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb"
-    ])
+    expect(inspector.paths(other_paths)).to match_array(
+      [
+        "spec/lib/guard/rspec/deprecator_spec.rb",
+        "spec/lib/guard/rspec/runner_spec.rb",
+        "spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb"
+      ]
+    )
     inspector.failed(other_failed_locations)
 
     # Now it returns other failed locations
@@ -70,18 +72,24 @@ RSpec.describe klass do
       inspector.paths(
         %w(spec/lib/guard/rspec/inspectors/base_inspector_spec.rb)
       )
-    ).to match_array([
-      "spec/lib/guard/rspec/runner_spec.rb",
-      "spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb",
-      "spec/lib/guard/rspec/inspectors/base_inspector_spec.rb"
-    ])
+    ).to match_array(
+      [
+        "spec/lib/guard/rspec/runner_spec.rb",
+        "spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb",
+        "spec/lib/guard/rspec/inspectors/base_inspector_spec.rb"
+      ]
+    )
     inspector.failed(other_failed_locations)
 
-    expect(inspector.paths(%w(spec/lib/guard/rspec/runner_spec.rb))).
-      to match_array([
+    expect(
+      inspector.paths(%w(spec/lib/guard/rspec/runner_spec.rb))
+    ).to match_array(
+      [
         "spec/lib/guard/rspec/runner_spec.rb",
         "spec/lib/guard/rspec/inspectors/simple_inspector_spec.rb"
-      ])
+      ]
+    )
+
     inspector.failed([])
 
     # Now there is no failed locations
