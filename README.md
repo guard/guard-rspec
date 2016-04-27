@@ -66,6 +66,8 @@ guard :rspec, cmd: 'spring rspec -f doc' do
 end
 ```
 
+NOTE: the above example assumes you have the `spring rspec` command installed - see here: https://github.com/jonleighton/spring-commands-rspec
+
 ### Running with bundler
 
 Running `bundle exec guard` will not run the specs with bundler. You need to change the `cmd` option to `bundle exec rspec`:
