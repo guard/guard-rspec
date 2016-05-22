@@ -15,9 +15,6 @@ module Guard
         end
       end
 
-      # NOTE: must match with const in RSpecFormatter!
-      TEMPORARY_FILE_PATH ||= "tmp/rspec_guard_result".freeze
-
       attr_accessor :options, :inspector, :notifier
 
       def initialize(options = {})
@@ -85,9 +82,18 @@ module Guard
       end
 
       def _results_file(results_file, chdir)
-        results_file ||= RSpecDefaults::TEMPORARY_FILE_PATH
+        results_file ||= File.expand_path(RSpecDefaults::TEMPORARY_FILE_PATH)
         return results_file unless Pathname(results_file).relative?
-        chdir ? File.join(chdir, results_file) : results_file
+        results_file = File.join(chdir, results_file) if chdir
+        return results_file unless Pathname(results_file).relative?
+
+        unless Pathname(results_file).absolute?
+          msg = "Guard::RSpec: The results file %s is not an absolute path."\
+            " Please provide an absolute path to avoid issues."
+          Compat::UI.warning(format(msg, results_file.inspect))
+        end
+
+        File.expand_path(results_file)
       end
     end
   end
