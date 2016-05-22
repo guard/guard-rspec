@@ -13,16 +13,16 @@ group :specs, halt_on_fail: true do
     dsl.watch_spec_files_for(dsl.ruby.lib_files)
 
     watch(%r{^(lib/guard/rspec/template)s/Guardfile$}) do
-      rspec.spec.("lib/guard/rspec/template")
+      rspec.spec.call("lib/guard/rspec/template")
     end
 
     watch(%r{^lib/guard/rspec/dsl.rb$}) do
-      rspec.spec.("lib/guard/rspec/template")
+      rspec.spec.call("lib/guard/rspec/template")
     end
   end
 
   guard :rubocop, all_on_start: false do
-    watch(%r{.+\.rb$})
+    watch(/.+\.rb$/)
     watch(%r{(?:.+/)?\.rubocop\.yml$}) { |m| File.dirname(m[0]) }
   end
 end

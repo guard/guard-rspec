@@ -11,7 +11,7 @@ module Guard
         lines = File.readlines(filename)
         if lines.empty? || lines.first.empty?
           dump = lines.inspect
-          fail InvalidData, "Invalid results in: #{filename},"\
+          raise InvalidData, "Invalid results in: #{filename},"\
             " lines:\n#{dump}\n"
         end
 

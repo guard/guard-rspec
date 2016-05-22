@@ -11,15 +11,15 @@ module Guard
         end
 
         def paths(_paths)
-          fail NotImplementedError
+          raise NotImplementedError
         end
 
         def failed(_locations)
-          fail NotImplementedError
+          raise NotImplementedError
         end
 
         def reload
-          fail NotImplementedError
+          raise NotImplementedError
         end
 
         private

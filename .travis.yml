@@ -1,13 +1,14 @@
 language: ruby
 bundler_args: --without tool
 rvm:
-  - 2.2.2
-  - jruby-head
+  - 2.2.5
+  - 2.3.1
+  - jruby-9.0.5.0
 gemfile:
-  - gemfiles/Gemfile.rspec-2.14
   - gemfiles/Gemfile.rspec-2.99
-  - gemfiles/Gemfile.rspec-3.3
+  - gemfiles/Gemfile.rspec-3.4
 matrix:
   allow_failures:
-    - rvm: jruby-head
+    - rvm: jruby-9.0.50
 sudo: false
+cache: bundler

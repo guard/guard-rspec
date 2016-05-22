@@ -10,11 +10,11 @@ RSpec.describe Guard::RSpec::Command do
 
   describe ".initialize" do
     it "sets paths at the end" do
-      expect(command).to match /path1 path2$/
+      expect(command).to match(/path1 path2$/)
     end
 
     it "sets custom failure exit code" do
-      expect(command).to match /--failure-exit-code 2/
+      expect(command).to match(/--failure-exit-code 2/)
     end
 
     it "sets formatter" do
@@ -26,7 +26,7 @@ RSpec.describe Guard::RSpec::Command do
       let(:options) { { cmd: "rspec -t ~slow" } }
 
       it "uses custom cmd" do
-        expect(command).to match /^rspec -t ~slow/
+        expect(command).to match(/^rspec -t ~slow/)
       end
     end
 
@@ -41,7 +41,7 @@ RSpec.describe Guard::RSpec::Command do
       end
 
       it "uses them" do
-        expect(command).to match %r{-f doc -o output}
+        expect(command).to match(/-f doc -o output/)
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe Guard::RSpec::Command do
       end
 
       it "sets default progress formatter" do
-        expect(command).to match %r{-f progress}
+        expect(command).to match(/-f progress/)
       end
     end
 
@@ -62,7 +62,7 @@ RSpec.describe Guard::RSpec::Command do
       let(:options) { { cmd: "rspec -f doc" } }
 
       it "sets no other formatters" do
-        expect(command).to match %r{-f doc}
+        expect(command).to match(/-f doc/)
       end
     end
 
@@ -70,14 +70,14 @@ RSpec.describe Guard::RSpec::Command do
       let(:options) { { cmd: "rspec", cmd_additional_args: "-f progress" } }
 
       it "uses them" do
-        expect(command).to match %r{-f progress}
+        expect(command).to match(/-f progress/)
       end
     end
 
     context ":chdir option present" do
       let(:chdir) { "moduleA" }
       let(:paths) do
-        %w[path1 path2].map { |p| "#{chdir}#{File::Separator}#{p}" }
+        %w(path1 path2).map { |p| "#{chdir}#{File::Separator}#{p}" }
       end
 
       let(:options) do
@@ -88,7 +88,7 @@ RSpec.describe Guard::RSpec::Command do
       end
 
       it "strips path of chdir" do
-        expect(command).to match %r{path1 path2}
+        expect(command).to match(/path1 path2/)
       end
     end
   end

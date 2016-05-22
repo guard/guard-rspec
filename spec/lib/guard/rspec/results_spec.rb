@@ -44,7 +44,8 @@ RSpec.describe Guard::RSpec::Results do
         subject.load
       end.to raise_error(
         Guard::RSpec::Results::InvalidData,
-        "Invalid results in: foo/bar.txt, lines:\n[]\n")
+        "Invalid results in: foo/bar.txt, lines:\n[]\n"
+      )
     end
   end
 
@@ -58,7 +59,8 @@ RSpec.describe Guard::RSpec::Results do
         subject.load
       end.to raise_error(
         Guard::RSpec::Results::InvalidData,
-        "Invalid results in: foo/bar.txt, lines:\n[\"\"]\n")
+        "Invalid results in: foo/bar.txt, lines:\n[\"\"]\n"
+      )
     end
   end
 end

@@ -12,7 +12,7 @@ group :test do
 end
 
 group :development do
-  gem "rspec", "~> 3.1"
+  gem "rspec", "~> 3.4"
   gem "rubocop", require: false
   gem "guard-rubocop", require: false
   gem "guard-compat", ">= 0.0.2", require: false

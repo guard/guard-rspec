@@ -27,7 +27,8 @@ module Guard
         _without_bundler_env do
           exit_code = _really_run
           unless [0, Command::FAILURE_EXIT_CODE].include?(exit_code)
-            fail Failure, "Failed: #{command.inspect} (exit code: #{exit_code})"
+            msg = "Failed: %s (exit code: %d)"
+            raise Failure, format(msg, command.inspect, exit_code)
           end
           exit_code
         end
@@ -39,7 +40,7 @@ module Guard
         result = ::Process.wait2(pid)
         result.last.exitstatus
       rescue Errno::ENOENT => ex
-        fail Failure, "Failed: #{command.inspect} (#{ex})"
+        raise Failure, "Failed: #{command.inspect} (#{ex})"
       end
 
       def _read_results

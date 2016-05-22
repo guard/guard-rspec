@@ -10,7 +10,7 @@ module Guard
       end
 
       def watch_spec_files_for(expr)
-        @dsl.send(:watch, expr) { |m| rspec.spec.(m[1]) }
+        @dsl.send(:watch, expr) { |m| rspec.spec.call(m[1]) }
       end
 
       def self.detect_spec_file_for(rspec, file)
@@ -21,7 +21,7 @@ module Guard
         return path unless file.start_with?("lib/")
         return path if Dir.exist?("#{rspec.spec_dir}/lib")
 
-        without_lib = file.sub(/^lib\//, "")
+        without_lib = file.sub(%r{^lib/}, "")
         "#{rspec.spec_dir}/#{without_lib}_spec.rb"
       end
 
@@ -44,9 +44,17 @@ module Guard
 
       def rails(options = {})
         # Rails example
-        @rails ||= OpenStruct.new.tap do |rails|
-          exts = _view_extensions(options) * "|"
+        @rails ||= _build_rails_rules(_view_extensions(options) * "|")
+      end
 
+      private
+
+      def _view_extensions(options)
+        options.dup.delete(:view_extensions) || %w(erb haml slim)
+      end
+
+      def _build_rails_rules(exts)
+        OpenStruct.new.tap do |rails|
           rails.app_files = %r{^app/(.+)\.rb$}
 
           rails.views = %r{^app/(views/.+/[^/]*\.(?:#{exts}))$}
@@ -58,12 +66,6 @@ module Guard
           rails.app_controller = "app/controllers/application_controller.rb"
           rails.spec_helper = "#{rspec.spec_dir}/rails_helper.rb"
         end
-      end
-
-      private
-
-      def _view_extensions(options)
-        options.dup.delete(:view_extensions) || %w(erb haml slim)
       end
     end
   end
