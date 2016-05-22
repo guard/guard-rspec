@@ -14,6 +14,7 @@ RSpec.describe Guard::RSpec::Runner do
 
   before do
     allow(Guard::Compat::UI).to receive(:info)
+    allow(Guard::Compat::UI).to receive(:warning)
     allow(Guard::Compat::UI).to receive(:error)
     allow(Guard::RSpec::Inspectors::Factory).to receive(:create) { inspector }
     allow(Guard::RSpec::Notifier).to receive(:new) { notifier }
@@ -214,7 +215,7 @@ RSpec.describe Guard::RSpec::Runner do
         let(:chdir_options) { {} }
 
         context "when the path is relative" do
-          let(:results_file) { "foobar.txt" }
+          let(:results_file) { File.join(Dir.pwd, "foobar.txt") }
           it "uses the given file" do
             expect(Guard::RSpec::RSpecProcess).to receive(:new).
               with(anything, results_file).and_return(process)
@@ -233,24 +234,60 @@ RSpec.describe Guard::RSpec::Runner do
       end
 
       context "with chdir option" do
-        let(:chdir_options) { { chdir: "moduleA" } }
+        context "when chdir option is absolute" do
+          let(:chdir_options) { { chdir: "/foo/bar/moduleA" } }
 
-        context "when the path is relative" do
-          let(:results_file) { "foobar.txt" }
+          context "when the path is relative" do
+            let(:results_file) { "foobar.txt" }
 
-          it "uses a path relative to chdir" do
-            expect(Guard::RSpec::RSpecProcess).to receive(:new).
-              with(anything, "moduleA/foobar.txt").and_return(process)
-            runner.run(paths)
+            it "uses a path relative to chdir" do
+              expected = "/foo/bar/moduleA/foobar.txt"
+              expect(Guard::RSpec::RSpecProcess).to receive(:new).
+                with(anything, expected).and_return(process)
+              runner.run(paths)
+            end
+          end
+
+          context "when the path is absolute" do
+            let(:results_file) { "/foo/foobar.txt" }
+            it "uses the full given path anyway" do
+              expect(Guard::RSpec::RSpecProcess).to receive(:new).
+                with(anything, results_file).and_return(process)
+              runner.run(paths)
+            end
           end
         end
 
-        context "when the path is absolute" do
-          let(:results_file) { "/foo/foobar.txt" }
-          it "uses the full given path anyway" do
-            expect(Guard::RSpec::RSpecProcess).to receive(:new).
-              with(anything, results_file).and_return(process)
-            runner.run(paths)
+        context "when chdir option is relative" do
+          let(:chdir_options) { { chdir: "moduleA" } }
+          before do
+            allow(Guard::Compat::UI).to receive(:warning)
+          end
+
+          context "when the path is relative" do
+            let(:results_file) { "foobar.txt" }
+
+            it "uses a path relative to chdir" do
+              expected = File.join(Dir.pwd, "moduleA/foobar.txt")
+              expect(Guard::RSpec::RSpecProcess).to receive(:new).
+                with(anything, expected).and_return(process)
+              runner.run(paths)
+            end
+
+            it "shows a warning" do
+              expect(Guard::Compat::UI).to receive(:warning).
+                with(/is not an absolute path/)
+              runner.run(paths)
+            end
+          end
+
+          context "when the path is absolute" do
+            let(:results_file) { "/foo/foobar.txt" }
+            it "uses the full given path anyway" do
+              expect(Guard::RSpec::RSpecProcess).to receive(:new).
+                with(anything, results_file).and_return(process)
+              runner.run(paths)
+            end
           end
         end
       end
@@ -260,7 +297,7 @@ RSpec.describe Guard::RSpec::Runner do
       let(:options) { { cmd: "rspec" } }
       it "uses the default" do
         expect(Guard::RSpec::RSpecProcess).to receive(:new).
-          with(anything, "tmp/rspec_guard_result").and_return(process)
+          with(anything, %r{/tmp/rspec_guard_result$}).and_return(process)
         runner.run(paths)
       end
     end

@@ -12,7 +12,7 @@ RSpec.describe Guard::RSpec::RSpecProcess do
   let(:results) { instance_double(Guard::RSpec::Results) }
 
   let(:cmd) { "foo" }
-  let(:file) { "foobar.txt" }
+  let(:file) { "/tmp/foobar.txt" }
   let(:pid) { 1234 }
   let(:exit_code) { 0 }
   let(:status) { instance_double(Process::Status, exitstatus: exit_code) }
@@ -28,6 +28,8 @@ RSpec.describe Guard::RSpec::RSpecProcess do
 
     allow(Guard::RSpec::Results).to receive(:new).
       with(file).and_return(results)
+
+    allow(Guard::Compat::UI).to receive(:debug)
   end
 
   context "with an non-existing command" do
@@ -73,6 +75,47 @@ RSpec.describe Guard::RSpec::RSpecProcess do
       end
 
       it { is_expected.to be_all_green }
+
+      context "with a relative results file path" do
+        before do
+          allow(Guard::Compat::UI).to receive(:warning)
+        end
+        let(:file) { "foobar.txt" }
+
+        it "shows a warning" do
+          expect(Guard::Compat::UI).to receive(:warning).
+            with(/is not an absolute path/)
+          subject
+        end
+      end
+
+      context "with a missing results file" do
+        before do
+          allow(Guard::Compat::UI).to receive(:error)
+        end
+        before do
+          allow(Guard::RSpec::Results).to receive(:new).
+            with(file).and_raise(Errno::ENOENT, "foobar.txt")
+        end
+
+        it "shows a message" do
+          expect(Guard::Compat::UI).to receive(:error).
+            with(/cannot open results file/)
+
+          begin
+            subject
+          rescue Errno::ENOENT
+            nil
+          end
+        end
+
+        it "fails with an error" do
+          expect { subject }.to raise_error(
+            Errno::ENOENT,
+            /No such file or directory - foobar/
+          )
+        end
+      end
     end
   end
 end

@@ -26,6 +26,10 @@ module Guard
       def _run
         _without_bundler_env do
           exit_code = _really_run
+
+          msg = "Guard::RSpec: RSpec command %s exited with: %s"
+          Compat::UI.debug(format(msg, command, exit_code.inspect))
+
           unless [0, Command::FAILURE_EXIT_CODE].include?(exit_code)
             msg = "Failed: %s (exit code: %d)"
             raise Failure, format(msg, command.inspect, exit_code)
@@ -36,6 +40,11 @@ module Guard
 
       def _really_run
         env = { "GUARD_RSPEC_RESULTS_FILE" => formatter_tmp_file }
+
+        _warn_unless_absolute_path(formatter_tmp_file)
+
+        Compat::UI.debug("Guard::RSpec: results file: #{formatter_tmp_file}")
+
         pid = Kernel.spawn(env, command) # use spawn to stub in JRuby
         result = ::Process.wait2(pid)
         result.last.exitstatus
@@ -45,6 +54,13 @@ module Guard
 
       def _read_results
         Results.new(formatter_tmp_file)
+      rescue Errno::ENOENT
+        msg = "Guard::RSpec cannot open results file: %s. This is likely a bug"\
+          "so please report this at"\
+          " http://github.com/guard/guard-rspec/issues/new along with as much"\
+          "information as possible to reproduce this issue."
+        Compat::UI.error(format(msg, formatter_tmp_file.inspect))
+        raise
       ensure
         File.delete(formatter_tmp_file) if File.exist?(formatter_tmp_file)
       end
@@ -55,6 +71,14 @@ module Guard
         else
           yield
         end
+      end
+
+      def _warn_unless_absolute_path(formatter_tmp_file)
+        return if Pathname(formatter_tmp_file).absolute?
+
+        msg = "Guard::RSpec: The results file %s is not an absolute path."\
+          " Please provide an absolute path to avoid issues."
+        Compat::UI.warning(format(msg, formatter_tmp_file.inspect))
       end
 
       attr_reader :command
