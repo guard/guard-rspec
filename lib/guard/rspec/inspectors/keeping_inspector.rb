@@ -37,7 +37,7 @@ module Guard
 
         # Extract file path from location
         def _location_path(location)
-          location.match(/^(\.\/)?(.*?)(:\d+)?$/)[2]
+          location.match(%r{^(\./)?(.*?)(:\d+)?$})[2]
         end
       end
     end

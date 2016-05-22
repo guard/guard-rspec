@@ -52,7 +52,7 @@ module Guard
       private
 
       def _run(paths, options, &block)
-        fail NoCmdOptionError unless options[:cmd]
+        raise NoCmdOptionError unless options[:cmd]
         command = Command.new(paths, options)
         _really_run(command, options, &block)
       rescue RSpecProcess::Failure, NoCmdOptionError => ex
@@ -73,11 +73,8 @@ module Guard
         _open_launchy
 
         all_green = process.all_green?
-        if block_given?
-          yield all_green
-        else
-          all_green
-        end
+        return yield all_green if block_given?
+        all_green
       end
 
       def _open_launchy

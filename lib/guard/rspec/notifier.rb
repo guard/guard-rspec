@@ -48,8 +48,7 @@ module Guard
       def _priority(image)
         { failed:   2,
           pending: -1,
-          success: -2
-        }[image]
+          success: -2 }[image]
       end
     end
   end

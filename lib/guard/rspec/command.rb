@@ -29,7 +29,8 @@ module Guard
       end
 
       def _paths(options)
-        return paths unless chdir = options[:chdir]
+        chdir = options[:chdir]
+        return paths unless chdir
         paths.map { |path| path.sub(File.join(chdir, "/"), "") }
       end
 

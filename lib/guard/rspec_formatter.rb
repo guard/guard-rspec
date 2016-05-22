@@ -7,19 +7,10 @@ require "fileutils"
 require "rspec"
 require "rspec/core/formatters/base_formatter"
 
-require_relative "rspec_defaults"
+require_relative "rspec_formatter_results_path"
 
 module Guard
   class RSpecFormatter < ::RSpec::Core::Formatters::BaseFormatter
-    WIKI_ENV_WARN_URL =
-      "https://github.com/guard/guard-rspec/wiki/Warning:-no-environment".freeze
-
-    NO_ENV_WARNING_MSG =
-      "no environment passed - see #{WIKI_ENV_WARN_URL}".freeze
-
-    NO_RESULTS_VALUE_MSG =
-      ":results_file value unknown (using defaults)".freeze
-
     UNSUPPORTED_PATTERN =
       "Your RSpec.configuration.pattern uses characters "\
       "unsupported by your Ruby version (File::FNM_EXTGLOB is undefined)".freeze
@@ -55,9 +46,7 @@ module Guard
         location = metadata[:location]
 
         until spec_path?(location)
-          metadata = metadata[:parent_example_group] || metadata[:example_group]
-
-          unless metadata
+          unless (metadata = _extract_group(metadata))
             STDERR.puts "no spec file location in #{root_metadata.inspect}"
             return root_metadata[:location]
           end
@@ -92,9 +81,13 @@ module Guard
         # ruby >= 2
         return flags |= File::FNM_EXTGLOB if File.const_defined?(:FNM_EXTGLOB)
 
-        fail Error::UnsupportedPattern if pattern =~ /[{}]/
+        raise Error::UnsupportedPattern if pattern =~ /[{}]/
 
         flags
+      end
+
+      def _extract_group(metadata)
+        metadata[:parent_example_group] || metadata[:example_group]
       end
     end
 
@@ -121,7 +114,7 @@ module Guard
     end
 
     def _write(&block)
-      file = _results_file
+      file = RSpecFormatterResultsPath.new.path
       FileUtils.mkdir_p(File.dirname(file))
       File.open(file, "w", &block)
     end
@@ -134,9 +127,7 @@ module Guard
 
     def _message(example_count, failure_count, pending_count, duration)
       message = "#{example_count} examples, #{failure_count} failures"
-      if pending_count > 0
-        message << " (#{pending_count} pending)"
-      end
+      message << " (#{pending_count} pending)" if pending_count > 0
       message << " in #{duration.round(4)} seconds"
       message
     end
@@ -147,17 +138,6 @@ module Guard
       else
         example.execution_result[:status].to_s == "failed"
       end
-    end
-
-    def _results_file
-      path = ENV["GUARD_RSPEC_RESULTS_FILE"]
-      if path.nil?
-        STDERR.puts("Guard::RSpec: Warning: #{NO_ENV_WARNING_MSG}\n" \
-                    "Guard::RSpec: Warning: #{NO_RESULTS_VALUE_MSG}")
-        path = RSpecDefaults::TEMPORARY_FILE_PATH
-      end
-
-      File.expand_path(path)
     end
   end
 end

@@ -16,9 +16,13 @@ rspec_version = ::RSpec::Version::STRING.to_f
 old_rspec = (rspec_version < 3)
 
 if old_rspec
-  class RSpec::Core::ExampleGroup
-    def instance_double(*args)
-      double(*args)
+  module RSpec
+    module Core
+      class ExampleGroup
+        def instance_double(*args)
+          double(*args)
+        end
+      end
     end
   end
 end
@@ -47,9 +51,7 @@ RSpec.configure do |config|
     # Prevents you from mocking or stubbing a method that does not exist on
     # a real object. This is generally recommended, and will default to
     # `true` in RSpec 4.
-    unless old_rspec
-      mocks.verify_partial_doubles = true
-    end
+    mocks.verify_partial_doubles = true unless old_rspec
   end
 
   # These two settings work together to allow you to limit a spec run
@@ -66,9 +68,7 @@ RSpec.configure do |config|
   #   - http://teaisaweso.me/blog/2013/05/27/rspecs-new-message-expectation-syntax/
   #   - http://myronmars.to/n/dev-blog/2014/05/notable-changes-in-rspec-3#new__config_option_to_disable_rspeccore_monkey_patching
 
-  unless old_rspec
-    config.disable_monkey_patching!
-  end
+  config.disable_monkey_patching! unless old_rspec
 
   # This setting enables warnings. It's recommended, but in some cases may
   # be too noisy due to issues in dependencies.

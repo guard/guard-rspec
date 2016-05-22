@@ -1,2 +1,2 @@
 inherit_from:
-  .hound.yml
+  .rubocop_todo.yml
