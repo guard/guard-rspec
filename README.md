@@ -21,6 +21,28 @@ Add guard definition to your Guardfile by running this command:
 $ guard init rspec
 ```
 
+## Installing with beta versions of RSpec
+
+To install beta versions of RSpec, you need to set versions of all the dependencies, e.g:
+
+```ruby
+gem 'rspec', '= 3.5.0.beta3'
+gem 'rspec-core', '= 3.5.0.beta3'
+gem 'rspec-expectations', '= 3.5.0.beta3'
+gem 'rspec-mocks', '= 3.5.0.beta3'
+gem 'rspec-support', '= 3.5.0.beta3'
+
+gem 'guard-rspec, '~> 4.7`
+```
+
+and for Rails projects this also means adding:
+  
+```ruby
+gem 'rspec-rails', '= 3.5.0.beta3'
+```
+
+and then running `bundle update rspec rspec-core rspec-expectations rspec-mocks rspec-support rspec-rails` or just `bundle update` to update all the gems in your project.
+
 ## Usage
 
 Please read [Guard usage doc](https://github.com/guard/guard#readme).
