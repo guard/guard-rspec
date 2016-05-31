@@ -136,7 +136,7 @@ RSpec.configure do |config|
     end
 
     %w(spawn system).each do |meth|
-      allow(File).to receive(meth.to_sym) do |*args|
+      allow(Kernel).to receive(meth.to_sym) do |*args|
         abort "stub me: Kernel.#{meth}(#{args.map(&:inspect) * ','})!"
       end
     end

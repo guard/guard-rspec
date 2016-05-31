@@ -3,12 +3,6 @@ require "guard/compat/test/helper"
 require "guard/rspec/rspec_process"
 
 RSpec.describe Guard::RSpec::RSpecProcess do
-  before do
-    allow(Kernel).to receive(:spawn) do |*args|
-      raise "Not stubbed: Kernel.spawn(#{args.map(&:inspect) * ','})"
-    end
-  end
-
   let(:results) { instance_double(Guard::RSpec::Results) }
 
   let(:cmd) { "foo" }
