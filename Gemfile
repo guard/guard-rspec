@@ -1,4 +1,13 @@
-source "https://rubygems.org"
+# Note: on Travis, this Gemfile is only for installing
+# dependencies. The actual builds use the Gemfiles in
+# the gemspecs/* directory.
+
+filename = "gemfiles/common"
+instance_eval(IO.read(filename), filename, 1)
+
+group :test do
+  gem "rspec", "~> 3.4"
+end
 
 if ENV["USE_INSTALLED_GUARD_RSPEC"] == "1"
   gem "guard-rspec"
@@ -10,12 +19,6 @@ end
 group :gem_build_tools do
   gem "bundler", "~> 1.12", "< 2.0"
   gem "rake", "~> 11.1"
-end
-
-group :test do
-  gem "coveralls", require: false
-  gem "rspec", "~> 3.4"
-  gem "launchy", "~> 2.4"
 end
 
 group :development do
