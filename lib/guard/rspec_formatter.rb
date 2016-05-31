@@ -9,8 +9,6 @@ require "rspec/core/formatters/base_formatter"
 
 require_relative "rspec_formatter_results_path"
 
-require "guard/ui"
-
 module Guard
   class RSpecFormatter < ::RSpec::Core::Formatters::BaseFormatter
     UNSUPPORTED_PATTERN =
@@ -117,9 +115,9 @@ module Guard
 
     def _write(&block)
       file = RSpecFormatterResultsPath.new.path
-      if Guard.const_defined?(:Compat)
+      if ENV['GUARD_RSPEC_DEBUGGING'] == '1'
         msg = "Guard::RSpec: using results file: #{file.inspect}"
-        Guard::Compat::UI.debug(format(msg, file))
+        STDERR.puts format(msg, file)
       end
       FileUtils.mkdir_p(File.dirname(file))
       File.open(file, "w", &block)
