@@ -1,5 +1,5 @@
 language: ruby
-bundler_args: --without tool
+bundler_args: --without=tool development
 rvm:
   - 2.2.5
   - 2.3.1
