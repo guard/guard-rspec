@@ -1,5 +1,5 @@
 module Guard
   module RSpecVersion
-    VERSION = "4.7.0".freeze
+    VERSION = "4.7.1".freeze
   end
 end
