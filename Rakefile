@@ -21,7 +21,7 @@ namespace :test do
   task :all_versions do
     system(*%w(bundle install --quiet)) || abort
     system(*%w(bundle update --quiet)) || abort
-    system(*%w(bundle exec rubocop -c .hound.yml)) || abort
+    system(*%w(bundle exec rubocop -c .rubocop.yml)) || abort
 
     travis = YAML.load(IO.read(".travis.yml"))
     travis["gemfile"].each do |gemfile|
