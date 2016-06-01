@@ -111,5 +111,33 @@ RSpec.describe Guard::RSpec::RSpecProcess do
         end
       end
     end
+
+    context "with bundler_env option" do
+      it "runs without Bunder changes when :inherit" do
+        expect(Bundler).to_not receive(:with_clean_env)
+        expect(Bundler).to_not receive(:with_original_env)
+
+        described_class.new(cmd, file, bundler_env: :inherit)
+      end
+
+      it "runs on clean Bunder changes when :clean_env" do
+        expect(Bundler).to receive(:with_clean_env)
+
+        described_class.new(cmd, file, bundler_env: :clean_env)
+      end
+
+      it "runs on original Bunder changes when :original_env" do
+        expect(Bundler).to receive(:with_original_env)
+
+        described_class.new(cmd, file, bundler_env: :original_env)
+      end
+    end
+
+    context "without bundler_env option" do
+      it "runs on original Bunder" do
+        expect(Bundler).to receive(:with_original_env)
+        subject
+      end
+    end
   end
 end

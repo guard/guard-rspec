@@ -11,7 +11,8 @@ module Guard
         cmd_additional_args: nil,
         launchy:         nil,
         notification:    true,
-        title:           "RSpec results"
+        title:           "RSpec results",
+        bundler_env:     :original_env
       }.freeze
 
       class << self

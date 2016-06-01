@@ -120,6 +120,11 @@ run_all: { cmd: 'custom rspec command', message: 'custom message' } # Custom opt
 title: 'My project'    # Display a custom title for the notification, default: 'RSpec results'
 chdir: 'directory'     # run rspec from within a given subdirectory (useful if project has separate specs for submodules)
 results_file: 'some/path' # use the given file for storing results (instead of default relative path)
+bundler_env: :original_env # Specify which Bundler env to run the cmd under, default: :original_env
+                       # Available values:
+                       #  :clean_env - old behavior, uses Bundler environment with all bundler-related variables removed. This is deprecated in bundler 1.12.x.
+                       #  :original_env (default) - uses Bundler environment present before Bundler was activated
+                       #  :inherit - runs inside the current environment
 ```
 
 ### Using Launchy to view rspec results

@@ -6,12 +6,13 @@ module Guard
       class Failure < RuntimeError
       end
 
-      attr_reader :results
+      attr_reader :results, :options
 
-      def initialize(command, formatter_tmp_file)
+      def initialize(command, formatter_tmp_file, options = {})
         @command = command
         @formatter_tmp_file = formatter_tmp_file
         @results = nil
+        @options = options
 
         @exit_code = _run
         @results = _read_results
@@ -24,7 +25,7 @@ module Guard
       private
 
       def _run
-        _without_bundler_env do
+        _with_desired_bundler_env do
           exit_code = _really_run
 
           msg = "Guard::RSpec: RSpec command %s exited with: %s"
@@ -65,11 +66,14 @@ module Guard
         File.delete(formatter_tmp_file) if File.exist?(formatter_tmp_file)
       end
 
-      def _without_bundler_env
-        if defined?(::Bundler)
+      def _with_desired_bundler_env
+        desired_bundler_env = options[:bundler_env]
+        if !defined?(::Bundler) || desired_bundler_env == :inherit
+          yield
+        elsif desired_bundler_env == :clean_env
           ::Bundler.with_clean_env { yield }
         else
-          yield
+          ::Bundler.with_original_env { yield }
         end
       end
 
