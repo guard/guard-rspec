@@ -62,7 +62,7 @@ module Guard
         # TODO: add option to specify the file
         file = _results_file(options[:results_file], options[:chdir])
 
-        process = RSpecProcess.new(cmd, file)
+        process = RSpecProcess.new(cmd, file, options)
         results = process.results
 
         inspector.failed(results.failed_paths)

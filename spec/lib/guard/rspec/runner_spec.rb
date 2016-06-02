@@ -218,7 +218,7 @@ RSpec.describe Guard::RSpec::Runner do
           let(:results_file) { File.join(Dir.pwd, "foobar.txt") }
           it "uses the given file" do
             expect(Guard::RSpec::RSpecProcess).to receive(:new).
-              with(anything, results_file).and_return(process)
+              with(anything, results_file, options).and_return(process)
             runner.run(paths)
           end
         end
@@ -227,7 +227,7 @@ RSpec.describe Guard::RSpec::Runner do
           let(:results_file) { "/foo/foobar.txt" }
           it "uses the given path" do
             expect(Guard::RSpec::RSpecProcess).to receive(:new).
-              with(anything, results_file).and_return(process)
+              with(anything, results_file, options).and_return(process)
             runner.run(paths)
           end
         end
@@ -243,7 +243,7 @@ RSpec.describe Guard::RSpec::Runner do
             it "uses a path relative to chdir" do
               expected = "/foo/bar/moduleA/foobar.txt"
               expect(Guard::RSpec::RSpecProcess).to receive(:new).
-                with(anything, expected).and_return(process)
+                with(anything, expected, options).and_return(process)
               runner.run(paths)
             end
           end
@@ -252,7 +252,7 @@ RSpec.describe Guard::RSpec::Runner do
             let(:results_file) { "/foo/foobar.txt" }
             it "uses the full given path anyway" do
               expect(Guard::RSpec::RSpecProcess).to receive(:new).
-                with(anything, results_file).and_return(process)
+                with(anything, results_file, options).and_return(process)
               runner.run(paths)
             end
           end
@@ -270,7 +270,7 @@ RSpec.describe Guard::RSpec::Runner do
             it "uses a path relative to chdir" do
               expected = File.join(Dir.pwd, "moduleA/foobar.txt")
               expect(Guard::RSpec::RSpecProcess).to receive(:new).
-                with(anything, expected).and_return(process)
+                with(anything, expected, options).and_return(process)
               runner.run(paths)
             end
 
@@ -285,7 +285,7 @@ RSpec.describe Guard::RSpec::Runner do
             let(:results_file) { "/foo/foobar.txt" }
             it "uses the full given path anyway" do
               expect(Guard::RSpec::RSpecProcess).to receive(:new).
-                with(anything, results_file).and_return(process)
+                with(anything, results_file, options).and_return(process)
               runner.run(paths)
             end
           end
@@ -296,8 +296,9 @@ RSpec.describe Guard::RSpec::Runner do
     context "with no custom results file" do
       let(:options) { { cmd: "rspec" } }
       it "uses the default" do
+        expected_params = [anything, %r{/tmp/rspec_guard_result$}, options]
         expect(Guard::RSpec::RSpecProcess).to receive(:new).
-          with(anything, %r{/tmp/rspec_guard_result$}).and_return(process)
+          with(*expected_params).and_return(process)
         runner.run(paths)
       end
     end
