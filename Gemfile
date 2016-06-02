@@ -23,7 +23,3 @@ group :development do
   gem "guard-rubocop", require: false
   gem "guard-compat", ">= 0.0.2", require: false
 end
-
-group :tool do
-  gem "ruby_gntp", require: false
-end
