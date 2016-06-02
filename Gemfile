@@ -15,10 +15,7 @@ else
   gemspec development_group: :gem_build_tools
 end
 
-# bundler + rake - always included
 group :gem_build_tools do
-  gem "bundler", "~> 1.12", "< 2.0"
-  gem "rake", "~> 11.1"
 end
 
 group :development do
