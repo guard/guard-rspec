@@ -32,7 +32,7 @@ gem 'rspec-expectations', '= 3.5.0.beta3'
 gem 'rspec-mocks', '= 3.5.0.beta3'
 gem 'rspec-support', '= 3.5.0.beta3'
 
-gem 'guard-rspec', '~> 4.7`
+gem 'guard-rspec', '~> 4.7'
 ```
 
 and for Rails projects this also means adding:
