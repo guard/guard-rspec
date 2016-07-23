@@ -32,8 +32,8 @@ module Guard
           Compat::UI.debug(format(msg, command, exit_code.inspect))
 
           unless [0, Command::FAILURE_EXIT_CODE].include?(exit_code)
-            msg = "Failed: %s (exit code: %d)"
-            raise Failure, format(msg, command.inspect, exit_code)
+            msg = "Failed: %s (exit code: %s)"
+            raise Failure, format(msg, command.inspect, exit_code.inspect)
           end
           exit_code
         end

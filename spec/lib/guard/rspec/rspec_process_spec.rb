@@ -52,6 +52,15 @@ RSpec.describe Guard::RSpec::RSpecProcess do
       end
     end
 
+    context "without any exit code" do
+      let(:exit_code) { nil }
+
+      it "fails" do
+        expect { subject }.
+          to raise_error(Guard::RSpec::RSpecProcess::Failure, /Failed: /)
+      end
+    end
+
     context "with the failure code for normal test failures" do
       let(:exit_code) { Guard::RSpec::Command::FAILURE_EXIT_CODE }
 
