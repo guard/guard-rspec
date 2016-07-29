@@ -18,7 +18,7 @@ Add the gem to your Gemfile (inside development group):
 Add guard definition to your Guardfile by running this command:
 
 ```
-$ guard init rspec
+$ bundle exec guard init rspec
 ```
 
 ## Installing with beta versions of RSpec
@@ -36,7 +36,7 @@ gem 'guard-rspec', '~> 4.7'
 ```
 
 and for Rails projects this also means adding:
-  
+
 ```ruby
 gem 'rspec-rails', '= 3.5.0.beta3'
 ```
