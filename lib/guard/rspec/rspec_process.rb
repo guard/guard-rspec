@@ -1,3 +1,4 @@
+require "guard/jobs/pry_wrapper"
 require "guard/rspec/command"
 
 module Guard
@@ -47,10 +48,19 @@ module Guard
         Compat::UI.debug("Guard::RSpec: results file: #{formatter_tmp_file}")
 
         pid = Kernel.spawn(env, command) # use spawn to stub in JRuby
-        result = ::Process.wait2(pid)
+        result = _wait_ignoring_interrupts(pid)
         result.last.exitstatus
       rescue Errno::ENOENT => ex
         raise Failure, "Failed: #{command.inspect} (#{ex})"
+      end
+
+      def _wait_ignoring_interrupts(pid)
+        ::Process.wait2(pid)
+      rescue Guard::Jobs::PryWrapper::Error::Interrupted
+        STDERR.puts "Guard::RSpec: Interrupted by user. Waiting for RSpec to die..."
+        retry
+      rescue Errno::ECHILD
+        1
       end
 
       def _read_results
