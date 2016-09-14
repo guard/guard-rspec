@@ -47,6 +47,12 @@ module Guard
         @rails ||= _build_rails_rules(_view_extensions(options) * "|")
       end
 
+      def rake
+        @rake ||= OpenStruct.new.tap do |rake|
+          rake.rake_files = %r{^(lib/.+)\.rake}
+        end
+      end
+
       private
 
       def _view_extensions(options)
