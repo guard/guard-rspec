@@ -5,6 +5,8 @@
 filename = "gemfiles/common"
 instance_eval(IO.read(filename), filename, 1)
 
+gem 'guard', github: 'guard/guard', branch: 'guard-api'
+
 group :test do
   gem "rspec", "~> 3.4"
 end
@@ -21,5 +23,6 @@ end
 group :development do
   gem "rubocop", require: false
   gem "guard-rubocop", require: false
-  gem "guard-compat", ">= 0.0.2", require: false
+  # gem "guard-compat", ">= 0.0.2", require: false
+  gem 'guard-compat', github: 'guard/guard-compat', branch: 'guard-api', require: false
 end

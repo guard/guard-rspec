@@ -4,7 +4,7 @@ require "pathname"
 require "guard/rspec"
 
 module Guard
-  class RSpec < Plugin
+  module RSpec
     class Command < String
       FAILURE_EXIT_CODE = 2
 

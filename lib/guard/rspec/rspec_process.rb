@@ -1,7 +1,7 @@
 require "guard/rspec/command"
 
 module Guard
-  class RSpec < Plugin
+  module RSpec
     class RSpecProcess
       class Failure < RuntimeError
       end

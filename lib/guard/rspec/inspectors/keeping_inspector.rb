@@ -1,7 +1,7 @@
 require "guard/rspec/inspectors/base_inspector.rb"
 
 module Guard
-  class RSpec < Plugin
+  module RSpec
     module Inspectors
       # Inspector that remembers all failed paths and
       # returns that paths in future calls to #paths method
@@ -52,7 +52,7 @@ end
 #  https://github.com/rspec/rspec-core/issues/952
 #
 # module Guard
-#  class RSpec < Plugin
+#  module RSpec
 #    module Inspectors
 #      # Inspector that remembers all failed paths and
 #      # returns that paths in future calls to #paths method

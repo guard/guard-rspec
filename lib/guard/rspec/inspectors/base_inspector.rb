@@ -1,5 +1,5 @@
 module Guard
-  class RSpec < Plugin
+  module RSpec
     module Inspectors
       class BaseInspector
         attr_accessor :options, :spec_paths

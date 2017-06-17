@@ -1,5 +1,5 @@
 module Guard
-  class RSpec < Plugin
+  module RSpec
     class Results
       class InvalidData < RuntimeError
       end

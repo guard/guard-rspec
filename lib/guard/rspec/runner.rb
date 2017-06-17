@@ -7,7 +7,7 @@ require "guard/rspec/results"
 require "guard/rspec/rspec_process"
 
 module Guard
-  class RSpec < Plugin
+  module RSpec
     class Runner
       class NoCmdOptionError < RuntimeError
         def initialize
