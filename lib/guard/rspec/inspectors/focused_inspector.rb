@@ -1,7 +1,7 @@
 require "guard/rspec/inspectors/base_inspector.rb"
 
 module Guard
-  class RSpec < Plugin
+  module RSpec
     module Inspectors
       # Inspector that focuses on set of paths if any of them is failing.
       # Returns only that set of paths on all future calls to #paths

@@ -1,10 +1,10 @@
 require "guard/compat/test/helper"
-require "guard/rspec"
+require "guard/rspec/plugin"
 
-RSpec.describe Guard::RSpec do
+RSpec.describe Guard::RSpec::Plugin do
   let(:default_options) { Guard::RSpec::Options::DEFAULTS }
   let(:options) { {} }
-  let(:plugin) { Guard::RSpec.new(options) }
+  let(:plugin) { described_class.new(options) }
   let(:runner) { instance_double(Guard::RSpec::Runner) }
 
   before do
@@ -14,23 +14,25 @@ RSpec.describe Guard::RSpec do
   end
 
   describe ".initialize" do
+    let(:options) { { foo: :bar } }
+
     it "instanciates with default and custom options" do
-      guard_rspec = Guard::RSpec.new(foo: :bar)
-      expect(guard_rspec.options).to eq(default_options.merge(foo: :bar))
+      expect(plugin.options).to eq(default_options.merge(options))
     end
 
     it "instanciates Runner with all default and custom options" do
       expect(Guard::RSpec::Runner).to receive(:new).
-        with(default_options.merge(foo: :bar))
-      Guard::RSpec.new(foo: :bar)
+        with(default_options.merge(options))
+
+      plugin
     end
 
     it "warns deprecated options" do
       expect(Guard::RSpec::Deprecator).
         to receive(:warns_about_deprecated_options).
-        with(default_options.merge(foo: :bar))
+        with(default_options.merge(options))
 
-      Guard::RSpec.new(foo: :bar)
+      plugin
     end
   end
 

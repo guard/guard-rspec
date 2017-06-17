@@ -1,7 +1,7 @@
 require "guard/rspec/inspectors/base_inspector"
 
 module Guard
-  class RSpec < Plugin
+  module RSpec
     module Inspectors
       class SimpleInspector < BaseInspector
         def paths(paths)
