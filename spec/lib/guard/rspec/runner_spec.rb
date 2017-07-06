@@ -25,6 +25,7 @@ RSpec.describe Guard::RSpec::Runner do
     allow(results).to receive(:summary).and_return("Summary")
     allow(results).to receive(:failed_paths).and_return([])
 
+    allow(process).to receive(:error_and_examples_not_run?).and_return(false)
     allow(Guard::RSpec::RSpecProcess).to receive(:new).and_return(process)
     allow(process).to receive(:all_green?).and_return(true)
     allow(process).to receive(:results).and_return(results)
@@ -336,6 +337,16 @@ RSpec.describe Guard::RSpec::Runner do
         and_raise(Guard::RSpec::RSpecProcess::Failure, /Failed: /)
 
       expect(notifier).to receive(:notify_failure)
+      runner.run(paths)
+    end
+
+    it "notifies that examples are not run" do
+      allow(process).to receive(:all_green?).and_return(false)
+      allow(process).to receive(:error_and_examples_not_run?).and_return(true)
+
+      expect(notifier).to receive(:notify_failure)
+        .with(%r{Error\/s occurred and examples are not run.})
+
       runner.run(paths)
     end
 

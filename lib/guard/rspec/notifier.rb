@@ -18,9 +18,9 @@ module Guard
                                  priority: priority)
       end
 
-      def notify_failure
+      def notify_failure(failure_message = 'Failed')
         return unless options[:notification]
-        Guard::Compat::UI.notify("Failed",
+        Guard::Compat::UI.notify(failure_message,
                                  title: @options[:title],
                                  image: :failed,
                                  priority: 2)
