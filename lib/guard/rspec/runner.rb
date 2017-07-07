@@ -64,12 +64,18 @@ module Guard
 
         process = RSpecProcess.new(cmd, file, options)
         results = process.results
-
         inspector.failed(results.failed_paths)
-        notifier.notify(results.summary)
-        _open_launchy
 
         all_green = process.all_green?
+
+        # Notify user of error and that examples are not run.
+        if process.error_and_examples_not_run?
+          notifier.notify_failure('Error/s occurred and examples are not run.')
+        else
+          notifier.notify(results.summary)
+        end
+
+        _open_launchy
         return yield all_green if block_given?
         all_green
       end

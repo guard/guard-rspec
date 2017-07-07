@@ -64,11 +64,18 @@ RSpec.describe Guard::RSpec::RSpecProcess do
     context "with the failure code for normal test failures" do
       let(:exit_code) { Guard::RSpec::Command::FAILURE_EXIT_CODE }
 
+      before do
+        summary = '2 examples, 1 failure'
+        allow(results).to receive(:summary).and_return(summary)
+      end
+
       it "fails" do
         expect { subject }.to_not raise_error
       end
 
       it { is_expected.to_not be_all_green }
+
+      it { is_expected.to_not be_error_and_examples_not_run }
     end
 
     context "with no failures" do
@@ -147,6 +154,19 @@ RSpec.describe Guard::RSpec::RSpecProcess do
         expect(Bundler).to receive(:with_original_env)
         subject
       end
+    end
+
+    context "with error outside examples" do
+      let(:exit_code) { 2 }
+
+      before do
+        summary = '0 examples, 0 failures, 1 error occurred outside of examples'
+        allow(results).to receive(:summary).and_return(summary)
+      end
+
+      it { is_expected.to_not be_all_green }
+
+      it { is_expected.to be_error_and_examples_not_run }
     end
   end
 end
