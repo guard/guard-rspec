@@ -3,6 +3,7 @@ bundler_args: --without=tool development
 rvm:
   - 2.2.5
   - 2.3.1
+  - ruby-head
   - jruby-9.1.1.0
 gemfile:
   - gemfiles/Gemfile.rspec-2.99
