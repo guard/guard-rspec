@@ -21,7 +21,6 @@ Install guard-rspec:
 $ bundle install
 ```
 
-
 Add guard definition to your Guardfile by running this command:
 
 ```
