@@ -15,6 +15,12 @@ Add the gem to your Gemfile (inside development group):
  gem 'guard-rspec', require: false
 ```
 
+Install guard-rspec:
+
+```
+$ bundle install
+```
+
 Add guard definition to your Guardfile by running this command:
 
 ```
