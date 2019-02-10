@@ -64,7 +64,7 @@ module Guard
 
       def _guard_formatter
         dir = Pathname.new(__FILE__).dirname.dirname
-        "-r #{dir + 'rspec_formatter.rb'} -f Guard::RSpecFormatter"
+        "--require #{dir + 'rspec_formatter.rb'} --format Guard::RSpecFormatter"
       end
     end
   end
