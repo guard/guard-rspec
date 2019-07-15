@@ -57,9 +57,9 @@ module Guard
         Results.new(formatter_tmp_file)
       rescue Errno::ENOENT
         msg = "Guard::RSpec cannot open results file: %s. This is likely a bug"\
-          "so please report this at"\
+          " so please report this at"\
           " http://github.com/guard/guard-rspec/issues/new along with as much"\
-          "information as possible to reproduce this issue."
+          " information as possible to reproduce this issue."
         Compat::UI.error(format(msg, formatter_tmp_file.inspect))
         raise
       ensure
