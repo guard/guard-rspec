@@ -42,6 +42,8 @@ module Guard
       _throw_if_failed { runner.run(paths) }
     end
 
+    alias run_on_additions run_on_modifications
+
     private
 
     def _throw_if_failed

@@ -88,4 +88,23 @@ RSpec.describe Guard::RSpec do
       plugin.run_on_modifications(paths)
     end
   end
+
+  describe "#run_on_additions" do
+    let(:paths) { %w[path1 path2] }
+    it "runs all specs via runner" do
+      expect(runner).to receive(:run).with(paths) { true }
+      plugin.run_on_additions(paths)
+    end
+
+    it "does nothing if paths empty" do
+      expect(runner).to_not receive(:run)
+      plugin.run_on_additions([])
+    end
+
+    it "throws task_has_failed if runner return false" do
+      allow(runner).to receive(:run) { false }
+      expect(plugin).to receive(:throw).with(:task_has_failed)
+      plugin.run_on_additions(paths)
+    end
+  end
 end
